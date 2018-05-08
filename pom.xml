@@ -89,6 +89,11 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <modules>
+                <module>jstressy-maven-plugin</module>
+                <module>jstressy-platform</module>
+                <module>jstressy-assembly</module>
+            </modules>
             <build>
                 <plugins>
                     <plugin>
@@ -121,6 +126,10 @@
         </profile>
         <profile>
             <id>release</id>
+            <modules>
+                <module>jstressy-maven-plugin</module>
+                <module>jstressy-platform</module>
+            </modules>
             <build>
                 <plugins>
                     <plugin>
