@@ -1,2 +1,2 @@
-language:java
-dist:trusty
+language: java
+dist: trusty
