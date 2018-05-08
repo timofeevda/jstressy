@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.github.timofeevda.jstressy</groupId>
+        <artifactId>jstressy-platform</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>jstressy-impl</artifactId>
+
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>jstressy-config</module>
+        <module>jstressy-logger</module>
+        <module>jstressy-metrics</module>
+        <module>jstressy-vertx</module>
+        <module>jstressy-utils</module>
+        <module>jstressy-httpclient</module>
+        <module>jstressy-httprequest</module>
+        <module>jstressy-scheduler</module>
+        <module>jstressy-dummy-scenario</module>
+        <module>jstressy-scenario-registry</module>
+    </modules>
+
+</project>
