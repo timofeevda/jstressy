@@ -8,6 +8,10 @@
 
     <packaging>pom</packaging>
 
+    <name>JStressy</name>
+    <url>https://github.com/timofeevda/jstressy</url>
+    <description>Leightweight framework for fast prototyping and building stress tools for WEB applications</description>
+
     <properties>
         <maven.version>3.5.2</maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
