@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
-            <artifactId>jstressy-metrics</artifactId>
+            <artifactId>jstressy-metrics-micrometer</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

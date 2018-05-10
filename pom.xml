@@ -218,9 +218,6 @@
                             </goals>
                         </execution>
                     </executions>
-                    <configuration>
-                        <additionalparam>-Xdoclint:none</additionalparam>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -323,6 +320,11 @@
             <dependency>
                 <groupId>io.vertx</groupId>
                 <artifactId>vertx-rx-java2</artifactId>
+                <version>${vertx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-micrometer-metrics</artifactId>
                 <version>${vertx.version}</version>
             </dependency>
             <dependency>
