@@ -50,6 +50,7 @@ import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResult;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -68,6 +69,21 @@ public class BuilderMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "5.6.10")
     private String felixVersion;
+
+    @Parameter(defaultValue = "")
+    private String felixConfigFile;
+
+    @Parameter(defaultValue = "")
+    private String logbackFile;
+
+    @Parameter(defaultValue = "")
+    private String runBatFile;
+
+    @Parameter(defaultValue = "")
+    private String runShFile;
+
+    @Parameter(defaultValue = "")
+    private String stressyConfigFile;
 
     @Parameter
     private List<Exclusion> exclusions;
@@ -249,25 +265,50 @@ public class BuilderMojo extends AbstractMojo {
 
     private void copyConfigurationFiles() {
         try {
-            // copy felix config
-            InputStream is = BuilderMojo.class.getResourceAsStream("/felix/" + Constants.FELIX_CONFIG);
-            FileUtils.copyFile(is, new File(target + Constants.CONFIGURATION_FOLDER + "/" + Constants.FELIX_CONFIG));
-
-            // copy logback config
-            InputStream logback = BuilderMojo.class.getResourceAsStream("/logback/logback.xml");
-            FileUtils.copyFile(logback, new File(target + Constants.CONFIGURATION_FOLDER + "/logback.xml"));
-
-            InputStream windowsRunner = BuilderMojo.class.getResourceAsStream("/run/run.bat");
-            FileUtils.copyFile(windowsRunner, new File(target + "/run.bat"));
-
-            InputStream linuxRunner = BuilderMojo.class.getResourceAsStream("/run/run.sh");
-            FileUtils.copyFile(linuxRunner, new File(target + "/run.sh"));
-
-            InputStream templateConfig = BuilderMojo.class.getResourceAsStream("/stressy/stressy.yml");
-            FileUtils.copyFile(templateConfig, new File(target + "/stressy.yml"));
+            writeFelixConfig();
+            writeLogbackConfig();
+            writeWindowsRunner();
+            writeUnixRunner();
+            writeStressyConfig();
         } catch (Exception ex) {
             getLog().error(ex);
         }
+    }
+
+    private void writeStressyConfig() throws Exception {
+        InputStream templateConfig = stressyConfigFile == null ?
+                BuilderMojo.class.getResourceAsStream("/stressy/stressy.yml") :
+                new FileInputStream(stressyConfigFile);
+        FileUtils.copyFile(templateConfig, new File(target + "/stressy.yml"));
+    }
+
+    private void writeUnixRunner() throws Exception {
+        InputStream unixRunner = runShFile == null ?
+                BuilderMojo.class.getResourceAsStream("/run/run.sh") :
+                new FileInputStream(runShFile);
+        FileUtils.copyFile(unixRunner, new File(target + "/run.sh"));
+    }
+
+    private void writeWindowsRunner() throws Exception {
+        InputStream windowsRunner = runBatFile == null ?
+                BuilderMojo.class.getResourceAsStream("/run/run.bat") :
+                new FileInputStream(runBatFile);
+        FileUtils.copyFile(windowsRunner, new File(target + "/run.bat"));
+    }
+
+    private void writeLogbackConfig() throws Exception {
+        // copy logback config
+        InputStream logback = logbackFile == null ?
+                BuilderMojo.class.getResourceAsStream("/logback/logback.xml") :
+                new FileInputStream(logbackFile);
+        FileUtils.copyFile(logback, new File(target + Constants.CONFIGURATION_FOLDER + "/logback.xml"));
+    }
+
+    private void writeFelixConfig() throws Exception {
+        InputStream felixConfig = felixConfigFile == null ?
+                BuilderMojo.class.getResourceAsStream("/felix/" + Constants.FELIX_CONFIG) :
+                new FileInputStream(felixConfigFile);
+        FileUtils.copyFile(felixConfig, new File(target + Constants.CONFIGURATION_FOLDER + "/" + Constants.FELIX_CONFIG));
     }
 
     private Set<Artifact> getApplicationBundles(Set<DependencyDescriptor> exclusionsSet) {
