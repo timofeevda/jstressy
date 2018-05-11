@@ -27,7 +27,7 @@
                     <instructions>
                         <Bundle-Activator>${bundle.namespace}.internal.Activator</Bundle-Activator>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
-                        <Import-Package>!com.github.benmanes.caffeine.*,!com.hazelcast.*,!com.netflix.hystrix.*,!net.sf.ehcache.*,!okhttp3,!org.apache.catalina,!org.aspectj.lang.*,!org.aspectj.lang.reflect,!org.eclipse.jetty.server.handler,!org.hibernate.*,!rx.*,!com.sun.management,!javax.cache,!javax.persistence,*</Import-Package>
+                        <Import-Package>!com.github.benmanes.caffeine.*,!com.hazelcast.*,!com.netflix.hystrix.*,!net.sf.ehcache.*,!okhttp3,!org.apache.catalina,!org.aspectj.lang.*,!org.aspectj.lang.reflect,!org.eclipse.jetty.server.handler,!org.hibernate.*,!rx.*,!com.sun.management,!javax.cache,!javax.persistence,!javax.annotation,*</Import-Package>
                         <Export-Package>!*</Export-Package>
                         <Embed-Dependency>*;scope=compile|runtime;inline=true</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
@@ -43,10 +43,6 @@
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
             <version>${micrometer.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-micrometer-metrics</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>

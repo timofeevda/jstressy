@@ -16,6 +16,7 @@ import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.micrometer.prometheus.PrometheusRenameFilter;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -27,6 +28,8 @@ import java.util.function.Supplier;
 public class MicrometerMetricsRegistry implements MetricsRegistry {
 
     private final PrometheusMeterRegistry prometheusRegistry;
+
+    private final ConcurrentHashMap<String, Timer> timers = new ConcurrentHashMap<>();
 
     MicrometerMetricsRegistry() {
         prometheusRegistry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
@@ -59,11 +62,15 @@ public class MicrometerMetricsRegistry implements MetricsRegistry {
 
     @Override
     public Timer timer(String name) {
-        io.micrometer.core.instrument.Timer timer = prometheusRegistry.timer(name);
-        return () -> {
-            long start = System.nanoTime();
-            return () -> timer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
-        };
+        return timers.computeIfAbsent(name, s -> {
+            io.micrometer.core.instrument.Timer timer = io.micrometer.core.instrument.Timer.builder(name)
+                    .publishPercentiles(0.5, 0.75, 0.95)
+                    .register(prometheusRegistry);
+            return () -> {
+                long start = System.nanoTime();
+                return () -> timer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+            };
+        });
     }
 
     @Override

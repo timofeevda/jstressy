@@ -99,7 +99,7 @@ class StressyRequestExecutor implements RequestExecutor, HttpSessionManager {
     }
 
     private Single<HttpClientResponse> getMeasuredRequest(HttpClientRequest rq) {
-        RequestTimer requestTimer = new RequestTimer(rq.uri());
+        RequestTimer requestTimer = new RequestTimer("rpath_" + rq.uri());
         return Single.create(emitter -> {
             rq.toObservable()
                     .timeout(60, TimeUnit.SECONDS)
