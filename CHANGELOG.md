@@ -6,5 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+## [1.0.2] - 2018-05-10
 ### Added
-	-  first version
+- added metrics registry implementation based on micrometer
+
+## [1.0.1] - 2018-05-08
+### Added
+- first release, released maven plugin and default services implementations
