@@ -21,16 +21,36 @@
  *
  */
 
-package com.github.timofeevda.jstressy.api.metrics.type;
+package com.github.timofeevda.jstressy.httpsession;
 
-import java.util.concurrent.TimeUnit;
+import com.github.timofeevda.jstressy.api.httpsession.HttpRequestHeader;
+import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManager;
+import io.vertx.reactivex.core.http.HttpClientRequest;
+import io.vertx.reactivex.core.http.HttpClientResponse;
 
-public interface Timer {
-    Context context();
+import java.util.Collection;
+import java.util.Collections;
 
-    interface Context {
-        void stop();
+public class NoOpHttpSessionManager implements HttpSessionManager {
+    @Override
+    public HttpClientRequest processRequest(HttpClientRequest request) {
+        // do nothing
+        return request;
     }
 
-    void record(long duration, TimeUnit timeUnit);
+    @Override
+    public HttpClientResponse processResponse(HttpClientResponse response) {
+        // do nothing
+        return response;
+    }
+
+    @Override
+    public void addCustomHeader(String headerName, String headerValue) {
+        // do nothing
+    }
+
+    @Override
+    public Collection<HttpRequestHeader> getHeaders() {
+        return Collections.emptyList();
+    }
 }

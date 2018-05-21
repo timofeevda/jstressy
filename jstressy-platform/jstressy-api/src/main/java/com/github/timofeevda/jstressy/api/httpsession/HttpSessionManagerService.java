@@ -21,16 +21,19 @@
  *
  */
 
-package com.github.timofeevda.jstressy.api.metrics.type;
+package com.github.timofeevda.jstressy.api.httpsession;
 
-import java.util.concurrent.TimeUnit;
+/**
+ * Service providing {@link HttpSessionManager} implementation
+ *
+ * @author dtimofeev
+ */
+public interface HttpSessionManagerService {
 
-public interface Timer {
-    Context context();
-
-    interface Context {
-        void stop();
-    }
-
-    void record(long duration, TimeUnit timeUnit);
+    /**
+     * Returns session manager implementation
+     *
+     * @return {@link HttpSessionManager} implementation
+     */
+    HttpSessionManager get();
 }

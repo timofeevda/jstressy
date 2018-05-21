@@ -21,16 +21,10 @@
  *
  */
 
-package com.github.timofeevda.jstressy.httprequest.internal;
+package com.github.timofeevda.jstressy.httpsession.internal;
 
-import com.github.timofeevda.jstressy.api.httpclient.HttpClientService;
-import com.github.timofeevda.jstressy.api.httprequest.RequestExecutorService;
 import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManagerService;
-import com.github.timofeevda.jstressy.api.metrics.MetricsRegistryService;
-import com.github.timofeevda.jstressy.httprequest.StressyRequestExecutorService;
-import com.github.timofeevda.jstressy.utils.ServiceObserver;
-import io.reactivex.Observable;
-import io.reactivex.Single;
+import com.github.timofeevda.jstressy.httpsession.StressyHttpSessionManagerService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -39,25 +33,13 @@ import org.slf4j.LoggerFactory;
 import java.util.Hashtable;
 
 public class Activator implements BundleActivator {
-
-    private static Logger logger = LoggerFactory.getLogger(Activator.class);
+    private static final Logger logger = LoggerFactory.getLogger(Activator.class);
 
     @Override
     public void start(BundleContext context) {
-        logger.info("Starting request executor service activator");
+        logger.info("Staring HTTP session manager service activator");
+        context.registerService(HttpSessionManagerService.class.getName(), new StressyHttpSessionManagerService(), new Hashtable());
 
-        Single<HttpClientService> vertxService = ServiceObserver.observeService(HttpClientService.class.getName(), context);
-        Single<MetricsRegistryService> configurationService = ServiceObserver.observeService(MetricsRegistryService.class.getName(), context);
-        Single<HttpSessionManagerService> httpSessionManagerService = ServiceObserver.observeService(HttpSessionManagerService.class.getName(), context);
-
-        Observable.combineLatest(
-                vertxService.toObservable(),
-                configurationService.toObservable(),
-                httpSessionManagerService.toObservable(),
-                StressyRequestExecutorService::new).subscribe(requestExecutorService -> {
-            logger.info("Registering request executor service");
-            context.registerService(RequestExecutorService.class.getName(), requestExecutorService, new Hashtable());
-        });
     }
 
     @Override

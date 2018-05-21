@@ -23,10 +23,13 @@
 
 package com.github.timofeevda.jstressy.api.httprequest;
 
+import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManager;
 import io.reactivex.Single;
 import io.vertx.reactivex.core.http.HttpClientRequest;
 import io.vertx.reactivex.core.http.HttpClientResponse;
 import io.vertx.reactivex.core.http.WebSocket;
+
+import java.util.Optional;
 
 /**
  * Request executor. Proxy object hiding concrete request/response handling functionality
@@ -93,5 +96,11 @@ public interface RequestExecutor {
      * @return {@link HttpClientResponse} response
      */
     Single<HttpClientResponse> invoke(HttpClientRequest request);
+
+    /**
+     * Returns {@link HttpSessionManager} instance assigned to request executor
+     * @return {@link HttpSessionManager} instance which manages requests in this request executor
+     */
+    Optional<HttpSessionManager> getSessionManager();
 
 }

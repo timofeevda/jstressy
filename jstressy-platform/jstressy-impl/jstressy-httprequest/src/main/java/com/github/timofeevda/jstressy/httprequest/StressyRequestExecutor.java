@@ -26,6 +26,7 @@ package com.github.timofeevda.jstressy.httprequest;
 import com.github.timofeevda.jstressy.api.httpclient.HttpClientService;
 import com.github.timofeevda.jstressy.api.httprequest.RequestExecutor;
 import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManager;
+import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManagerService;
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry;
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistryService;
 import com.github.timofeevda.jstressy.api.metrics.type.Timer;
@@ -39,6 +40,7 @@ import io.vertx.reactivex.core.http.HttpClientRequest;
 import io.vertx.reactivex.core.http.HttpClientResponse;
 import io.vertx.reactivex.core.http.WebSocket;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -47,25 +49,29 @@ import java.util.concurrent.TimeUnit;
  *
  * @author timofeevda
  */
-class StressyRequestExecutor implements RequestExecutor, HttpSessionManager {
+class StressyRequestExecutor implements RequestExecutor {
 
     private final HttpClient client;
     private final MetricsRegistry metricsRegistry;
+    private final HttpSessionManager httpSessionManager;
+
 
     StressyRequestExecutor(HttpClientService httpClientService,
-                           MetricsRegistryService metricsRegistryService) {
+                           MetricsRegistryService metricsRegistryService,
+                           HttpSessionManagerService httpSessionManagerService) {
         this.client = httpClientService.get();
         this.metricsRegistry = metricsRegistryService.get();
+        this.httpSessionManager = httpSessionManagerService.get();
     }
 
     @Override
     public Single<HttpClientResponse> get(String host, int port, String requestURI) {
-        return getMeasuredRequest(processRequest(client.request(HttpMethod.GET, port, host, requestURI)));
+        return getMeasuredRequest(httpSessionManager.processRequest(client.request(HttpMethod.GET, port, host, requestURI)));
     }
 
     @Override
     public Single<HttpClientResponse> post(String host, int port, String requestURI) {
-        return getMeasuredRequest(processRequest(client.request(HttpMethod.POST, port, host, requestURI)));
+        return getMeasuredRequest(httpSessionManager.processRequest(client.request(HttpMethod.POST, port, host, requestURI)));
     }
 
     @Override
@@ -93,6 +99,11 @@ class StressyRequestExecutor implements RequestExecutor, HttpSessionManager {
     }
 
     @Override
+    public Optional<HttpSessionManager> getSessionManager() {
+        return Optional.empty();
+    }
+
+    @Override
     public Single<HttpClientResponse> postFormData(String host, int port, String requestURI, String data) {
         return getMeasuredRequestWithPayload(
                 processFormDataRequest(client.request(HttpMethod.POST, port, host, requestURI), data), data);
@@ -106,7 +117,7 @@ class StressyRequestExecutor implements RequestExecutor, HttpSessionManager {
                     .doOnSubscribe(disposable -> requestTimer.start())
                     .doOnNext(response -> {
                         requestTimer.stop();
-                        processResponse(response);
+                        httpSessionManager.processResponse(response);
                     })
                     .subscribe(emitter::onSuccess, emitter::onError);
             rq.end();
@@ -121,7 +132,7 @@ class StressyRequestExecutor implements RequestExecutor, HttpSessionManager {
                     .doOnSubscribe(disposable -> requestTimer.start())
                     .doOnNext(response -> {
                         requestTimer.stop();
-                        processResponse(response);
+                        httpSessionManager.processResponse(response);
                     })
                     .subscribe(emitter::onSuccess, emitter::onError);
             rq.write(data);
@@ -129,24 +140,14 @@ class StressyRequestExecutor implements RequestExecutor, HttpSessionManager {
         });
     }
 
-    @Override
-    public HttpClientResponse processResponse(HttpClientResponse response) {
-        return response;
-    }
-
-    @Override
-    public HttpClientRequest processRequest(HttpClientRequest request) {
-        return request;
-    }
-
     private HttpClientRequest processFormDataRequest(HttpClientRequest request, String data) {
-        return processRequest(request)
+        return httpSessionManager.processRequest(request)
                 .putHeader("Content-Length", Integer.toString(data.getBytes().length))
                 .putHeader("Content-Type", "application/x-www-form-urlencoded");
     }
 
     private HttpClientRequest processJsonDataRequest(HttpClientRequest request, String jsonData) {
-        return processRequest(request)
+        return httpSessionManager.processRequest(request)
                 .putHeader("Content-Length", Integer.toString(jsonData.getBytes().length))
                 .putHeader("Content-Type", "application/json");
     }

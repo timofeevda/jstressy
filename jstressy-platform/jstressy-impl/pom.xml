@@ -25,6 +25,7 @@
         <module>jstressy-scenario-registry</module>
         <module>jstressy-metrics-micrometer</module>
         <module>jstressy-dummy-scenario-kotlin</module>
+        <module>jstressy-httpsession</module>
     </modules>
 
 </project>

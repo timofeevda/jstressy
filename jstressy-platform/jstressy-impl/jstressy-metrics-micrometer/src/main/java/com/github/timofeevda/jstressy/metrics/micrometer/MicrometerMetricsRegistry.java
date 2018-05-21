@@ -66,9 +66,17 @@ public class MicrometerMetricsRegistry implements MetricsRegistry {
             io.micrometer.core.instrument.Timer timer = io.micrometer.core.instrument.Timer.builder(name)
                     .publishPercentiles(0.5, 0.75, 0.95)
                     .register(prometheusRegistry);
-            return () -> {
-                long start = System.nanoTime();
-                return () -> timer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+            return new Timer() {
+                @Override
+                public Context context() {
+                    long start = System.nanoTime();
+                    return () -> timer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+                }
+
+                @Override
+                public void record(long duration, TimeUnit timeUnit) {
+                    timer.record(duration, timeUnit);
+                }
             };
         });
     }

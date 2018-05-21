@@ -26,7 +26,7 @@ package com.github.timofeevda.jstressy.scheduler;
 import com.github.timofeevda.jstressy.api.scenario.ScenarioProviderService;
 import com.github.timofeevda.jstressy.api.scenario.ScenarioRegistryService;
 import io.reactivex.Completable;
-import io.reactivex.CompletableEmitter;
+import io.reactivex.subjects.CompletableSubject;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -42,8 +42,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class ScenarioProvidersTracker extends ServiceTracker {
 
-    private final CopyOnWriteArrayList<CompletableEmitter> emittersList = new CopyOnWriteArrayList<>();
     private final CopyOnWriteArrayList<String> scenariosToWait = new CopyOnWriteArrayList<>();
+
+    private CompletableSubject observeAwaitComplete = CompletableSubject.create();
 
     private final ScenarioRegistryService scenarioRegistryService;
 
@@ -58,7 +59,7 @@ public class ScenarioProvidersTracker extends ServiceTracker {
         registerScenarioProviderService(scenarioProviderService.getScenarioName(), scenarioProviderService);
         scenariosToWait.remove(scenarioProviderService.getScenarioName());
         if (scenariosToWait.isEmpty()) {
-            emittersList.forEach(CompletableEmitter::onComplete);
+            observeAwaitComplete.onComplete();
         }
         return scenarioProviderService;
     }
@@ -69,13 +70,7 @@ public class ScenarioProvidersTracker extends ServiceTracker {
     }
 
     public Completable observeScenarioProviders() {
-        return Completable.create(emitter -> {
-            emittersList.add(emitter);
-            if (scenariosToWait.isEmpty()) {
-                emitter.onComplete();
-            }
-            emitter.setCancellable(() -> emittersList.remove(emitter));
-        });
+        return observeAwaitComplete;
     }
 
     private void registerScenarioProviderService(String scenarioName, ScenarioProviderService scenarioProviderService) {

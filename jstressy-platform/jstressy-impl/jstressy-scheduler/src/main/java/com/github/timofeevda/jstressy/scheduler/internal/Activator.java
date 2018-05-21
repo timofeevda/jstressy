@@ -67,8 +67,9 @@ public class Activator implements BundleActivator {
                 this::toScenariosSchedulerService
         ).flatMap(stressyScenariosScheduler -> toObservableScenarioScheduler(context, stressyScenariosScheduler))
                 .map(ScenarioSchedulerService::observeScenarios)
-                .subscribe(scenarioObservable -> scenarioObservable.subscribe(Scenario::start));
-
+                .subscribe(
+                        scenarioObservable -> scenarioObservable.subscribe(Scenario::start),
+                        throwable -> logger.error("Error creating scheduled scenarios stream", throwable));
     }
 
     @Override

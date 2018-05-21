@@ -21,16 +21,15 @@
  *
  */
 
-package com.github.timofeevda.jstressy.api.metrics.type;
+package com.github.timofeevda.jstressy.httpsession;
 
-import java.util.concurrent.TimeUnit;
+import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManager;
+import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManagerService;
 
-public interface Timer {
-    Context context();
+public class StressyHttpSessionManagerService implements HttpSessionManagerService {
 
-    interface Context {
-        void stop();
+    @Override
+    public HttpSessionManager get() {
+        return new NoOpHttpSessionManager();
     }
-
-    void record(long duration, TimeUnit timeUnit);
 }

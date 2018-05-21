@@ -29,6 +29,11 @@
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
+            <artifactId>jstressy-httpsession</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-httprequest</artifactId>
             <version>${project.version}</version>
         </dependency>

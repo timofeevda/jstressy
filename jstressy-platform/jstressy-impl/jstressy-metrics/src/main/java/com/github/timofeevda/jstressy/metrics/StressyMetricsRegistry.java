@@ -32,6 +32,7 @@ import com.github.timofeevda.jstressy.api.metrics.type.Timer;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.dropwizard.DropwizardExports;
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
@@ -65,9 +66,17 @@ public class StressyMetricsRegistry implements MetricsRegistry {
     @Override
     public Timer timer(String name) {
         final com.codahale.metrics.Timer timer = metricRegistry.timer(name);
-        return () -> {
-            final com.codahale.metrics.Timer.Context context = timer.time();
-            return context::stop;
+        return new Timer() {
+            @Override
+            public Context context() {
+                final com.codahale.metrics.Timer.Context context = timer.time();
+                return context::stop;
+            }
+
+            @Override
+            public void record(long duration, TimeUnit timeUnit) {
+                timer.update(duration, timeUnit);
+            }
         };
     }
 

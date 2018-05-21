@@ -26,6 +26,7 @@ package com.github.timofeevda.jstressy.httprequest;
 import com.github.timofeevda.jstressy.api.httpclient.HttpClientService;
 import com.github.timofeevda.jstressy.api.httprequest.RequestExecutor;
 import com.github.timofeevda.jstressy.api.httprequest.RequestExecutorService;
+import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManagerService;
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistryService;
 
 /**
@@ -37,15 +38,18 @@ public class StressyRequestExecutorService implements RequestExecutorService {
 
     private final HttpClientService httpClientService;
     private final MetricsRegistryService metricsRegistryService;
+    private HttpSessionManagerService httpSessionManagerService;
 
     public StressyRequestExecutorService(HttpClientService httpClientService,
-                                         MetricsRegistryService metricsRegistryService) {
+                                         MetricsRegistryService metricsRegistryService,
+                                         HttpSessionManagerService httpSessionManagerService) {
         this.httpClientService = httpClientService;
         this.metricsRegistryService = metricsRegistryService;
+        this.httpSessionManagerService = httpSessionManagerService;
     }
 
     @Override
     public RequestExecutor get() {
-        return new StressyRequestExecutor(httpClientService, metricsRegistryService);
+        return new StressyRequestExecutor(httpClientService, metricsRegistryService, httpSessionManagerService);
     }
 }

@@ -86,13 +86,13 @@ public class BuilderMojo extends AbstractMojo {
     private String stressyConfigFile;
 
     @Parameter
-    private List<Exclusion> exclusions;
+    private List<Exclusion> exclusions = Collections.emptyList();
 
     @Parameter
-    private List<SystemBundle> systemBundles;
+    private List<SystemBundle> systemBundles = Collections.emptyList();
 
     @Parameter
-    private List<ScenarioBundle> scenarioBundles;
+    private List<ScenarioBundle> scenarioBundles = Collections.emptyList();
 
     @Parameter(defaultValue = "target")
     private String target;

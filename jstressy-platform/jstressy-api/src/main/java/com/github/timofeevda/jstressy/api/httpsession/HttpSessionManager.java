@@ -26,6 +26,8 @@ package com.github.timofeevda.jstressy.api.httpsession;
 import io.vertx.reactivex.core.http.HttpClientRequest;
 import io.vertx.reactivex.core.http.HttpClientResponse;
 
+import java.util.Collection;
+
 /**
  * Session manager which can be used to implement statefull HTTP communication
  *
@@ -35,6 +37,7 @@ public interface HttpSessionManager {
 
     /**
      * Processes HTTP request (e.g. adding session cookie)
+     *
      * @param request {@link HttpClientRequest} to process
      * @return {@link HttpClientRequest} instance
      */
@@ -42,9 +45,25 @@ public interface HttpSessionManager {
 
     /**
      * Processes HTTP response (e.g. getting new session cookie)
+     *
      * @param response {@link HttpClientResponse} to process
      * @return {@link HttpClientResponse} instance
      */
     HttpClientResponse processResponse(HttpClientResponse response);
 
+    /**
+     * Adds custom header for all subsequent requests
+     *
+     * @param headerName  custom header name
+     * @param headerValue custom header value
+     */
+    void addCustomHeader(String headerName, String headerValue);
+
+    /**
+     * Returns current collection of request headers being passed to each request by this session manager.
+     *
+     * @return current collection of request headers being passed to each request by this session manager,
+     * empty collection in case there is no HTTP headers to set or request manager doesn't implement this logic
+     */
+    Collection<HttpRequestHeader> getHeaders();
 }

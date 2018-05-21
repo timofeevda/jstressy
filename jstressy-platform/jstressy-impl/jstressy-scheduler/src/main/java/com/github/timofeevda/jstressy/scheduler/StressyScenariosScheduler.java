@@ -91,7 +91,7 @@ public class StressyScenariosScheduler implements ScenarioSchedulerService {
         ScenarioProviderService scenarioProviderService = scenarioRegistryService.get(stage.getScenarioName());
         ScenarioProvider scenarioProvider = scenarioProviderService.get(stage.getScenarioProviderParameters());
         scenarioProvider.init(metricsRegistry, requestExecutor, configurationService, vertxService);
-        return Observable.interval((long) (1000 / stage.getArrivalRate()), TimeUnit.MILLISECONDS)
+        return Observable.interval(0, (long) (1000 / stage.getArrivalRate()), TimeUnit.MILLISECONDS)
                 .map(i -> scenarioProvider.get().withParameters(stage.getScenarioParameters()));
     }
 
@@ -101,7 +101,12 @@ public class StressyScenariosScheduler implements ScenarioSchedulerService {
                 && stage.getRampInterval() != null) {
             ScenarioProviderService scenarioProviderService = scenarioRegistryService.get(stage.getScenarioName());
             ScenarioProvider scenarioProvider = scenarioProviderService.get(stage.getScenarioProviderParameters());
-            scenarioProvider.init(metricsRegistry, requestExecutor, configurationService, vertxService);
+
+            try {
+                scenarioProvider.init(metricsRegistry, requestExecutor, configurationService, vertxService);
+            } catch (Throwable e) {
+                return Optional.of(Observable.error(e));
+            }
 
             long rampInterval = rateToIntervalInMillis(stage.getRampArrivalRate());
             long rampDuration = Duration.parse(stage.getRampInterval()).toMilliseconds();
