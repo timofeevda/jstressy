@@ -4,7 +4,7 @@
 
     <groupId>com.github.timofeevda.jstressy</groupId>
     <artifactId>jstressy</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -76,7 +76,7 @@
         <url>https://github.com/timofeevda/jstressy</url>
         <connection>scm:git:git@github.com:timofeevda/jstressy.git</connection>
         <developerConnection>scm:git:git@github.com:timofeevda/jstressy.git</developerConnection>
-        <tag>jstressy-1.0.4</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <profiles>
