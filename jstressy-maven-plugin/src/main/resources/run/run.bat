@@ -11,7 +11,7 @@ rem Configuration parameters
 set MEMORY=-Xms512M -Xmx2048M
 set DEBUG=-Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n
 set LOG=-Dlogback.configurationFile=./%CONFIGURATION_DIRECTORY%/logback.xml
-set STRESSY_CONF=-DconfigFile=stressy.yml
+set STRESSY_CONF=-DconfigFolder=.
 
 java %MEMORY% %DEBUG% %LOG% %STRESSY_CONF% -jar ./bin/felix.jar
 

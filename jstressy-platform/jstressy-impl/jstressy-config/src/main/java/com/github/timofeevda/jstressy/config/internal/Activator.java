@@ -40,9 +40,9 @@ public class Activator implements BundleActivator {
         logger.info("Activating configuration loader");
 
         ConfigLoader configLoader = new ConfigLoader();
-        String configFile = System.getProperty("configFile");
-        logger.info("Reading configuration file " + configFile);
-        configLoader.readConfiguration(configFile);
+        String configFolder = System.getProperty("configFolder");
+        logger.info("Reading configuration from folder " + configFolder);
+        configLoader.readConfiguration(configFolder);
 
         logger.info("Registering configuration loader");
         bundleContext.registerService(ConfigurationService.class.getName(), configLoader, new Hashtable());

@@ -16,6 +16,6 @@ CONFIG_PROPERTIES_PARAMETER="-Dfelix.config.properties=file:$CONFIG_PROPERTIES_F
 MEMORY="-Xms512M -Xmx2048M"
 DEBUG="-Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n"
 LOG="-Dlogback.configurationFile=./$CONFIGURATION_DIRECTORY/logback.xml"
-STRESSY_CONF="-DconfigFile=stressy.yml"
+STRESSY_CONF="-DconfigFolder=."
 
 java $MEMORY $DEBUG $LOG $STRESSY_CONF -jar ./bin/felix.jar

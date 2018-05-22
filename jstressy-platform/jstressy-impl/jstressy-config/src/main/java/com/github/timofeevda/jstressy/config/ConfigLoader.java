@@ -51,15 +51,17 @@ public class ConfigLoader implements ConfigurationService {
 
     private static final Logger log = LoggerFactory.getLogger(ConfigLoader.class);
 
+    public static final String STRESSY_YML = "stressy.yml";
+
     private Config config;
 
-    private String configurationFilePath;
+    private String configurationFolder;
 
     @Override
-    public void readConfiguration(String configFilePath) {
-        this.configurationFilePath = configFilePath;
+    public void readConfiguration(String configurationFolder) {
+        this.configurationFolder = configurationFolder;
         try {
-            File configFile = new File(configFilePath);
+            File configFile = new File(configurationFolder + File.separator + STRESSY_YML);
 
             ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
@@ -76,7 +78,7 @@ public class ConfigLoader implements ConfigurationService {
 
             config = mapper.readValue(configFile, Config.class);
         } catch (Exception e) {
-            log.error("Error loading configuration file: " + configFilePath, e);
+            log.error("Error loading configuration file: " + configurationFolder + File.separator + STRESSY_YML, e);
         }
     }
 
@@ -84,7 +86,7 @@ public class ConfigLoader implements ConfigurationService {
         return config;
     }
 
-    public String getConfigurationFilePath() {
-        return configurationFilePath;
+    public String getConfigurationFolder() {
+        return configurationFolder;
     }
 }

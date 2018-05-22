@@ -40,18 +40,18 @@ public interface ConfigurationService {
     StressyConfiguration getConfiguration();
 
     /**
-     * Reads configuration from the specified configuration file path
+     * Reads configuration from the specified configuration folder
      *
-     * @param configFilePath path to the configuration file
+     * @param configurationFolder path to the configuration folder
      */
-    void readConfiguration(String configFilePath);
+    void readConfiguration(String configurationFolder);
 
     /**
-     * Returns configuration file path, which can be used by third-parties or different implementation
+     * Returns configuration folder path, which can be used by third-parties or different implementation
      * to augment the default configuration (e.g. adding additional fields in YAML file and reading
-     * them after the default processing)
+     * them after the default processing, adding additional configuration files for scenarios)
      *
-     * @return path to the configuration file
+     * @return path to the configuration folder
      */
-    String getConfigurationFilePath();
+    String getConfigurationFolder();
 }
