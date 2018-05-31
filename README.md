@@ -31,3 +31,55 @@ stressPlan:                     # describes stress plan
         foo1: bar1
 ```
 JStressy doesn't restrict changes to the format of the config if it follows the initial structure which is read by JStressy itself
+
+## JStressy assembly
+JStressy provides Maven plugin which can be used to easily create and distribute custom JStressy builds. Developer just needs to describe set of dependencies representing OSGi bundles (forming custom JStressy build).
+JStressy Maven plugin configuration example (full example can be seen in [jstressy-assembly pom.xml](https://github.com/timofeevda/jstressy/blob/master/jstressy-assembly/pom.xml)):
+```xml
+<plugin>
+    <groupId>com.github.timofeevda.jstressy</groupId>
+    <artifactId>jstressy-maven-plugin</artifactId>
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>build</goal>
+            </goals>
+        </execution>
+    </executions>
+    <configuration>
+        <target>${project.basedir}/target</target>        
+        <systemBundles>
+            <systemBundle>
+                <groupId>com.github.timofeevda.jstressy</groupId>
+                <artifactId>jstressy-logger</artifactId>
+            </systemBundle>
+            <systemBundle>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.fileinstall</artifactId>
+            </systemBundle>
+        </systemBundles>
+        <scenarioBundles>
+            <scenarioBundle>
+                <groupId>com.github.timofeevda.jstressy</groupId>
+                <artifactId>jstressy-dummy-scenario-kotlin</artifactId>
+            </scenarioBundle>
+        </scenarioBundles>
+    </configuration>
+</plugin>
+```
+JStressy Maven plugin creates folders structure with all required component needed to run Apache Felix with provided JStressy bundles. Almost everything can be customized, especially configuration folder and run scripts:
+```
+|--- bin/
+|    |--- felix.jar
+|--- bundles/
+|    |--- system/       # basic bundles which are loaded first during Apache Felix start (logback initialization etc.)
+|    |--- application/  # all bundles representing custom JStressy framework build with all required dependencies
+|    |--- plugins/      # scenarios bundles, each bundles can be replaced in folder for hot reload
+|--- config/
+|    |--- config.properties # Apache Felix config
+|    |--- logback.xml       # basic logback config
+|--- run.sh                 # basic run script
+|--- stressy.yml            # basic configuration example
+```
+
