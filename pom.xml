@@ -21,7 +21,7 @@
 
         <dropwizard.version>1.3.0</dropwizard.version>
         <prometheusclient.version>0.3.0</prometheusclient.version>
-        <vertx.version>3.5.3</vertx.version>
+        <vertx.version>3.5.4</vertx.version>
         <slf4j.version>1.7.25</slf4j.version>
         <rxjava.version>2.1.9</rxjava.version>
         <jackson-databind.version>2.9.5</jackson-databind.version>
