@@ -23,8 +23,18 @@
 
 package com.github.timofeevda.jstressy.plugin.api;
 
+/**
+ * Defines system bundle. Bundle, which must be placed in Apache Felix system folder and started before
+ * all other bundles start
+ */
 public class SystemBundle {
+    /**
+     * Artifact's group id
+     */
     protected String groupId;
+    /**
+     * Artifact's id
+     */
     protected String artifactId;
 
     public String getGroupId() {

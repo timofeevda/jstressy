@@ -25,6 +25,7 @@ package com.github.timofeevda.jstressy.dummy.scenario.internal
 
 import com.github.timofeevda.jstressy.api.scenario.ScenarioProviderService
 import com.github.timofeevda.jstressy.dummy.scenario.TouchGoogleScenarioProviderService
+import com.github.timofeevda.jstressy.utils.logging.LazyLogging
 import org.osgi.framework.BundleActivator
 import org.osgi.framework.BundleContext
 import org.slf4j.Logger
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory
 import java.util.Hashtable
 
 class Activator : BundleActivator {
+    companion object : LazyLogging()
 
     override fun start(context: BundleContext) {
         logger.info("Registering TouchGoogle scenario provider service")
@@ -41,10 +43,5 @@ class Activator : BundleActivator {
 
     override fun stop(context: BundleContext) {
 
-    }
-
-    companion object {
-
-        private val logger = LoggerFactory.getLogger(Activator::class.java)
     }
 }

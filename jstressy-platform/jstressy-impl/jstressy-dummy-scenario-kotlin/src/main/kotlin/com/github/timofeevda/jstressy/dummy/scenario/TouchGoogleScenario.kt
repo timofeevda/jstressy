@@ -27,6 +27,7 @@ import com.github.timofeevda.jstressy.api.config.ConfigurationService
 import com.github.timofeevda.jstressy.api.httprequest.RequestExecutor
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.scenario.Scenario
+import com.github.timofeevda.jstressy.utils.logging.LazyLogging
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -36,19 +37,17 @@ import org.slf4j.LoggerFactory
 class TouchGoogleScenario internal constructor(private val metricsRegistry: MetricsRegistry,
                                                private val requestExecutor: RequestExecutor,
                                                configurationService: ConfigurationService) : Scenario {
-    private val host: String
-    private val port: Int
+    companion object : LazyLogging()
 
-    init {
-
-        this.host = configurationService.configuration.globals.host
-        this.port = configurationService.configuration.globals.port
-    }
+    private val host: String = configurationService.configuration.globals.host
+    private val port: Int = configurationService.configuration.globals.port
 
     override fun start() {
         requestExecutor.get(host, port, "/")
                 .doOnSuccess { httpClientResponse -> metricsRegistry.counter("googl_request_success").inc() }
-                .subscribe { httpClientResponse -> logger.info("Host {} answered with code {}", host, httpClientResponse.statusCode()) }
+                .subscribe(
+                        { httpClientResponse -> logger.info("Host $host answered with code ${httpClientResponse.statusCode()}") },
+                        { t -> logger.error("Error getting response from $host", t) })
     }
 
     override fun stop() {
@@ -59,7 +58,4 @@ class TouchGoogleScenario internal constructor(private val metricsRegistry: Metr
         return this
     }
 
-    companion object {
-        private val logger = LoggerFactory.getLogger(TouchGoogleScenario::class.java)
-    }
 }

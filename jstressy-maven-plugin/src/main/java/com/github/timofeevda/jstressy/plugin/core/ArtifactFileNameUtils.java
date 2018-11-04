@@ -35,7 +35,7 @@ public class ArtifactFileNameUtils {
     /**
      * Get artifact filename using Aether artifact instance
      *
-     * @param artifact
+     * @param artifact specified artifact
      * @return artifact filename constructed using Aether artifact instance
      */
     public static String getArtifactFileName(Artifact artifact) {
@@ -47,7 +47,7 @@ public class ArtifactFileNameUtils {
     /**
      * Get artifact filename using dependency descriptor instance
      *
-     * @param dependencyDescriptor
+     * @param dependencyDescriptor specified dependency descriptor
      * @return artifact filename constructed using dependency descriptor instance
      */
     public static String getArtifactFileName(DependencyDescriptor dependencyDescriptor) {
@@ -59,9 +59,9 @@ public class ArtifactFileNameUtils {
     /**
      * Get artifact filename based on groupId, artifactId and version
      *
-     * @param groupId
-     * @param artifactId
-     * @param version
+     * @param groupId    artifact's group id
+     * @param artifactId artifact's id
+     * @param version    artifact's version
      * @return artifact filename based on groupId, artifactId and version
      */
     private static String getFileName(String groupId,

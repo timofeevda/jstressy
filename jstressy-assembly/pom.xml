@@ -126,7 +126,7 @@
                     <scenarioBundles>
                         <scenarioBundle>
                             <groupId>com.github.timofeevda.jstressy</groupId>
-                            <artifactId>jstressy-dummy-scenario-scala</artifactId>
+                            <artifactId>jstressy-dummy-scenario-kotlin</artifactId>
                         </scenarioBundle>
                     </scenarioBundles>
                 </configuration>

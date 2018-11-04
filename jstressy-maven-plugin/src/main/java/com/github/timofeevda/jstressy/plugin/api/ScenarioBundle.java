@@ -23,6 +23,9 @@
 
 package com.github.timofeevda.jstressy.plugin.api;
 
+/**
+ * Defines scenario bundle. Bundle, which must be placed in Apache Felix plugins folder
+ */
 public class ScenarioBundle extends SystemBundle {
 
 }

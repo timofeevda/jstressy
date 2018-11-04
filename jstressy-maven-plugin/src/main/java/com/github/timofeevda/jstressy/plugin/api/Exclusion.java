@@ -21,9 +21,21 @@
  */
 package com.github.timofeevda.jstressy.plugin.api;
 
+/**
+ * Defines artifact which must be excluded from dependencies list while packaging JStressy
+ */
 public class Exclusion {
+    /**
+     * Exclusion group id
+     */
     protected String groupId;
+    /**
+     * Exclusion artifact id
+     */
     protected String artifactId;
+    /**
+     * Exclusion version
+     */
     protected String version;
 
     public String getGroupId() {

@@ -44,7 +44,7 @@ public class JarUtils {
      * - Bundle-Vendor
      * @param file specified file
      * @return true if specified file is bundle
-     * @throws Exception
+     * @throws Exception error while processing jar file
      */
     public static boolean isBundle(File file) throws Exception {
         Jar jar = new Jar(file);

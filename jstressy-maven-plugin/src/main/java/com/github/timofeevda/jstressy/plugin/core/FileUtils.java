@@ -61,11 +61,11 @@ public class FileUtils {
 
     private static final int MODE_EXECUTABLE = 1;
 
-    private static final int MODE_MASK = 0100000;
+    private static final int MODE_MASK = 32768;
 
-    private static final int MODE_MASK_USER = 0100;
+    private static final int MODE_MASK_USER = 64;
 
-    private static final int MODE_MASK_GROUP = 010;
+    private static final int MODE_MASK_GROUP = 8;
 
     private static final int COPY_BUFFER_SIZE = 1024;
 
@@ -77,19 +77,21 @@ public class FileUtils {
     public static boolean deleteFolder(File path) {
         if (path.exists()) {
             File[] files = path.listFiles();
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    deleteFolder(file);
-                } else {
-                    if (!file.delete()) {
-                        // suppress warnings about unsuccessful deletion
-                        Logger.getLogger(FileUtils.class.getName()).log(Level.WARNING,
-                                "Couldn''t delete file: {0}", file.getAbsolutePath());
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        deleteFolder(file);
+                    } else {
+                        if (!file.delete()) {
+                            // suppress warnings related to unsuccessful deletion
+                            Logger.getLogger(FileUtils.class.getName()).log(Level.WARNING,
+                                    "Couldn''t delete file: {0}", file.getAbsolutePath());
+                        }
                     }
                 }
             }
         }
-        return (path.delete());
+        return path.delete();
     }
 
     public static void createFolders(File... folders) throws IOException {
@@ -110,7 +112,7 @@ public class FileUtils {
      * @param zipFilePath     path to the zip file
      * @param headReplacement head path to replace in order to get relative
      *                        entries in zip file
-     * @throws IOException
+     * @throws IOException i/o error
      */
     public static void zipFolder(String source,
                                  String zipFilePath, String zipName, String headReplacement) throws IOException {
@@ -125,7 +127,7 @@ public class FileUtils {
      * @param tarGzFilePath   path to the tar.gz file
      * @param headReplacement head path to replace in order to get relative
      *                        entries in zip file
-     * @throws IOException
+     * @throws IOException i/o error
      */
     public static void tarGzFolder(String source,
                                    String tarGzFilePath,
@@ -133,14 +135,6 @@ public class FileUtils {
                                    String headReplacement) throws IOException {
         TarGzFolderUtility tp = new TarGzFolderUtility();
         tp.tarGzFolder(source, tarGzFilePath, tarName, headReplacement);
-    }
-
-    /**
-     * Utility class to keep bytes during recursive folder tree walk
-     */
-    private static class BytesCounter {
-
-        private long bytes;
     }
 
     /**

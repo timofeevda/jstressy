@@ -128,7 +128,7 @@ public class BuilderMojo extends AbstractMojo {
                 .map(DependencyDescriptor::deriveAetherArtifact)
                 .collect(Collectors.toSet());
 
-        // get list of scenario bundles -
+        // get list of scenario bundles
         Collection<DependencyDescriptor> scenarioBundles = getScenarioBundles()
                 .stream().map(DependencyDescriptor::deriveAetherArtifact)
                 .collect(Collectors.toSet());

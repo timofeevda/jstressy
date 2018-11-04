@@ -18,7 +18,13 @@
     </properties>
 
     <build>
+        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
+            <plugin>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <groupId>org.jetbrains.kotlin</groupId>
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -27,7 +33,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
                         <!-- exports dropwizard metrics due to corrupted original bundle -->
-                        <Export-Package>${bundle.namespace},io.vertx.ext.jwt;version="3.5.0",com.codahale.metrics.*</Export-Package>
+                        <Export-Package>${bundle.namespace}.*,io.vertx.ext.jwt;version="3.5.0",com.codahale.metrics.*</Export-Package>
                         <Embed-Dependency>*;scope=compile|runtime;inline=true</Embed-Dependency>
                     </instructions>
                 </configuration>
@@ -36,6 +42,17 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-osgi-bundle</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>

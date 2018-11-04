@@ -52,14 +52,16 @@ import java.util.List;
 public class ArtifactResolver {
 
     private final Log log;
-
+    /**
+     * Maven's repository system
+     */
     private RepositorySystem repositorySystem;
     /**
      * Project's remote repositories to use for the resolution of artifact and their dependencies
      */
     private List<RemoteRepository> remoteRepositories;
     /**
-     * Repository/network configuration of Maven
+     * Maven's repository/network configuration
      */
     private RepositorySystemSession repositorySession;
 
@@ -93,16 +95,14 @@ public class ArtifactResolver {
     public Artifact resolveArtifact(String groupId, String artifactId,
                                     String classifier, String type, String version) {
 
-        // construct artifact being resolved
         Artifact artifact = new DefaultArtifact(groupId, artifactId, classifier,
                 type, version);
 
-        // construct artifact request
         ArtifactRequest artifactRequest = new ArtifactRequest();
         artifactRequest.setRepositories(remoteRepositories);
         artifactRequest.setArtifact(artifact);
 
-        // receive artifact result
+        // receive artifact result and resolve it (checking in local repo or downloading it)
         ArtifactResult artifactResult = null;
         try {
             artifactResult = repositorySystem.resolveArtifact(repositorySession, artifactRequest);

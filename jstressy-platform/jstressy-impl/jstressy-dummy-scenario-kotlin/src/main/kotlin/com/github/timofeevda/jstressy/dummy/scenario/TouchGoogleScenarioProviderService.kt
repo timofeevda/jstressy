@@ -30,11 +30,10 @@ import com.github.timofeevda.jstressy.api.scenario.ScenarioProviderService
  * Example implementation of scenario provider service
  */
 class TouchGoogleScenarioProviderService : ScenarioProviderService {
-    override fun getScenarioName(): String {
-        return "TouchGoogle"
-    }
+    override val scenarioName: String = "TouchGoogle"
 
-    override fun get(scenarioProviderParameters: Map<String, String>?): ScenarioProvider {
+    override fun get(scenarioProviderParameters: Map<String, String>): ScenarioProvider {
         return TouchGoogleScenarioProvider()
     }
+
 }
