@@ -49,15 +49,15 @@ class Activator : BundleActivator {
     override fun start(context: BundleContext) {
         logger.info("Starting HTTP Client service activator")
 
-        val vertxService = observeService<VertxService>(
+        val vertxServiceSingle = observeService<VertxService>(
                 VertxService::class.java.name, context)
 
-        val configurationService = observeService<ConfigurationService>(
+        val configurationServiceSingle = observeService<ConfigurationService>(
                 ConfigurationService::class.java.name, context)
 
         subscription = Observable.combineLatest<VertxService, ConfigurationService, StressyHttpClientService>(
-                vertxService.toObservable(),
-                configurationService.toObservable(),
+                vertxServiceSingle.toObservable(),
+                configurationServiceSingle.toObservable(),
                 BiFunction<VertxService, ConfigurationService, StressyHttpClientService> { vxService, configService -> StressyHttpClientService(vxService, configService) })
                 .doOnSubscribe { logger.info("HTTP client service subscribes on VertX and Configuration services") }
                 .doOnNext { logger.info("Registering HTTP client service") }

@@ -21,29 +21,19 @@
  *
  */
 
-package com.github.timofeevda.jstressy.config.parameters
+package com.github.timofeevda.jstressy.cookiesession
 
-import com.github.timofeevda.jstressy.api.config.parameters.StressyConfiguration
-import com.github.timofeevda.jstressy.api.config.parameters.StressyGlobals
+import com.github.timofeevda.jstressy.api.config.ConfigurationService
+import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManager
+import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManagerService
 
 /**
- * Stressy configuration
+ * HTTP session manager implementation which tracks HTTP response cookies assigned by server
  *
  * @author timofeevda
  */
-class Config : StressyConfiguration {
-    /**
-     * Global Stressy configuration
-     */
-    override var globals: StressyGlobals = Globals()
-    /**
-     * Stress plan configuration
-     */
-    override var stressPlan: StressPlan = StressPlan()
-
-    /**
-     * Arbitrary parameters defined globally
-     */
-    override val globalParameters: Map<String, String> = emptyMap()
-
+class CookieSessionManagerServiceImpl(private val configService: ConfigurationService) : HttpSessionManagerService {
+    override fun get(): HttpSessionManager {
+        return CookieHttpSessionManagerImpl(configService)
+    }
 }

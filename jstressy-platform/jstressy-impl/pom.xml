@@ -27,6 +27,7 @@
         <module>jstressy-dummy-scenario-kotlin</module>
         <module>jstressy-dummy-scenario-scala</module>
         <module>jstressy-httpsession</module>
+        <module>jstressy-cookiesession</module>
     </modules>
 
 </project>

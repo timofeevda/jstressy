@@ -44,14 +44,14 @@ class Activator : BundleActivator {
     override fun start(context: BundleContext) {
         logger.info("Starting HTTP Request Executor service activator")
 
-        val vertxService = observeService<HttpClientService>(HttpClientService::class.java.name, context)
-        val configurationService = observeService<MetricsRegistryService>(MetricsRegistryService::class.java.name, context)
-        val httpSessionManagerService = observeService<HttpSessionManagerService>(HttpSessionManagerService::class.java.name, context)
+        val vertxServiceSingle = observeService<HttpClientService>(HttpClientService::class.java.name, context)
+        val configurationServiceSingle = observeService<MetricsRegistryService>(MetricsRegistryService::class.java.name, context)
+        val httpSessionManagerServiceSingle = observeService<HttpSessionManagerService>(HttpSessionManagerService::class.java.name, context)
 
         Observable.combineLatest<HttpClientService, MetricsRegistryService, HttpSessionManagerService, StressyRequestExecutorService>(
-                vertxService.toObservable(),
-                configurationService.toObservable(),
-                httpSessionManagerService.toObservable(),
+                vertxServiceSingle.toObservable(),
+                configurationServiceSingle.toObservable(),
+                httpSessionManagerServiceSingle.toObservable(),
                 Function3<HttpClientService, MetricsRegistryService, HttpSessionManagerService, StressyRequestExecutorService> { httpClientService, metricsRegistryService, httpSessionManagerService -> StressyRequestExecutorService(httpClientService, metricsRegistryService, httpSessionManagerService) })
                 .doOnSubscribe { logger.info("HTTP Request Executor subscribes on HTTPClient, Metrics Registry and Session Manager") }
                 .doOnNext { logger.info("Registering HTTP Request Executor service") }

@@ -42,4 +42,6 @@ interface StressyConfiguration {
      * @return [StressyStressPlan]
      */
     val stressPlan: StressyStressPlan
+
+    val globalParameters: Map<String, String>
 }

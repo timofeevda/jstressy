@@ -46,18 +46,18 @@ class Activator : BundleActivator {
     override fun start(context: BundleContext) {
         logger.info("Starting scenarios scheduler service activator")
 
-        val observeConfigurationService = observeService<ConfigurationService>(ConfigurationService::class.java.name, context)
-        val vertxService = observeService<VertxService>(VertxService::class.java.name, context)
-        val scenarioRegistryService = observeService<ScenarioRegistryService>(ScenarioRegistryService::class.java.name, context)
+        val configurationServiceSingle = observeService<ConfigurationService>(ConfigurationService::class.java.name, context)
+        val vertxServiceSingle = observeService<VertxService>(VertxService::class.java.name, context)
+        val scenarioRegistryServiceSingle = observeService<ScenarioRegistryService>(ScenarioRegistryService::class.java.name, context)
         val metricsRegistryServiceSingle = observeService<MetricsRegistryService>(MetricsRegistryService::class.java.name, context)
         val requestExecutorServiceSingle = observeService<RequestExecutorService>(RequestExecutorService::class.java.name, context)
 
         Observable.combineLatest<ConfigurationService, ScenarioRegistryService, MetricsRegistryService, RequestExecutorService, VertxService, StressyScenariosScheduler>(
-                observeConfigurationService.toObservable(),
-                scenarioRegistryService.toObservable(),
+                configurationServiceSingle.toObservable(),
+                scenarioRegistryServiceSingle.toObservable(),
                 metricsRegistryServiceSingle.toObservable(),
                 requestExecutorServiceSingle.toObservable(),
-                vertxService.toObservable(),
+                vertxServiceSingle.toObservable(),
                 Function5<ConfigurationService, ScenarioRegistryService, MetricsRegistryService, RequestExecutorService, VertxService, StressyScenariosScheduler> { configurationService, scenarioRegistryService, metricsRegistryService, requestExecutorService, vertxService -> this.toScenariosSchedulerService(configurationService, scenarioRegistryService, metricsRegistryService, requestExecutorService, vertxService) }        )
                 .doOnSubscribe { logger.info("Scenario Scheduler service subscribes on Configuration, Scenario Registry, Metrics Registry, HTTP Request Executor, VertX service") }
                 .timeout(10, TimeUnit.SECONDS)

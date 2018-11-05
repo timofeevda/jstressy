@@ -46,12 +46,12 @@ class Activator : BundleActivator {
     override fun start(context: BundleContext) {
         logger.info("Starting metrics registry service activator")
 
-        val vertxService = observeService<VertxService>(VertxService::class.java.name, context)
-        val configurationService = observeService<ConfigurationService>(ConfigurationService::class.java.name, context)
+        val vertxServiceSingle = observeService<VertxService>(VertxService::class.java.name, context)
+        val configurationServiceSingle = observeService<ConfigurationService>(ConfigurationService::class.java.name, context)
 
         subscription = Observable.combineLatest<VertxService, ConfigurationService, MetricsRegistryService>(
-                vertxService.toObservable(),
-                configurationService.toObservable(),
+                vertxServiceSingle.toObservable(),
+                configurationServiceSingle.toObservable(),
                 BiFunction<VertxService, ConfigurationService, MetricsRegistryService> { vxService, configService -> this.toMetricsRegistryService(vxService, configService) })
                 .doOnSubscribe { logger.info("Metric Registry service subscribes on VertX and Configuration services") }
                 .doOnNext { logger.info("Registering metrics registry service") }
