@@ -9,12 +9,11 @@
 
     <artifactId>jstressy-utils</artifactId>
 
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
 
     <properties>
         <bundle.symbolicName>com.github.timofeevda.jstressy-utils</bundle.symbolicName>
         <bundle.namespace>com.github.timofeevda.jstressy.utils</bundle.namespace>
-        <metrics-core.version>3.1.2</metrics-core.version>
     </properties>
 
     <build>
@@ -26,15 +25,30 @@
                 <groupId>org.jetbrains.kotlin</groupId>
             </plugin>
             <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
-                        <!-- exports dropwizard metrics due to corrupted original bundle -->
-                        <Export-Package>${bundle.namespace}.*,io.vertx.ext.jwt;version="3.5.0",com.codahale.metrics.*</Export-Package>
-                        <Embed-Dependency>*;scope=compile|runtime;inline=true</Embed-Dependency>
+                        <Export-Package>${bundle.namespace}.*</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -54,11 +68,6 @@
             <version>${kotlin.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-core</artifactId>
-            <version>${metrics-core.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
@@ -67,6 +76,10 @@
             <groupId>io.reactivex.rxjava2</groupId>
             <artifactId>rxjava</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
     </dependencies>
 

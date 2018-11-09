@@ -28,7 +28,7 @@ import com.github.timofeevda.jstressy.api.metrics.MetricsRegistryService
 import com.github.timofeevda.jstressy.api.vertx.VertxService
 import com.github.timofeevda.jstressy.metrics.StressyMetricsRegistryService
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
-import com.github.timofeevda.jstressy.utils.StressyUtils.observeService as observeService
+import com.github.timofeevda.jstressy.utils.observeService
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction

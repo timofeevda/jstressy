@@ -29,7 +29,7 @@ import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManagerService
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistryService
 import com.github.timofeevda.jstressy.httprequest.StressyRequestExecutorService
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
-import com.github.timofeevda.jstressy.utils.StressyUtils.observeService as observeService
+import com.github.timofeevda.jstressy.utils.observeService
 import io.reactivex.Observable
 import io.reactivex.functions.Function3
 import org.osgi.framework.BundleActivator

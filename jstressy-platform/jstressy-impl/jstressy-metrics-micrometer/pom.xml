@@ -33,7 +33,7 @@
                     <instructions>
                         <Bundle-Activator>${bundle.namespace}.internal.Activator</Bundle-Activator>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
-                        <Import-Package>!com.github.benmanes.caffeine.*,!com.hazelcast.*,!com.netflix.hystrix.*,!net.sf.ehcache.*,!okhttp3,!org.apache.catalina,!org.aspectj.lang.*,!org.aspectj.lang.reflect,!org.eclipse.jetty.server.handler,!org.hibernate.*,!rx.*,!com.sun.management,!javax.cache,!javax.persistence,!javax.annotation,*</Import-Package>
+                        <Import-Package>!com.github.benmanes.caffeine.*,!com.hazelcast.*,!com.netflix.hystrix.*,!net.sf.ehcache.*,!okhttp3,!org.apache.catalina,!org.aspectj.lang.*,!org.aspectj.lang.reflect,!org.eclipse.jetty.server.handler,!org.hibernate.*,!rx.*,!com.sun.management,!javax.cache,!javax.persistence,!javax.annotation,!com.codahale.metrics,*</Import-Package>
                         <Export-Package>!*</Export-Package>
                         <Embed-Dependency>*;scope=compile|runtime;inline=true</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>

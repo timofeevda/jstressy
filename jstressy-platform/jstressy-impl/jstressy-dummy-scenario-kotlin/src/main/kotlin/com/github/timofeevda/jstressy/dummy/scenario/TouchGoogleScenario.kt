@@ -28,8 +28,6 @@ import com.github.timofeevda.jstressy.api.httprequest.RequestExecutor
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.scenario.Scenario
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 /**
  * Example implementation of scenario. Just tries to GET data from https://google.com/
@@ -46,7 +44,14 @@ class TouchGoogleScenario internal constructor(private val metricsRegistry: Metr
         requestExecutor.get(host, port, "/")
                 .doOnSuccess { httpClientResponse -> metricsRegistry.counter("googl_request_success").inc() }
                 .subscribe(
-                        { httpClientResponse -> logger.info("Host $host answered with code ${httpClientResponse.statusCode()}") },
+                        { httpClientResponse ->
+                            run {
+                                logger.info("Host $host answered with code ${httpClientResponse.statusCode()}")
+                                httpClientResponse.bodyHandler { event ->
+                                    logger.info("Host $host answered with data $event")
+                                }
+                            }
+                        },
                         { t -> logger.error("Error getting response from $host", t) })
     }
 

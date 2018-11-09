@@ -357,6 +357,11 @@
                 <version>${vertx.version}</version>
             </dependency>
             <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-jwt</artifactId>
+                <version>${vertx.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.fileinstall</artifactId>
                 <version>${felix-fileinstall.version}</version>

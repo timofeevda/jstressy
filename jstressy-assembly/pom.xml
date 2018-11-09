@@ -101,18 +101,6 @@
                 </executions>
                 <configuration>
                     <target>${project.basedir}/target</target>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>io.dropwizard.metrics</groupId>
-                            <artifactId>metrics-core</artifactId>
-                            <version>4.0.2</version>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>io.dropwizard.metrics</groupId>
-                            <artifactId>metrics-core</artifactId>
-                            <version>3.1.2</version>
-                        </exclusion>
-                    </exclusions>
                     <systemBundles>
                         <systemBundle>
                             <groupId>com.github.timofeevda.jstressy</groupId>

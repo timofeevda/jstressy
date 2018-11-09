@@ -152,7 +152,7 @@ public class BuilderMojo extends AbstractMojo {
         copyApplicationBundlesArtifact(getBundlesWithMaxVersions(applicationBundles));
         copyScenarioBundles(getBundlesWithMaxVersions(scenarioBundles));
 
-        writeFelixConfig(systemBundles);
+        writeFelixConfig();
 
         writeFelixRunnable();
 
@@ -176,14 +176,9 @@ public class BuilderMojo extends AbstractMojo {
         copyArtifactFile(DependencyDescriptor.deriveAetherArtifact(downloadFelixBundle()), "bin/", "felix.jar");
     }
 
-    private void writeFelixConfig(Collection<DependencyDescriptor> systemBundles) {
+    private void writeFelixConfig() {
         try {
-            // get list of system bundles we need to start automatically before the start of all framework
-            // (e.g logging bundle which needs to be initialized first)
-            List<String> listOfAutoStartBundles = systemBundles
-                    .stream()
-                    .map(dd -> Constants.BUNDLES_SYSTEM + ArtifactFileNameUtils.getArtifactFileName(dd.getAetherArtifact())).collect(Collectors.toList());
-            FelixConfigWriter.writeConfig(target, target, listOfAutoStartBundles);
+            FelixConfigWriter.writeConfig(target, target);
         } catch (IOException e) {
             getLog().error(e);
         }
@@ -265,7 +260,7 @@ public class BuilderMojo extends AbstractMojo {
 
     private void copyConfigurationFiles() {
         try {
-            writeFelixConfig();
+            copyFelixConfig();
             writeLogbackConfig();
             writeWindowsRunner();
             writeUnixRunner();
@@ -304,7 +299,7 @@ public class BuilderMojo extends AbstractMojo {
         FileUtils.copyFile(logback, new File(target + Constants.CONFIGURATION_FOLDER + "/logback.xml"));
     }
 
-    private void writeFelixConfig() throws Exception {
+    private void copyFelixConfig() throws Exception {
         InputStream felixConfig = felixConfigFile == null ?
                 BuilderMojo.class.getResourceAsStream("/felix/" + Constants.FELIX_CONFIG) :
                 new FileInputStream(felixConfigFile);

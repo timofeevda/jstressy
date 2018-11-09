@@ -4,7 +4,7 @@ import com.github.timofeevda.jstressy.api.config.ConfigurationService
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistryService
 import com.github.timofeevda.jstressy.api.vertx.VertxService
 import com.github.timofeevda.jstressy.metrics.micrometer.MicrometerMetricsRegistryService
-import com.github.timofeevda.jstressy.utils.StressyUtils.observeService as observeService
+import com.github.timofeevda.jstressy.utils.observeService
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import org.osgi.framework.BundleActivator

@@ -26,8 +26,8 @@ package com.github.timofeevda.jstressy.cookiesession.internal
 import com.github.timofeevda.jstressy.api.config.ConfigurationService
 import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManagerService
 import com.github.timofeevda.jstressy.cookiesession.CookieSessionManagerServiceImpl
-import com.github.timofeevda.jstressy.utils.StressyUtils
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
+import com.github.timofeevda.jstressy.utils.observeService
 import io.reactivex.disposables.Disposable
 import org.osgi.framework.BundleActivator
 import org.osgi.framework.BundleContext
@@ -42,7 +42,7 @@ class Activator : BundleActivator {
     override fun start(context: BundleContext) {
         logger.info("Staring HTTP session manager service activator")
 
-        val configurationServiceSingle = StressyUtils.observeService<ConfigurationService>(ConfigurationService::class.java.name, context)
+        val configurationServiceSingle = observeService<ConfigurationService>(ConfigurationService::class.java.name, context)
 
         subscription = configurationServiceSingle.toObservable()
                 .subscribe(
