@@ -28,15 +28,8 @@ import com.github.timofeevda.jstressy.api.httpsession.HttpRequestHeader
 import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManager
 import io.vertx.reactivex.core.http.HttpClientRequest
 import io.vertx.reactivex.core.http.HttpClientResponse
-import java.util.*
-import java.util.concurrent.CopyOnWriteArrayList
-import java.util.regex.Pattern
-import java.util.stream.Collectors
-import java.util.stream.Stream
-
-
-private const val DEFAULT_COOKIE_NAME = "JSESSIONID"
-private const val DEFAULT_SESSION_COOKIE_HEADER_NAME = "Cookie"
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Simple implementation of session manager. Keeps track of HTTP session cookie, assigning its value to all
@@ -47,62 +40,40 @@ private const val DEFAULT_SESSION_COOKIE_HEADER_NAME = "Cookie"
  */
 internal class CookieHttpSessionManagerImpl(configService: ConfigurationService) : HttpSessionManager {
 
-    /**
-     * List of headers which can be added to HTTP session manager externally (e.g. as a result of some HTTP request
-     * processing)
-     */
-    private val customHeaders = CopyOnWriteArrayList<CustomHeader>()
+    private var sessionCookies: ConcurrentHashMap<String, String> = ConcurrentHashMap()
 
-    /**
-     * Defines session cookie header name. "Cookie" by default
-     */
-    private val sessionCookieHeaderName = configService.configuration.globalParameters["session.cookie.header.name"]
-            ?: DEFAULT_SESSION_COOKIE_HEADER_NAME
-
-    /**
-     * Defines session cookie name. Classic "JSESSIONID" by default
-     */
-    private val sessionCookieName = configService.configuration.globalParameters["session.cookie.name"]
-            ?: DEFAULT_COOKIE_NAME
-
-    /**
-     * Pattern used to extract session cookie value from HTTP response header
-     */
-    private val sessionCookiePattern = Pattern.compile("$sessionCookieName=(.*);")
-
-    private var sessionCookie: String? = null
+    private var sessionCookieHeader: AtomicReference<HttpRequestHeaderImpl> = AtomicReference()
 
     override val headers: Collection<HttpRequestHeader>
-        get() = Stream.concat(getTrackedCookie().stream(), customHeaders.stream()).collect(Collectors.toList())
+        get() = getTrackedCookies()
 
-    private fun getTrackedCookie(): List<CustomHeader> {
-        return Optional.ofNullable(sessionCookie)
-                .map { listOf(CustomHeader(sessionCookieHeaderName, "$sessionCookieName=$sessionCookie")) }
-                .orElse(emptyList())
+    private fun getTrackedCookies(): List<HttpRequestHeader> {
+        return if (sessionCookieHeader.get() == null) {
+            emptyList()
+        } else {
+            listOf(sessionCookieHeader.get())
+        }
     }
 
     override fun processRequest(request: HttpClientRequest): HttpClientRequest {
-        Optional.ofNullable(sessionCookie)
-                .ifPresent { cookie -> request.putHeader(sessionCookieHeaderName, "$sessionCookieName=$cookie") }
-
-        customHeaders.forEach { customHeader -> request.putHeader(customHeader.name, customHeader.value) }
-
+        val cookieHeader = sessionCookieHeader.get()
+        if (cookieHeader != null) {
+            request.putHeader(cookieHeader.name, cookieHeader.value)
+        }
         return request
     }
 
     override fun processResponse(response: HttpClientResponse): HttpClientResponse {
-        sessionCookie = response.cookies()
-                .map { sessionCookiePattern.matcher(it) }
-                .filter { it.find() }
-                .map { m -> m.group(1) }
-                .first()
+        response.cookies()
+                .map { it.substringBefore(";") }
+                .map { it.split("=") }
+                .forEach { sessionCookies[it[0]] = it[1] }
+        if (sessionCookies.isNotEmpty()) {
+            sessionCookieHeader.set(HttpRequestHeaderImpl("Cookie", sessionCookies.entries.joinToString("; ") { "${it.key}=${it.value}" }))
+        }
         return response
     }
 
-    override fun addCustomHeader(headerName: String, headerValue: String) {
-        customHeaders.add(CustomHeader(headerName, headerValue))
-    }
-
-    private data class CustomHeader constructor(override val name: String, override val value: String) : HttpRequestHeader
+    private data class HttpRequestHeaderImpl constructor(override val name: String, override val value: String) : HttpRequestHeader
 
 }

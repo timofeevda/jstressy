@@ -15,7 +15,6 @@
     <modules>
         <module>jstressy-config</module>
         <module>jstressy-logger</module>
-        <module>jstressy-metrics</module>
         <module>jstressy-vertx</module>
         <module>jstressy-utils</module>
         <module>jstressy-httpclient</module>

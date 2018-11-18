@@ -33,9 +33,42 @@
                     <instructions>
                         <Bundle-Activator>${bundle.namespace}.internal.Activator</Bundle-Activator>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
-                        <Import-Package>!com.github.benmanes.caffeine.*,!com.hazelcast.*,!com.netflix.hystrix.*,!net.sf.ehcache.*,!okhttp3,!org.apache.catalina,!org.aspectj.lang.*,!org.aspectj.lang.reflect,!org.eclipse.jetty.server.handler,!org.hibernate.*,!rx.*,!com.sun.management,!javax.cache,!javax.persistence,!javax.annotation,!com.codahale.metrics,*</Import-Package>
+                        <Import-Package>
+                            com.codahale.metrics;
+                            com.github.benmanes.caffeine.cache;
+                            com.github.benmanes.caffeine.cache.stats;
+                            com.hazelcast.core;
+                            com.hazelcast.monitor;
+                            com.netflix.hystrix;
+                            com.netflix.hystrix.metric;
+                            com.netflix.hystrix.strategy;
+                            com.netflix.hystrix.strategy.concurrency;
+                            com.netflix.hystrix.strategy.eventnotifier;
+                            com.netflix.hystrix.strategy.executionhook;
+                            com.netflix.hystrix.strategy.metrics;
+                            com.netflix.hystrix.strategy.properties;
+                            javax.annotation.meta;
+                            javax.cache;
+                            javax.persistence;
+                            net.sf.ehcache;
+                            net.sf.ehcache.statistics;
+                            okhttp3;
+                            org.apache.catalina;
+                            org.aspectj.lang;
+                            org.aspectj.lang.annotation;
+                            org.aspectj.lang.reflect;
+                            org.eclipse.jetty.server.handler;
+                            org.hibernate;
+                            org.hibernate.stat;
+                            com.google.common.cache;
+                            com.sun.management;
+                            rx;
+                            rx.functions;resolution:=optional,
+                            *
+                        </Import-Package>
+                        <!--<Import-Package>!com.github.benmanes.caffeine.*,!com.hazelcast.*,!com.netflix.hystrix.*,!net.sf.ehcache.*,!okhttp3,!org.apache.catalina,!org.aspectj.lang.*,!org.aspectj.lang.reflect,!org.eclipse.jetty.server.handler,!org.hibernate.*,!rx.*,!com.sun.management,!javax.cache,!javax.persistence,!javax.annotation,!com.codahale.metrics,*</Import-Package>-->
                         <Export-Package>!*</Export-Package>
-                        <Embed-Dependency>*;scope=compile|runtime;inline=true</Embed-Dependency>
+                        <Embed-Dependency>*;optional=!true;scope=compile|runtime;inline=true</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
@@ -54,6 +87,7 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-osgi-bundle</artifactId>
             <version>${kotlin.version}</version>
+            <scope>provided</scope>
         </dependency>
         <!-- embedded -->
         <dependency>

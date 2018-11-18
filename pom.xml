@@ -287,11 +287,6 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>io.dropwizard</groupId>
-                <artifactId>dropwizard-util</artifactId>
-                <version>${dropwizard.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>${osgi-core.version}</version>

@@ -31,7 +31,7 @@ import com.github.timofeevda.jstressy.api.scenario.Scenario
 import com.github.timofeevda.jstressy.api.scenario.ScenarioRegistryService
 import com.github.timofeevda.jstressy.api.scenario.ScenarioSchedulerService
 import com.github.timofeevda.jstressy.api.vertx.VertxService
-import io.dropwizard.util.Duration
+import com.github.timofeevda.jstressy.utils.parseDuration
 import io.reactivex.Observable
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -62,8 +62,8 @@ class StressyScenariosScheduler(private val vertxService: VertxService,
     }
 
     private fun observeScenarios(stage: StressyStage): Observable<Scenario> {
-        val delay = Duration.parse(stage.stageDelay).toMilliseconds()
-        val duration = Duration.parse(stage.stageDuration).toMilliseconds()
+        val delay = parseDuration(stage.stageDelay ?: "0ms").toMilliseconds()
+        val duration = parseDuration(stage.stageDuration).toMilliseconds()
         return Observable.timer(delay, TimeUnit.MILLISECONDS)
                 .flatMap {
                     observeWithRamping(stage)
@@ -93,7 +93,7 @@ class StressyScenariosScheduler(private val vertxService: VertxService,
                 && stage.rampArrivalRate != null
                 && stage.rampInterval != null) {
             val rampInterval = rateToIntervalInMillis(stage.rampArrivalRate ?: 1.0)
-            val rampDuration = Duration.parse(stage.rampInterval).toMilliseconds()
+            val rampDuration = parseDuration(stage.rampInterval ?: "0ms").toMilliseconds()
             val rampSteps = (rampDuration / rampInterval).toInt()
             val rampIncrease = (stage.rampArrival ?: 1.0 - stage.arrivalRate) / rampSteps
             return Optional.of(Observable.interval(0, rampInterval, TimeUnit.MILLISECONDS)
@@ -101,7 +101,7 @@ class StressyScenariosScheduler(private val vertxService: VertxService,
                     .map { i -> stage.arrivalRate + rampIncrease * i }
                     .switchMap { newRate ->
                         Observable.interval(rateToIntervalInMillis(newRate), TimeUnit.MILLISECONDS)
-                                .flatMap { _ -> createScenario(stage) }
+                                .flatMap { createScenario(stage) }
                     })
         } else {
             return Optional.empty()

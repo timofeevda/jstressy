@@ -39,6 +39,7 @@ import io.vertx.reactivex.core.http.HttpClient
 import io.vertx.reactivex.core.http.HttpClientRequest
 import io.vertx.reactivex.core.http.HttpClientResponse
 import io.vertx.reactivex.core.http.WebSocket
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
 /**
@@ -50,16 +51,23 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
                                       metricsRegistryService: MetricsRegistryService,
                                       httpSessionManagerService: HttpSessionManagerService) : RequestExecutor {
 
+    private val customHeaders = ConcurrentHashMap<String, String>()
+
     private val client: HttpClient = httpClientService.get()
     private val metricsRegistry: MetricsRegistry = metricsRegistryService.get()
+
     override val httpSessionManager: HttpSessionManager = httpSessionManagerService.get()
 
     override fun get(host: String, port: Int, requestURI: String): Single<HttpClientResponse> {
-        return getMeasuredRequest(httpSessionManager.processRequest(client.request(HttpMethod.GET, port, host, requestURI)))
+        return getMeasuredRequest(
+                addCustomHeaders(
+                        httpSessionManager.processRequest(client.request(HttpMethod.GET, port, host, requestURI))))
     }
 
     override fun post(host: String, port: Int, requestURI: String): Single<HttpClientResponse> {
-        return getMeasuredRequest(httpSessionManager.processRequest(client.request(HttpMethod.POST, port, host, requestURI)))
+        return getMeasuredRequest(
+                addCustomHeaders(
+                        httpSessionManager.processRequest(client.request(HttpMethod.POST, port, host, requestURI))))
     }
 
     override fun post(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse> {
@@ -69,6 +77,8 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
 
     override fun websocket(host: String, port: Int, requestURI: String): Single<WebSocket> {
         val headersAdaptor = HeadersAdaptor(DefaultHttpHeaders())
+        httpSessionManager.headers.forEach { header -> headersAdaptor.add(header.name, header.value) }
+        customHeaders.forEach { name: String, value: String -> headersAdaptor.add(name, value) }
         return Single.create { emitter ->
             val requestTimer = RequestTimer("WebSocket Connection Setup")
             client.websocketStream(port, host, requestURI, MultiMap(headersAdaptor))
@@ -88,6 +98,19 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
     override fun postFormData(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse> {
         return getMeasuredRequestWithPayload(
                 processFormDataRequest(client.request(HttpMethod.POST, port, host, requestURI), data), data)
+    }
+
+    override fun addCustomHeader(headerName: String, headerValue: String) {
+        customHeaders[headerName] = headerValue
+    }
+
+    override fun removeCustomHeader(headerName: String) {
+        customHeaders.remove(headerName)
+    }
+
+    private fun addCustomHeaders(request: HttpClientRequest): HttpClientRequest {
+        customHeaders.forEach { name: String, value: String -> request.putHeader(name, value) }
+        return request
     }
 
     private fun getMeasuredRequest(rq: HttpClientRequest): Single<HttpClientResponse> {
@@ -126,13 +149,13 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
     }
 
     private fun processFormDataRequest(request: HttpClientRequest, data: String): HttpClientRequest {
-        return httpSessionManager.processRequest(request)
+        return addCustomHeaders(httpSessionManager.processRequest(request))
                 .putHeader("Content-Length", Integer.toString(data.toByteArray().size))
                 .putHeader("Content-Type", "application/x-www-form-urlencoded")
     }
 
     private fun processJsonDataRequest(request: HttpClientRequest, jsonData: String): HttpClientRequest {
-        return httpSessionManager.processRequest(request)
+        return addCustomHeaders(httpSessionManager.processRequest(request))
                 .putHeader("Content-Length", Integer.toString(jsonData.toByteArray().size))
                 .putHeader("Content-Type", "application/json")
     }

@@ -41,7 +41,4 @@ class NoOpHttpSessionManager : HttpSessionManager {
         return response
     }
 
-    override fun addCustomHeader(headerName: String, headerValue: String) {
-    }
-
 }

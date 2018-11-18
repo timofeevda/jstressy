@@ -35,7 +35,6 @@
                         <Bundle-Activator>${bundle.namespace}.internal.Activator</Bundle-Activator>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
                         <Export-Package>!*</Export-Package>
-                        <Embed-Dependency>dropwizard-util;scope=compile;inline=true</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>
@@ -67,10 +66,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.dropwizard</groupId>
-            <artifactId>dropwizard-util</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>

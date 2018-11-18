@@ -27,7 +27,7 @@ import io.vertx.reactivex.core.http.HttpClientRequest
 import io.vertx.reactivex.core.http.HttpClientResponse
 
 /**
- * Session manager which can be used to implement statefull HTTP communication
+ * Session manager which can be used to implement stateful HTTP communication
  *
  * @author timofeevda
  */
@@ -57,11 +57,4 @@ interface HttpSessionManager {
      */
     fun processResponse(response: HttpClientResponse): HttpClientResponse
 
-    /**
-     * Adds custom header for all subsequent requests
-     *
-     * @param headerName  custom header name
-     * @param headerValue custom header value
-     */
-    fun addCustomHeader(headerName: String, headerValue: String)
 }

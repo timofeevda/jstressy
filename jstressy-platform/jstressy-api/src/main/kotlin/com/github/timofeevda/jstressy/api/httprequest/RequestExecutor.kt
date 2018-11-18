@@ -103,4 +103,19 @@ interface RequestExecutor {
      */
     operator fun invoke(request: HttpClientRequest): Single<HttpClientResponse>
 
+    /**
+     * Adds custom header for all subsequent requests
+     *
+     * @param headerName  custom header name
+     * @param headerValue custom header value
+     */
+    fun addCustomHeader(headerName: String, headerValue: String)
+
+    /**
+     * Remove custom header for all subsequent requests
+     *
+     * @param headerName  custom header name
+     */
+    fun removeCustomHeader(headerName: String)
+
 }
