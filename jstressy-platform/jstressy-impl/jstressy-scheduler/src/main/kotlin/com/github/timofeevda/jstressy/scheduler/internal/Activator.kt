@@ -30,8 +30,8 @@ import com.github.timofeevda.jstressy.api.scenario.ScenarioRegistryService
 import com.github.timofeevda.jstressy.api.vertx.VertxService
 import com.github.timofeevda.jstressy.scheduler.ScenarioProvidersTracker
 import com.github.timofeevda.jstressy.scheduler.StressyScenariosScheduler
+import com.github.timofeevda.jstressy.utils.StressyUtils.observeService
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
-import com.github.timofeevda.jstressy.utils.observeService
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.functions.Function5

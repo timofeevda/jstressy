@@ -20,11 +20,9 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  *
  */
-
-@file:JvmName("StressyUtils")
-
 package com.github.timofeevda.jstressy.utils
 
+import com.github.timofeevda.jstressy.utils.utils.Duration
 import io.reactivex.Single
 import io.reactivex.plugins.RxJavaPlugins
 import org.osgi.framework.BundleContext
@@ -61,117 +59,91 @@ private val TIME_UNITS = hashMapOf(
         Pair("days", TimeUnit.DAYS)
 )
 
-data class Duration(val count: Long, val timeUnit: TimeUnit) {
+object StressyUtils {
 
-    fun toNanoseconds(): Long {
-        return TimeUnit.NANOSECONDS.convert(count, timeUnit)
-    }
-
-    fun toMicroseconds(): Long {
-        return TimeUnit.MICROSECONDS.convert(count, timeUnit)
-    }
-
-    fun toMilliseconds(): Long {
-        return TimeUnit.MILLISECONDS.convert(count, timeUnit)
-    }
-
-    fun toSeconds(): Long {
-        return TimeUnit.SECONDS.convert(count, timeUnit)
-    }
-
-    fun toMinutes(): Long {
-        return TimeUnit.MINUTES.convert(count, timeUnit)
-    }
-
-    fun toHours(): Long {
-        return TimeUnit.HOURS.convert(count, timeUnit)
-    }
-
-    fun toDays(): Long {
-        return TimeUnit.DAYS.convert(count, timeUnit)
-    }
-}
-
-/**
- * Parse duration represented by human-readable string
- *
- * Available time interval descriptors:
- *
- * "ns", "nanosecond","nanoseconds",
- * "um","microsecond","microseconds",
- * "ms","millisecond","milliseconds",
- * "s","second","seconds",
- * "m","min","mins","minute","minutes",
- * "h","hour","hours",
- * "d","day","days"
- *
- * @param duration human-readable duration representation
- * @return [Duration] instance
- */
-fun parseDuration(duration: String): Duration {
-    val matcher = DURATION_PATTERN.matcher(duration)
-    if (!matcher.matches()) {
-        throw IllegalArgumentException("Invalid duration format: $duration");
-    }
-    val count = java.lang.Long.parseLong(matcher.group(1))
-    val unit = TIME_UNITS[matcher.group(2)] ?: throw IllegalArgumentException("Invalid duration format: $duration")
-    return Duration(count, unit)
-}
-
-/**
- * Observe OSGI service by service's class name. Looks for the registered service or
- * subscribes to service registration events. Doesn't provide notifications about service
- * state changes
- *
- * @param className service's class name
- * @param bundleContext OSGI bundle context
- * @return [Single] instance which completes when specified service appears in OSGI context
- */
-@Suppress("UNCHECKED_CAST")
-fun <T> observeService(className: String, bundleContext: BundleContext): Single<T> {
-    return Single.create { singleEmitter ->
-        val serviceListener = { event: ServiceEvent ->
-            val ref = event.serviceReference
-            if (event.type == ServiceEvent.REGISTERED) {
-                singleEmitter.onSuccess(bundleContext.getService(ref) as T)
-            }
+    /**
+     * Parse duration represented by human-readable string
+     *
+     * Available time interval descriptors:
+     *
+     * "ns", "nanosecond","nanoseconds",
+     * "um","microsecond","microseconds",
+     * "ms","millisecond","milliseconds",
+     * "s","second","seconds",
+     * "m","min","mins","minute","minutes",
+     * "h","hour","hours",
+     * "d","day","days"
+     *
+     * @param duration human-readable duration representation
+     * @return [Duration] instance
+     */
+    fun parseDuration(duration: String): Duration {
+        val matcher = DURATION_PATTERN.matcher(duration)
+        if (!matcher.matches()) {
+            throw IllegalArgumentException("Invalid duration format: $duration");
         }
-        bundleContext.addServiceListener(serviceListener, "(objectClass=$className)")
-        synchronized(singleEmitter) {
-            val ref = bundleContext.getServiceReference(className)
-            if (ref != null) {
-                singleEmitter.onSuccess(bundleContext.getService(ref) as T)
-            }
-        }
-        singleEmitter.setCancellable { bundleContext.removeServiceListener(serviceListener) }
+        val count = java.lang.Long.parseLong(matcher.group(1))
+        val unit = TIME_UNITS[matcher.group(2)] ?: throw IllegalArgumentException("Invalid duration format: $duration")
+        return Duration(count, unit)
     }
-}
 
-/**
- * Configure RxJava plugins to enable MDC context passing between scheduled threads
- */
-fun setupRxJavaMDC() {
-
-    class MDCRunnable(private val runnable: Runnable) : Runnable {
-
-        private var context: Map<String, String>? = MDC.getCopyOfContextMap()
-
-        override fun run() {
-            val currentMDC = MDC.getCopyOfContextMap()
-            try {
-                if (context != null) {
-                    MDC.setContextMap(context)
+    /**
+     * Observe OSGI service by service's class name. Looks for the registered service or
+     * subscribes to service registration events. Doesn't provide notifications about service
+     * state changes
+     *
+     * @param className service's class name
+     * @param bundleContext OSGI bundle context
+     * @return [Single] instance which completes when specified service appears in OSGI context
+     */
+    @Suppress("UNCHECKED_CAST")
+    fun <T> observeService(className: String, bundleContext: BundleContext): Single<T> {
+        return Single.create { singleEmitter ->
+            val serviceListener = { event: ServiceEvent ->
+                val ref = event.serviceReference
+                if (event.type == ServiceEvent.REGISTERED) {
+                    singleEmitter.onSuccess(bundleContext.getService(ref) as T)
                 }
-                runnable.run()
-            } finally {
-                MDC.clear()
-                if (currentMDC != null) {
-                    MDC.setContextMap(currentMDC)
+            }
+            bundleContext.addServiceListener(serviceListener, "(objectClass=$className)")
+            synchronized(singleEmitter) {
+                val ref = bundleContext.getServiceReference(className)
+                if (ref != null) {
+                    singleEmitter.onSuccess(bundleContext.getService(ref) as T)
+                }
+            }
+            singleEmitter.setCancellable { bundleContext.removeServiceListener(serviceListener) }
+        }
+    }
+
+    /**
+     * Configure RxJava plugins to enable MDC context passing between scheduled threads
+     */
+    fun setupRxJavaMDC() {
+
+        class MDCRunnable(private val runnable: Runnable) : Runnable {
+
+            private var context: Map<String, String>? = MDC.getCopyOfContextMap()
+
+            override fun run() {
+                val currentMDC = MDC.getCopyOfContextMap()
+                try {
+                    if (context != null) {
+                        MDC.setContextMap(context)
+                    }
+                    runnable.run()
+                } finally {
+                    MDC.clear()
+                    if (currentMDC != null) {
+                        MDC.setContextMap(currentMDC)
+                    }
                 }
             }
         }
+
+        RxJavaPlugins.setScheduleHandler { r -> MDCRunnable(r) }
     }
 
-    RxJavaPlugins.setScheduleHandler { r -> MDCRunnable(r) }
 }
+
 

@@ -27,38 +27,41 @@ import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.vertx.reactivex.core.http.WebSocket
 
-/**
- * Converts [WebSocket] to [Observable] stream of text messages. It assumes that [WebSocket] is opened in text mode
- *
- */
-fun webSocketToMessages(webSocket: WebSocket): Observable<String> {
-    return Observable.create { emitter -> webSocketFramesHandler(webSocket, emitter) }
-}
+object WebSocketUtils {
 
-/**
- * Adds frame handler to [WebSocket] instance and uses [ObservableEmitter] to notify subscribers with messages.
- *
- * Handles continuation and final WebSocket frames, on receiving "close" frame completes observable stream
- */
-private fun webSocketFramesHandler(webSocket: WebSocket, emitter: ObservableEmitter<String>) {
-    val frames = ArrayList<String>()
-    webSocket.frameHandler { frame ->
-        if (frame.isClose) {
-            // WebSocket is closed, complete the stream
-            emitter.onComplete()
-        } else {
-            if (!frame.isFinal) {
-                frames.add(frame.textData())
+    /**
+     * Converts [WebSocket] to [Observable] stream of text messages. It assumes that [WebSocket] is opened in text mode
+     *
+     */
+    fun webSocketToMessages(webSocket: WebSocket): Observable<String> {
+        return Observable.create { emitter -> webSocketFramesHandler(webSocket, emitter) }
+    }
+
+    /**
+     * Adds frame handler to [WebSocket] instance and uses [ObservableEmitter] to notify subscribers with messages.
+     *
+     * Handles continuation and final WebSocket frames, on receiving "close" frame completes observable stream
+     */
+    private fun webSocketFramesHandler(webSocket: WebSocket, emitter: ObservableEmitter<String>) {
+        val frames = ArrayList<String>()
+        webSocket.frameHandler { frame ->
+            if (frame.isClose) {
+                // WebSocket is closed, complete the stream
+                emitter.onComplete()
             } else {
-                if (frames.isEmpty() && frame.isFinal) {
-                    // we've got single full frame, pass it directly as message
-                    emitter.onNext(frame.textData())
-                } else {
-                    // join all frames and pass it as single message
+                if (!frame.isFinal) {
                     frames.add(frame.textData())
-                    val message = frames.joinToString("")
-                    frames.clear()
-                    emitter.onNext(message)
+                } else {
+                    if (frames.isEmpty() && frame.isFinal) {
+                        // we've got single full frame, pass it directly as message
+                        emitter.onNext(frame.textData())
+                    } else {
+                        // join all frames and pass it as single message
+                        frames.add(frame.textData())
+                        val message = frames.joinToString("")
+                        frames.clear()
+                        emitter.onNext(message)
+                    }
                 }
             }
         }

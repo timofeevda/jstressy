@@ -31,7 +31,7 @@ import com.github.timofeevda.jstressy.api.scenario.Scenario
 import com.github.timofeevda.jstressy.api.scenario.ScenarioRegistryService
 import com.github.timofeevda.jstressy.api.scenario.ScenarioSchedulerService
 import com.github.timofeevda.jstressy.api.vertx.VertxService
-import com.github.timofeevda.jstressy.utils.parseDuration
+import com.github.timofeevda.jstressy.utils.StressyUtils.parseDuration
 import io.reactivex.Observable
 import java.util.*
 import java.util.concurrent.TimeUnit
