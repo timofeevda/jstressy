@@ -32,7 +32,10 @@ import io.vertx.reactivex.core.http.WebSocket
 import java.util.Optional
 
 /**
- * Request executor. Proxy object hiding concrete request/response handling functionality
+ * Request executor. Proxy object hiding concrete request/response handling functionality.
+ *
+ * Example interface (contains most frequently used HTTP methods). Implementors may choose to use different way
+ * of creating handler for various HTTP methods (e.g. providing builders) and different interface
  *
  * @author timofeevda
  */
@@ -84,6 +87,68 @@ interface RequestExecutor {
      * @return [HttpClientResponse] response
      */
     fun postFormData(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse>
+
+    /**
+     * Invokes PUT method
+     *
+     * @param host       host
+     * @param port       port
+     * @param requestURI request URI
+     * @return [HttpClientResponse] response
+     */
+    fun put(host: String, port: Int, requestURI: String): Single<HttpClientResponse>
+
+    /**
+     * Invokes PUT method with payload as json
+     *
+     * @param host       host
+     * @param port       port
+     * @param requestURI request URI
+     * @param data       json payload
+     * @return [HttpClientResponse] response
+     */
+    fun put(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse>
+
+    /**
+     * Invokes PUT method with payload as form data with "application/x-www-form-urlencoded" content type
+     *
+     * @param host       host
+     * @param port       port
+     * @param requestURI request URI
+     * @return [HttpClientResponse] response
+     */
+    fun putFormData(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse>
+
+    /**
+     * Invokes DELETE method
+     *
+     * @param host       host
+     * @param port       port
+     * @param requestURI request URI
+     * @return [HttpClientResponse] response
+     */
+    fun delete(host: String, port: Int, requestURI: String): Single<HttpClientResponse>
+
+    /**
+     * Invokes DELETE method with payload as json
+     *
+     * @param host       host
+     * @param port       port
+     * @param requestURI request URI
+     * @param data       json payload
+     * @return [HttpClientResponse] response
+     */
+    fun delete(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse>
+
+    /**
+     * Invokes DELETE method with payload as form data with "application/x-www-form-urlencoded" content type
+     *
+     * @param host       host
+     * @param port       port
+     * @param requestURI request URI
+     * @return [HttpClientResponse] response
+     */
+    fun deleteFormData(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse>
 
     /**
      * Opens websocket stream

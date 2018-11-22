@@ -69,14 +69,39 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
     }
 
     override fun post(host: String, port: Int, requestURI: String): Single<HttpClientResponse> {
-        return getMeasuredRequest(
-                addCustomHeaders(
-                        httpSessionManager.processRequest(client.request(HttpMethod.POST, port, host, requestURI))), null)
+        return createMeasuredRequest(host, port, requestURI, HttpMethod.POST)
     }
 
     override fun post(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse> {
-        return getMeasuredRequest(
-                processJsonDataRequest(client.request(HttpMethod.POST, port, host, requestURI), data), data)
+        return createMeasuredJSONPayloadRequest(host, port, requestURI, HttpMethod.POST, data)
+    }
+
+    override fun postFormData(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse> {
+        return createMeasuredFormDataRequest(host, port, requestURI, HttpMethod.POST, data)
+    }
+
+    override fun put(host: String, port: Int, requestURI: String): Single<HttpClientResponse> {
+        return createMeasuredRequest(host, port, requestURI, HttpMethod.PUT)
+    }
+
+    override fun put(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse> {
+        return createMeasuredJSONPayloadRequest(host, port, requestURI, HttpMethod.PUT, data)
+    }
+
+    override fun putFormData(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse> {
+        return createMeasuredFormDataRequest(host, port, requestURI, HttpMethod.PUT, data)
+    }
+
+    override fun delete(host: String, port: Int, requestURI: String): Single<HttpClientResponse> {
+        return createMeasuredRequest(host, port, requestURI, HttpMethod.DELETE)
+    }
+
+    override fun delete(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse> {
+        return createMeasuredJSONPayloadRequest(host, port, requestURI, HttpMethod.DELETE, data)
+    }
+
+    override fun deleteFormData(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse> {
+        return createMeasuredFormDataRequest(host, port, requestURI, HttpMethod.DELETE, data)
     }
 
     override fun websocket(host: String, port: Int, requestURI: String): Single<WebSocket> {
@@ -99,11 +124,6 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
         return getMeasuredRequest(request, null)
     }
 
-    override fun postFormData(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse> {
-        return getMeasuredRequest(
-                processFormDataRequest(client.request(HttpMethod.POST, port, host, requestURI), data), data)
-    }
-
     override fun addCustomHeader(headerName: String, headerValue: String) {
         customHeaders[headerName] = headerValue
     }
@@ -115,6 +135,23 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
     private fun addCustomHeaders(request: HttpClientRequest): HttpClientRequest {
         customHeaders.forEach { name: String, value: String -> request.putHeader(name, value) }
         return request
+    }
+
+    private fun createMeasuredRequest(host: String, port: Int, requestURI: String, method: HttpMethod): Single<HttpClientResponse> {
+        return getMeasuredRequest(
+                addCustomHeaders(
+                        httpSessionManager.processRequest(client.request(method, port, host, requestURI))), null)
+    }
+
+    private fun createMeasuredJSONPayloadRequest(host: String, port: Int, requestURI: String, method: HttpMethod, data: String): Single<HttpClientResponse> {
+        return getMeasuredRequest(
+                processJsonDataRequest(client.request(method, port, host, requestURI), data), data)
+    }
+
+
+    private fun createMeasuredFormDataRequest(host: String, port: Int, requestURI: String, method: HttpMethod, data: String): Single<HttpClientResponse> {
+        return getMeasuredRequest(
+                processFormDataRequest(client.request(method, port, host, requestURI), data), data)
     }
 
     private fun getMeasuredRequest(rq: HttpClientRequest, data: String?): Single<HttpClientResponse> {
@@ -180,6 +217,5 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
 
     private fun multiMapToString(multiMap: MultiMap): String {
         return multiMap.delegate.entries().joinToString(";") { "[${it.key} -> ${it.value}]" }
-
     }
 }
