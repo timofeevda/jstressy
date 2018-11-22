@@ -30,6 +30,7 @@ import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManagerService
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistryService
 import com.github.timofeevda.jstressy.api.metrics.type.Timer
+import com.github.timofeevda.jstressy.utils.logging.LazyLogging
 import io.netty.handler.codec.http.DefaultHttpHeaders
 import io.reactivex.Single
 import io.vertx.core.http.HttpMethod
@@ -39,6 +40,7 @@ import io.vertx.reactivex.core.http.HttpClient
 import io.vertx.reactivex.core.http.HttpClientRequest
 import io.vertx.reactivex.core.http.HttpClientResponse
 import io.vertx.reactivex.core.http.WebSocket
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
@@ -51,6 +53,8 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
                                       metricsRegistryService: MetricsRegistryService,
                                       httpSessionManagerService: HttpSessionManagerService) : RequestExecutor {
 
+    companion object : LazyLogging()
+
     private val customHeaders = ConcurrentHashMap<String, String>()
 
     private val client: HttpClient = httpClientService.get()
@@ -61,17 +65,17 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
     override fun get(host: String, port: Int, requestURI: String): Single<HttpClientResponse> {
         return getMeasuredRequest(
                 addCustomHeaders(
-                        httpSessionManager.processRequest(client.request(HttpMethod.GET, port, host, requestURI))))
+                        httpSessionManager.processRequest(client.request(HttpMethod.GET, port, host, requestURI))), null)
     }
 
     override fun post(host: String, port: Int, requestURI: String): Single<HttpClientResponse> {
         return getMeasuredRequest(
                 addCustomHeaders(
-                        httpSessionManager.processRequest(client.request(HttpMethod.POST, port, host, requestURI))))
+                        httpSessionManager.processRequest(client.request(HttpMethod.POST, port, host, requestURI))), null)
     }
 
     override fun post(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse> {
-        return getMeasuredRequestWithPayload(
+        return getMeasuredRequest(
                 processJsonDataRequest(client.request(HttpMethod.POST, port, host, requestURI), data), data)
     }
 
@@ -92,11 +96,11 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
     }
 
     override fun invoke(request: HttpClientRequest): Single<HttpClientResponse> {
-        return getMeasuredRequest(request)
+        return getMeasuredRequest(request, null)
     }
 
     override fun postFormData(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse> {
-        return getMeasuredRequestWithPayload(
+        return getMeasuredRequest(
                 processFormDataRequest(client.request(HttpMethod.POST, port, host, requestURI), data), data)
     }
 
@@ -113,37 +117,30 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
         return request
     }
 
-    private fun getMeasuredRequest(rq: HttpClientRequest): Single<HttpClientResponse> {
-        val requestTimer = RequestTimer("rpath_" + rq.uri())
+    private fun getMeasuredRequest(rq: HttpClientRequest, data: String?): Single<HttpClientResponse> {
+        val rqUUID = UUID.randomUUID()
+        val requestTimer = RequestTimer("request_" + rq.uri())
         return Single.create { emitter ->
             rq.toObservable()
                     .timeout(60, TimeUnit.SECONDS)
-                    .doOnSubscribe { requestTimer.start() }
-                    .doOnNext { response ->
+                    .doOnSubscribe {
+                        logger.debug { "Invoking request ${buildRequestDescription(rqUUID, rq)}"}
+                        requestTimer.start()
+                    }
+                    .doOnNext { rp ->
+                        logger.debug {"Processing response ${buildResponseDescription(rqUUID, rp)}"}
                         requestTimer.stop()
-                        httpSessionManager.processResponse(response)
+                        httpSessionManager.processResponse(rp)
+                    }
+                    .doOnError { e ->
+                        logger.debug({"Error invoking request ${buildRequestDescription(rqUUID, rq)}"}, e)
                     }
                     .subscribe(
                             { emitter.onSuccess(it) },
                             { emitter.onError(it) })
-            rq.end()
-        }
-    }
-
-    private fun getMeasuredRequestWithPayload(rq: HttpClientRequest, data: String): Single<HttpClientResponse> {
-        val requestTimer = RequestTimer(rq.uri())
-        return Single.create { emitter ->
-            rq.toObservable()
-                    .timeout(60, TimeUnit.SECONDS)
-                    .doOnSubscribe { requestTimer.start() }
-                    .doOnNext { response ->
-                        requestTimer.stop()
-                        httpSessionManager.processResponse(response)
-                    }
-                    .subscribe(
-                            { emitter.onSuccess(it) },
-                            { emitter.onError(it) })
-            rq.write(data)
+            if (data != null) {
+                rq.write(data)
+            }
             rq.end()
         }
     }
@@ -171,5 +168,20 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
         fun stop() {
             context?.stop()
         }
+    }
+
+    private fun buildRequestDescription(uuid: UUID, rq: HttpClientRequest): String {
+        return "id: $uuid uri: ${rq.uri()} headers: ${multiMapToString(rq.headers())}"
+    }
+
+    private fun buildResponseDescription(uuid: UUID, rs: HttpClientResponse): String {
+        return "id: $uuid uri: ${rs.request().uri()} headers: ${multiMapToString(rs.headers())}"
+    }
+
+    private fun multiMapToString(multiMap: MultiMap): String {
+        return multiMap.delegate.entries()
+                .map { it -> return "[${it.key} -> ${it.value}]"}
+                .joinToString { " " }
+
     }
 }

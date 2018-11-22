@@ -23,12 +23,9 @@
 
 package com.github.timofeevda.jstressy.cookiesession.internal
 
-import com.github.timofeevda.jstressy.api.config.ConfigurationService
 import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManagerService
 import com.github.timofeevda.jstressy.cookiesession.CookieSessionManagerServiceImpl
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
-import com.github.timofeevda.jstressy.utils.observeService
-import io.reactivex.disposables.Disposable
 import org.osgi.framework.BundleActivator
 import org.osgi.framework.BundleContext
 import java.util.*
@@ -37,23 +34,13 @@ class Activator : BundleActivator {
 
     companion object : LazyLogging()
 
-    private var subscription: Disposable? = null
-
     override fun start(context: BundleContext) {
         logger.info("Staring HTTP session manager service activator")
 
-        val configurationServiceSingle = observeService<ConfigurationService>(ConfigurationService::class.java.name, context)
-
-        subscription = configurationServiceSingle.toObservable()
-                .subscribe(
-                        { configService -> context.registerService(HttpSessionManagerService::class.java.name, CookieSessionManagerServiceImpl(configService), Hashtable<Any, Any>()) },
-                        { t -> logger.error("Error registering HTTP Session Manager", t) }
-                )
-
+        context.registerService(HttpSessionManagerService::class.java.name, CookieSessionManagerServiceImpl(), Hashtable<Any, Any>())
     }
 
     override fun stop(context: BundleContext) {
-        subscription?.dispose()
     }
 
 }

@@ -26,8 +26,10 @@
 package com.github.timofeevda.jstressy.utils
 
 import io.reactivex.Single
+import io.reactivex.plugins.RxJavaPlugins
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceEvent
+import org.slf4j.MDC
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
@@ -90,6 +92,22 @@ data class Duration(val count: Long, val timeUnit: TimeUnit) {
     }
 }
 
+/**
+ * Parse duration represented by human-readable string
+ *
+ * Available time interval descriptors:
+ *
+ * "ns", "nanosecond","nanoseconds",
+ * "um","microsecond","microseconds",
+ * "ms","millisecond","milliseconds",
+ * "s","second","seconds",
+ * "m","min","mins","minute","minutes",
+ * "h","hour","hours",
+ * "d","day","days"
+ *
+ * @param duration human-readable duration representation
+ * @return [Duration] instance
+ */
 fun parseDuration(duration: String): Duration {
     val matcher = DURATION_PATTERN.matcher(duration)
     if (!matcher.matches()) {
@@ -100,6 +118,15 @@ fun parseDuration(duration: String): Duration {
     return Duration(count, unit)
 }
 
+/**
+ * Observe OSGI service by service's class name. Looks for the registered service or
+ * subscribes to service registration events. Doesn't provide notifications about service
+ * state changes
+ *
+ * @param className service's class name
+ * @param bundleContext OSGI bundle context
+ * @return [Single] instance which completes when specified service appears in OSGI context
+ */
 @Suppress("UNCHECKED_CAST")
 fun <T> observeService(className: String, bundleContext: BundleContext): Single<T> {
     return Single.create { singleEmitter ->
@@ -120,4 +147,31 @@ fun <T> observeService(className: String, bundleContext: BundleContext): Single<
     }
 }
 
+/**
+ * Configure RxJava plugins to enable MDC context passing between scheduled threads
+ */
+fun setupRxJavaMDC() {
+
+    class MDCRunnable(private val runnable: Runnable) : Runnable {
+
+        private var context: Map<String, String>? = MDC.getCopyOfContextMap()
+
+        override fun run() {
+            val currentMDC = MDC.getCopyOfContextMap()
+            try {
+                if (context != null) {
+                    MDC.setContextMap(context)
+                }
+                runnable.run()
+            } finally {
+                MDC.clear()
+                if (currentMDC != null) {
+                    MDC.setContextMap(currentMDC)
+                }
+            }
+        }
+    }
+
+    RxJavaPlugins.setScheduleHandler { r -> MDCRunnable(r) }
+}
 

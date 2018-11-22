@@ -45,7 +45,7 @@ import sun.awt.ConstrainableGraphics
 
 import java.io.File
 
-val STRESSY_YML = "stressy.yml"
+private const val STRESSY_YML = "stressy.yml"
 
 /**
  * Example implementation of configuration service. Reads JStressy configuration from YAML file

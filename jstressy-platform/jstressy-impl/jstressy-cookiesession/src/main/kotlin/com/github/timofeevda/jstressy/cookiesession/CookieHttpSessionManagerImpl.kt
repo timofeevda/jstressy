@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicReference
  *
  * @author timofeevda
  */
-internal class CookieHttpSessionManagerImpl(configService: ConfigurationService) : HttpSessionManager {
+internal class CookieHttpSessionManagerImpl : HttpSessionManager {
 
     private var sessionCookies: ConcurrentHashMap<String, String> = ConcurrentHashMap()
 

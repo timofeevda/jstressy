@@ -23,7 +23,6 @@
 
 package com.github.timofeevda.jstressy.cookiesession
 
-import com.github.timofeevda.jstressy.api.config.ConfigurationService
 import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManager
 import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManagerService
 
@@ -32,8 +31,8 @@ import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManagerService
  *
  * @author timofeevda
  */
-class CookieSessionManagerServiceImpl(private val configService: ConfigurationService) : HttpSessionManagerService {
+class CookieSessionManagerServiceImpl : HttpSessionManagerService {
     override fun get(): HttpSessionManager {
-        return CookieHttpSessionManagerImpl(configService)
+        return CookieHttpSessionManagerImpl()
     }
 }
