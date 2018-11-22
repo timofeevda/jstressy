@@ -56,7 +56,7 @@ private fun webSocketFramesHandler(webSocket: WebSocket, emitter: ObservableEmit
                 } else {
                     // join all frames and pass it as single message
                     frames.add(frame.textData())
-                    val message = frames.joinToString { "" }
+                    val message = frames.joinToString("")
                     frames.clear()
                     emitter.onNext(message)
                 }

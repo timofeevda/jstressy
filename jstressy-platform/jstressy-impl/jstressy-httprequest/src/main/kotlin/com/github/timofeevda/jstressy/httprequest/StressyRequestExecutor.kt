@@ -124,16 +124,16 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
             rq.toObservable()
                     .timeout(60, TimeUnit.SECONDS)
                     .doOnSubscribe {
-                        logger.debug { "Invoking request ${buildRequestDescription(rqUUID, rq)}"}
+                        logger.debug { "Invoking request ${buildRequestDescription(rqUUID, rq)}" }
                         requestTimer.start()
                     }
                     .doOnNext { rp ->
-                        logger.debug {"Processing response ${buildResponseDescription(rqUUID, rp)}"}
+                        logger.debug { "Processing response ${buildResponseDescription(rqUUID, rp)}" }
                         requestTimer.stop()
                         httpSessionManager.processResponse(rp)
                     }
                     .doOnError { e ->
-                        logger.debug({"Error invoking request ${buildRequestDescription(rqUUID, rq)}"}, e)
+                        logger.debug({ "Error invoking request ${buildRequestDescription(rqUUID, rq)}" }, e)
                     }
                     .subscribe(
                             { emitter.onSuccess(it) },
@@ -179,9 +179,7 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
     }
 
     private fun multiMapToString(multiMap: MultiMap): String {
-        return multiMap.delegate.entries()
-                .map { it -> return "[${it.key} -> ${it.value}]"}
-                .joinToString { " " }
+        return multiMap.delegate.entries().joinToString(";") { "[${it.key} -> ${it.value}]" }
 
     }
 }
