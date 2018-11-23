@@ -5,8 +5,6 @@ import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistryService
 import com.github.timofeevda.jstressy.api.vertx.VertxService
 import io.prometheus.client.exporter.common.TextFormat
-import io.vertx.core.Handler
-import io.vertx.reactivex.core.http.HttpServerRequest
 import io.vertx.reactivex.ext.web.Router
 
 class MicrometerMetricsRegistryService : MetricsRegistryService {

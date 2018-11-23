@@ -23,9 +23,8 @@
 package com.github.timofeevda.jstressy.dummy.scenario
 
 import com.github.timofeevda.jstressy.api.config.ConfigurationService
-import com.github.timofeevda.jstressy.api.httprequest.RequestExecutor
+import com.github.timofeevda.jstressy.api.httprequest.RequestExecutorService
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
-import com.github.timofeevda.jstressy.api.scenario.Scenario
 import com.github.timofeevda.jstressy.api.scenario.ScenarioProvider
 import com.github.timofeevda.jstressy.api.vertx.VertxService
 
@@ -36,14 +35,14 @@ import com.github.timofeevda.jstressy.api.vertx.VertxService
   */
 class TouchGoogleScenarioProvider extends ScenarioProvider {
   private var metricsRegistry: MetricsRegistry = _
-  private var requestExecutor: RequestExecutor = _
+  private var requestExecutorService: RequestExecutorService = _
   private var configurationService: ConfigurationService = _
 
-  override def get = new TouchGoogleScenario(metricsRegistry, requestExecutor, configurationService)
+  override def get = new TouchGoogleScenario(metricsRegistry, requestExecutorService.get(), configurationService)
 
-  override def init(metricsRegistry: MetricsRegistry, requestExecutor: RequestExecutor, configurationService: ConfigurationService, vertxService: VertxService): Unit = {
+  override def init(metricsRegistry: MetricsRegistry, requestExecutorService: RequestExecutorService, configurationService: ConfigurationService, vertxService: VertxService): Unit = {
     this.metricsRegistry = metricsRegistry
-    this.requestExecutor = requestExecutor
+    this.requestExecutorService = requestExecutorService
     this.configurationService = configurationService
   }
 }

@@ -57,7 +57,7 @@ public class TouchGoogleScenario implements Scenario {
     @Override
     public void start() {
         requestExecutor.get(host, port, "/")
-                .doOnSuccess(httpClientResponse -> metricsRegistry.counter("googl_request_success").inc())
+                .doOnSuccess(httpClientResponse -> metricsRegistry.counter("google_request_success").inc())
                 .subscribe(
                         httpClientResponse -> logger.info("Host {} answered with code {}", host, httpClientResponse.statusCode())
                 );

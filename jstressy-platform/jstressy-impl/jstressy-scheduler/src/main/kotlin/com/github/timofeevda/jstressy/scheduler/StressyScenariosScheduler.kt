@@ -25,7 +25,7 @@ package com.github.timofeevda.jstressy.scheduler
 
 import com.github.timofeevda.jstressy.api.config.ConfigurationService
 import com.github.timofeevda.jstressy.api.config.parameters.StressyStage
-import com.github.timofeevda.jstressy.api.httprequest.RequestExecutor
+import com.github.timofeevda.jstressy.api.httprequest.RequestExecutorService
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.scenario.Scenario
 import com.github.timofeevda.jstressy.api.scenario.ScenarioRegistryService
@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit
  * @author timofeevda
  */
 class StressyScenariosScheduler(private val vertxService: VertxService,
-                                private val requestExecutor: RequestExecutor,
+                                private val requestExecutorService: RequestExecutorService,
                                 private val metricsRegistry: MetricsRegistry,
                                 private val configurationService: ConfigurationService,
                                 val scenarioRegistryService: ScenarioRegistryService) : ScenarioSchedulerService {
@@ -81,7 +81,7 @@ class StressyScenariosScheduler(private val vertxService: VertxService,
         val scenarioProviderService = scenarioRegistryService[stage.scenarioName]
         val scenarioProvider = scenarioProviderService?.get(stage.scenarioProviderParameters)
         try {
-            scenarioProvider?.init(metricsRegistry, requestExecutor, configurationService, vertxService)
+            scenarioProvider?.init(metricsRegistry, requestExecutorService, configurationService, vertxService)
         } catch (e: Throwable) {
             return Observable.error(e)
         }

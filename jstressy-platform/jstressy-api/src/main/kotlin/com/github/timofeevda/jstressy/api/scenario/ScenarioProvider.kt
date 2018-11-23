@@ -23,8 +23,8 @@
 
 package com.github.timofeevda.jstressy.api.scenario
 
-import com.github.timofeevda.jstressy.api.httprequest.RequestExecutor
 import com.github.timofeevda.jstressy.api.config.ConfigurationService
+import com.github.timofeevda.jstressy.api.httprequest.RequestExecutorService
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.vertx.VertxService
 
@@ -44,15 +44,15 @@ interface ScenarioProvider {
 
     /**
      * Initializes scenario provider. Passed value can be stored for passing to scenario instances and used for
-     * long-running initializition logic (e.g. reading list of available users from file)
+     * long-running initialization logic (e.g. reading list of available users from file)
      *
      * @param metricsRegistry      metrics registry
-     * @param requestExecutor      request executor
+     * @param requestExecutorService   request executor service
      * @param configurationService configuration service
      * @param vertxService         VertX service
      */
     fun init(metricsRegistry: MetricsRegistry,
-             requestExecutor: RequestExecutor,
+             requestExecutorService: RequestExecutorService,
              configurationService: ConfigurationService,
              vertxService: VertxService)
 

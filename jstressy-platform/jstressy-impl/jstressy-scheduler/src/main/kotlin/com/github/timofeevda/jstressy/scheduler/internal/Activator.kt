@@ -86,7 +86,7 @@ class Activator : BundleActivator {
                                             metricsRegistryService: MetricsRegistryService,
                                             requestExecutorService: RequestExecutorService,
                                             vertxService: VertxService): StressyScenariosScheduler {
-        return StressyScenariosScheduler(vertxService, requestExecutorService.get(),
+        return StressyScenariosScheduler(vertxService, requestExecutorService,
                 metricsRegistryService.get(), configurationService, scenarioRegistryService)
     }
 
