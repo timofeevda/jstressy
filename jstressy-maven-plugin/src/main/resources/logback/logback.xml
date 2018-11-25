@@ -16,14 +16,14 @@
         </rollingPolicy>
 
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>2MB</maxFileSize>
+            <maxFileSize>50MB</maxFileSize>
         </triggeringPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="FILE"/>
         <appender-ref ref="STDOUT"/>
     </root>

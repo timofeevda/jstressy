@@ -79,10 +79,10 @@ class MicrometerMetricsRegistry internal constructor() : MetricsRegistry {
     }
 
     override fun gauge(name: String, valueSupplier: Supplier<Double>): Gauge {
-        val gauge = io.micrometer.core.instrument.Gauge.builder(name, 0.0) { value -> valueSupplier.get() }.register(prometheusRegistry)
+        prometheusRegistry.gauge(name, valueSupplier, {v -> v.get()})
         return object : Gauge {
             override val value: Double
-                get() = gauge.value()
+                get() = valueSupplier.get()
         }
     }
 }

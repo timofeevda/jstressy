@@ -33,7 +33,7 @@ object WebSocketUtils {
      * Converts [WebSocket] to [Observable] stream of text messages. It assumes that [WebSocket] is opened in text mode
      *
      */
-    fun webSocketToMessages(webSocket: WebSocket): Observable<String> {
+    fun webSocketToMessages(webSocket: WebSocket): Observable<WebSocketTextMessage> {
         return Observable.create { emitter -> webSocketFramesHandler(webSocket, emitter) }
     }
 
@@ -42,8 +42,10 @@ object WebSocketUtils {
      *
      * Handles continuation and final WebSocket frames, on receiving "close" frame completes observable stream
      */
-    private fun webSocketFramesHandler(webSocket: WebSocket, emitter: ObservableEmitter<String>) {
+    private fun webSocketFramesHandler(webSocket: WebSocket, emitter: ObservableEmitter<WebSocketTextMessage>) {
         val frames = ArrayList<String>()
+        var bytes = 0
+        webSocket.exceptionHandler { e -> emitter.onError(e)}
         webSocket.frameHandler { frame ->
             if (frame.isClose) {
                 // WebSocket is closed, complete the stream
@@ -51,16 +53,22 @@ object WebSocketUtils {
             } else {
                 if (!frame.isFinal) {
                     frames.add(frame.textData())
+                    bytes += frame.binaryData().length()
                 } else {
                     if (frames.isEmpty() && frame.isFinal) {
                         // we've got single full frame, pass it directly as message
-                        emitter.onNext(frame.textData())
+                        emitter.onNext(WebSocketTextMessage(frame.textData(), frame.binaryData().length()))
                     } else {
                         // join all frames and pass it as single message
                         frames.add(frame.textData())
-                        val message = frames.joinToString("")
-                        frames.clear()
-                        emitter.onNext(message)
+                        bytes += frame.binaryData().length()
+                        try {
+                            val message = frames.joinToString("")
+                            emitter.onNext(WebSocketTextMessage(message, bytes))
+                        } finally {
+                            frames.clear()
+                            bytes = 0
+                        }
                     }
                 }
             }
