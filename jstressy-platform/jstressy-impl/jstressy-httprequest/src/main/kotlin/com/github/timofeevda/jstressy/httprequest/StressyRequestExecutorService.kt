@@ -34,7 +34,7 @@ import com.github.timofeevda.jstressy.api.metrics.MetricsRegistryService
  *
  * @author timofeevda
  */
-class StressyRequestExecutorService(private val httpClientService: HttpClientService,
+open class StressyRequestExecutorService(private val httpClientService: HttpClientService,
                                     private val metricsRegistryService: MetricsRegistryService,
                                     private val httpSessionManagerService: HttpSessionManagerService) : RequestExecutorService {
 

@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * @author timofeevda
  */
-class StressyScenarioRegistry : ScenarioRegistryService {
+open class StressyScenarioRegistry : ScenarioRegistryService {
 
     private val scenarioProviderServiceMap = ConcurrentHashMap<String, ScenarioProviderService>()
 

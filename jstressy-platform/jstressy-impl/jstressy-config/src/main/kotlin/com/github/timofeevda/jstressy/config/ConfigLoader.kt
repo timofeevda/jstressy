@@ -52,7 +52,7 @@ private const val STRESSY_YML = "stressy.yml"
  *
  * @author timofeevda
  */
-class ConfigLoader : ConfigurationService {
+open class ConfigLoader : ConfigurationService {
 
     companion object : LazyLogging()
 

@@ -34,7 +34,7 @@ JStressy doesn't restrict changes to the format of the config if it follows the 
 
 ## JStressy assembly
 JStressy provides Maven plugin which can be used to easily create and distribute custom JStressy builds. Developer just needs to describe set of dependencies representing OSGi bundles (forming custom JStressy build).
-JStressy Maven plugin configuration example (full example can be seen in [jstressy-assembly pom.xml](https://github.com/timofeevda/jstressy/blob/master/jstressy-assembly/pom.xml)):
+JStressy Maven plugin configuration example (full example can be seen in [jstressy-assembly-osgi pom.xml](https://github.com/timofeevda/jstressy/blob/master/jstressy-assembly/pom.xml)):
 ```xml
 <plugin>
     <groupId>com.github.timofeevda.jstressy</groupId>

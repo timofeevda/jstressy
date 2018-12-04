@@ -31,7 +31,7 @@ import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManagerService
  *
  * @author timofeevda
  */
-class CookieSessionManagerServiceImpl : HttpSessionManagerService {
+open class CookieSessionManagerServiceImpl : HttpSessionManagerService {
     override fun get(): HttpSessionManager {
         return CookieHttpSessionManagerImpl()
     }

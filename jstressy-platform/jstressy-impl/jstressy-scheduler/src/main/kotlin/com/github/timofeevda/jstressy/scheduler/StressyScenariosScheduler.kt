@@ -26,7 +26,7 @@ package com.github.timofeevda.jstressy.scheduler
 import com.github.timofeevda.jstressy.api.config.ConfigurationService
 import com.github.timofeevda.jstressy.api.config.parameters.StressyStage
 import com.github.timofeevda.jstressy.api.httprequest.RequestExecutorService
-import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
+import com.github.timofeevda.jstressy.api.metrics.MetricsRegistryService
 import com.github.timofeevda.jstressy.api.scenario.Scenario
 import com.github.timofeevda.jstressy.api.scenario.ScenarioRegistryService
 import com.github.timofeevda.jstressy.api.scenario.ScenarioSchedulerService
@@ -42,11 +42,13 @@ import java.util.concurrent.TimeUnit
  *
  * @author timofeevda
  */
-class StressyScenariosScheduler(private val vertxService: VertxService,
-                                private val requestExecutorService: RequestExecutorService,
-                                private val metricsRegistry: MetricsRegistry,
-                                private val configurationService: ConfigurationService,
-                                val scenarioRegistryService: ScenarioRegistryService) : ScenarioSchedulerService {
+open class StressyScenariosScheduler(private val vertxService: VertxService,
+                                     private val requestExecutorService: RequestExecutorService,
+                                     private val configurationService: ConfigurationService,
+                                     metricsRegistryService: MetricsRegistryService,
+                                     val scenarioRegistryService: ScenarioRegistryService) : ScenarioSchedulerService {
+
+    private val metricsRegistry = metricsRegistryService.get()
 
     val listOfStages: List<StressyStage>
         get() = configurationService.configuration.stressPlan.stages

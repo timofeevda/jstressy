@@ -7,7 +7,7 @@ import com.github.timofeevda.jstressy.api.vertx.VertxService
 import io.prometheus.client.exporter.common.TextFormat
 import io.vertx.reactivex.ext.web.Router
 
-class MicrometerMetricsRegistryService : MetricsRegistryService {
+open class MicrometerMetricsRegistryService : MetricsRegistryService {
 
     private val metricsRegistry: MicrometerMetricsRegistry = MicrometerMetricsRegistry()
 

@@ -36,7 +36,7 @@ import io.vertx.reactivex.core.http.HttpClient
  *
  * @author timofeevda
  */
-class StressyHttpClientService(vertxService: VertxService,
+open class StressyHttpClientService(vertxService: VertxService,
                                configurationService: ConfigurationService) : HttpClientService {
 
     private val client: HttpClient

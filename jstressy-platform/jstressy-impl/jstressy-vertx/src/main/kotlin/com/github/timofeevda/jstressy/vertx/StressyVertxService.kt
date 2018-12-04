@@ -31,7 +31,7 @@ import io.vertx.reactivex.core.Vertx
  *
  * @author timofeevda
  */
-class StressyVertxService : VertxService {
+open class StressyVertxService : VertxService {
 
     override val vertx: Vertx = Vertx.vertx()
 
