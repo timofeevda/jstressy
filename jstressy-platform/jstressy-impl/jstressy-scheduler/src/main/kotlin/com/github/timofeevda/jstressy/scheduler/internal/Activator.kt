@@ -31,6 +31,7 @@ import com.github.timofeevda.jstressy.api.vertx.VertxService
 import com.github.timofeevda.jstressy.scheduler.ScenarioProvidersTracker
 import com.github.timofeevda.jstressy.scheduler.StressyScenariosScheduler
 import com.github.timofeevda.jstressy.utils.StressyUtils.observeService
+import com.github.timofeevda.jstressy.utils.StressyUtils.serviceAwaitTimeout
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
@@ -60,7 +61,7 @@ class Activator : BundleActivator {
                 vertxServiceSingle.toObservable(),
                 Function5<ConfigurationService, ScenarioRegistryService, MetricsRegistryService, RequestExecutorService, VertxService, StressyScenariosScheduler> { configurationService, scenarioRegistryService, metricsRegistryService, requestExecutorService, vertxService -> this.toScenariosSchedulerService(configurationService, scenarioRegistryService, metricsRegistryService, requestExecutorService, vertxService) }        )
                 .doOnSubscribe { logger.info("Scenario Scheduler service subscribes on Configuration, Scenario Registry, Metrics Registry, HTTP Request Executor, VertX service") }
-                .timeout(10, TimeUnit.SECONDS)
+                .timeout(serviceAwaitTimeout().toMilliseconds(), TimeUnit.MILLISECONDS)
                 .doOnNext { logger.info("Registering Scenario Scheduler") }
                 .flatMap { stressyScenariosScheduler -> toObservableScenarioScheduler(context, stressyScenariosScheduler) }
                 .flatMap { it.observeScenarios() }

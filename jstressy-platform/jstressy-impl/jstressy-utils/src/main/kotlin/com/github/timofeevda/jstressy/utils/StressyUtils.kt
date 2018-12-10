@@ -80,7 +80,7 @@ object StressyUtils {
     fun parseDuration(duration: String): Duration {
         val matcher = DURATION_PATTERN.matcher(duration)
         if (!matcher.matches()) {
-            throw IllegalArgumentException("Invalid duration format: $duration");
+            throw IllegalArgumentException("Invalid duration format: $duration")
         }
         val count = java.lang.Long.parseLong(matcher.group(1))
         val unit = TIME_UNITS[matcher.group(2)] ?: throw IllegalArgumentException("Invalid duration format: $duration")
@@ -119,6 +119,7 @@ object StressyUtils {
     /**
      * Configure RxJava plugins to enable MDC context passing between scheduled threads
      */
+    @Suppress("UNUSED")
     fun setupRxJavaMDC() {
 
         class MDCRunnable(private val runnable: Runnable) : Runnable {
@@ -143,6 +144,10 @@ object StressyUtils {
 
         RxJavaPlugins.setScheduleHandler { r -> MDCRunnable(r) }
     }
+
+    fun serviceAwaitTimeout() = parseDuration(System.getProperty("serviceTimeout", "30s"))
+
+    fun httpTimeout() = parseDuration(System.getProperty("httpTimeout", "1m"))
 
 }
 

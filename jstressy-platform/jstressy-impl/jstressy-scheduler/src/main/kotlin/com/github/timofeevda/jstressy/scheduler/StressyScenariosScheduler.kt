@@ -31,10 +31,8 @@ import com.github.timofeevda.jstressy.api.scenario.Scenario
 import com.github.timofeevda.jstressy.api.scenario.ScenarioRegistryService
 import com.github.timofeevda.jstressy.api.scenario.ScenarioSchedulerService
 import com.github.timofeevda.jstressy.api.vertx.VertxService
-import com.github.timofeevda.jstressy.utils.StressyUtils.parseDuration
+import com.github.timofeevda.jstressy.scheduler.ScenarioRateScheduler.observeScenarioTicks
 import io.reactivex.Observable
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 /**
  * Basic implementation of [ScenarioRegistryService]. Implements basic scheduling reading arrivalRate,
@@ -59,24 +57,8 @@ open class StressyScenariosScheduler(private val vertxService: VertxService,
 
     private fun observeScenarios(stages: List<StressyStage>): Observable<Scenario> {
         return stages.stream()
-                .map<Observable<Scenario>> { this.observeScenarios(it) }
+                .map<Observable<Scenario>> { stage -> observeScenarioTicks(stage).flatMap { createScenario(stage) } }
                 .reduce(Observable.empty()) { source1, source2 -> Observable.merge(source1, source2) }
-    }
-
-    private fun observeScenarios(stage: StressyStage): Observable<Scenario> {
-        val delay = parseDuration(stage.stageDelay ?: "0ms").toMilliseconds()
-        val duration = parseDuration(stage.stageDuration).toMilliseconds()
-        return Observable.timer(delay, TimeUnit.MILLISECONDS)
-                .flatMap {
-                    observeWithRamping(stage)
-                            .orElseGet { observeWithoutRamping(stage) }
-                }
-                .take(delay + duration, TimeUnit.MILLISECONDS)
-    }
-
-    private fun observeWithoutRamping(stage: StressyStage): Observable<Scenario> {
-        return Observable.interval(0, (1000 / stage.arrivalRate).toLong(), TimeUnit.MILLISECONDS)
-                .flatMap { createScenario(stage) }
     }
 
     private fun createScenario(stage: StressyStage): Observable<Scenario> {
@@ -90,27 +72,4 @@ open class StressyScenariosScheduler(private val vertxService: VertxService,
         return Observable.just(scenarioProvider?.get()?.withParameters(stage.scenarioParameters))
     }
 
-    private fun observeWithRamping(stage: StressyStage): Optional<Observable<Scenario>> {
-        if (stage.rampArrival != null
-                && stage.rampArrivalRate != null
-                && stage.rampInterval != null) {
-            val rampInterval = rateToIntervalInMillis(stage.rampArrivalRate ?: 1.0)
-            val rampDuration = parseDuration(stage.rampInterval ?: "0ms").toMilliseconds()
-            val rampSteps = (rampDuration / rampInterval).toInt()
-            val rampIncrease = (stage.rampArrival ?: 1.0 - stage.arrivalRate) / rampSteps
-            return Optional.of(Observable.interval(0, rampInterval, TimeUnit.MILLISECONDS)
-                    .take(rampSteps.toLong())
-                    .map { i -> stage.arrivalRate + rampIncrease * i }
-                    .switchMap { newRate ->
-                        Observable.interval(rateToIntervalInMillis(newRate), TimeUnit.MILLISECONDS)
-                                .flatMap { createScenario(stage) }
-                    })
-        } else {
-            return Optional.empty()
-        }
-    }
-
-    private fun rateToIntervalInMillis(rate: Double): Long {
-        return (1000 / rate).toLong()
-    }
 }

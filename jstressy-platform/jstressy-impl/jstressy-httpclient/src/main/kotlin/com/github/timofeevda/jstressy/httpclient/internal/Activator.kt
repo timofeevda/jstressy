@@ -28,6 +28,7 @@ import com.github.timofeevda.jstressy.api.httpclient.HttpClientService
 import com.github.timofeevda.jstressy.api.vertx.VertxService
 import com.github.timofeevda.jstressy.httpclient.StressyHttpClientService
 import com.github.timofeevda.jstressy.utils.StressyUtils.observeService
+import com.github.timofeevda.jstressy.utils.StressyUtils.serviceAwaitTimeout
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
@@ -44,7 +45,7 @@ class Activator : BundleActivator {
 
     companion object : LazyLogging()
 
-    var subscription: Disposable? = null
+    private var subscription: Disposable? = null
 
     override fun start(context: BundleContext) {
         logger.info("Starting HTTP Client service activator")
@@ -61,7 +62,7 @@ class Activator : BundleActivator {
                 BiFunction<VertxService, ConfigurationService, StressyHttpClientService> { vxService, configService -> StressyHttpClientService(vxService, configService) })
                 .doOnSubscribe { logger.info("HTTP client service subscribes on VertX and Configuration services") }
                 .doOnNext { logger.info("Registering HTTP client service") }
-                .timeout(10, TimeUnit.SECONDS)
+                .timeout(serviceAwaitTimeout().toMilliseconds(), TimeUnit.MILLISECONDS)
                 .subscribe(
                         { httpClientService ->
                             context.registerService(HttpClientService::class.java.name, httpClientService, Hashtable<Any, Any>())

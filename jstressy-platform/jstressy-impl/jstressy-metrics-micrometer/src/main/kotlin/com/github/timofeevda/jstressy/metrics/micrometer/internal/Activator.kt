@@ -5,6 +5,7 @@ import com.github.timofeevda.jstressy.api.metrics.MetricsRegistryService
 import com.github.timofeevda.jstressy.api.vertx.VertxService
 import com.github.timofeevda.jstressy.metrics.micrometer.MicrometerMetricsRegistryService
 import com.github.timofeevda.jstressy.utils.StressyUtils.observeService
+import com.github.timofeevda.jstressy.utils.StressyUtils.serviceAwaitTimeout
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import org.osgi.framework.BundleActivator
@@ -27,7 +28,7 @@ class Activator : BundleActivator {
                 BiFunction<VertxService, ConfigurationService, MetricsRegistryService> { vxService, configService -> this.toMetricsRegistryService(vxService, configService) })
                 .doOnSubscribe { logger.info("Metric Registry service subscribes on VertX and Configuration services") }
                 .doOnNext { logger.info("Registering metrics registry service") }
-                .timeout(10, TimeUnit.SECONDS)
+                .timeout(serviceAwaitTimeout().toMilliseconds(), TimeUnit.MILLISECONDS)
                 .subscribe { metricsRegistryService ->
                     context.registerService(MetricsRegistryService::class.java.name, metricsRegistryService, Hashtable<Any, Any>())
                 }

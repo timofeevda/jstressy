@@ -29,6 +29,7 @@ import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManagerService
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistryService
 import com.github.timofeevda.jstressy.httprequest.StressyRequestExecutorService
 import com.github.timofeevda.jstressy.utils.StressyUtils.observeService
+import com.github.timofeevda.jstressy.utils.StressyUtils.serviceAwaitTimeout
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
 import io.reactivex.Observable
 import io.reactivex.functions.Function3
@@ -55,7 +56,7 @@ class Activator : BundleActivator {
                 Function3<HttpClientService, MetricsRegistryService, HttpSessionManagerService, StressyRequestExecutorService> { httpClientService, metricsRegistryService, httpSessionManagerService -> StressyRequestExecutorService(httpClientService, metricsRegistryService, httpSessionManagerService) })
                 .doOnSubscribe { logger.info("HTTP Request Executor subscribes on HTTPClient, Metrics Registry and Session Manager") }
                 .doOnNext { logger.info("Registering HTTP Request Executor service") }
-                .timeout(10, TimeUnit.SECONDS)
+                .timeout(serviceAwaitTimeout().toMilliseconds(), TimeUnit.MILLISECONDS)
                 .subscribe { requestExecutorService ->
                     context.registerService(RequestExecutorService::class.java.name, requestExecutorService, Hashtable<Any, Any>())
                 }

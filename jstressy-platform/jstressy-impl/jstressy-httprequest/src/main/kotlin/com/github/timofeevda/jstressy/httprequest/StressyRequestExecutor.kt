@@ -30,6 +30,7 @@ import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManagerService
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistryService
 import com.github.timofeevda.jstressy.api.metrics.type.Timer
+import com.github.timofeevda.jstressy.utils.StressyUtils.httpTimeout
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
 import io.netty.handler.codec.http.DefaultHttpHeaders
 import io.reactivex.Single
@@ -159,7 +160,7 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
         val requestTimer = RequestTimer("request_" + rq.uri())
         return Single.create { emitter ->
             rq.toObservable()
-                    .timeout(60, TimeUnit.SECONDS)
+                    .timeout(httpTimeout().toMilliseconds(), TimeUnit.MILLISECONDS)
                     .doOnSubscribe {
                         logger.debug { "Invoking request ${buildRequestDescription(rqUUID, rq)}" }
                         requestTimer.start()
