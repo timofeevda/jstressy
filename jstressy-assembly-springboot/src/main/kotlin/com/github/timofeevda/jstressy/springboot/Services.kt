@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
 
 @Service
-class VertxService : StressyVertxService()
-
-@Service
-class ConfigurationService : ConfigLoader() {
+class ConfigurationService() : ConfigLoader() {
     @PostConstruct
     fun init() {
         val configFolder = System.getProperty("configFolder")
@@ -30,6 +27,9 @@ class ConfigurationService : ConfigLoader() {
         readConfiguration(configFolder)
     }
 }
+
+@Service
+class VertxService(configurationService: ConfigurationService) : StressyVertxService(configurationService)
 
 @Service
 class HttpSessionManager : CookieSessionManagerServiceImpl()

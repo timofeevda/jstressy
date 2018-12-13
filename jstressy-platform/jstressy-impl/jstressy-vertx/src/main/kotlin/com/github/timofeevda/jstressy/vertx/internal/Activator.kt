@@ -23,23 +23,41 @@
 
 package com.github.timofeevda.jstressy.vertx.internal
 
+import com.github.timofeevda.jstressy.api.config.ConfigurationService
 import com.github.timofeevda.jstressy.api.vertx.VertxService
+import com.github.timofeevda.jstressy.utils.StressyUtils.observeService
+import com.github.timofeevda.jstressy.utils.StressyUtils.serviceAwaitTimeout
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
 import com.github.timofeevda.jstressy.vertx.StressyVertxService
+import io.reactivex.disposables.Disposable
 import org.osgi.framework.BundleActivator
 import org.osgi.framework.BundleContext
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class Activator : BundleActivator {
 
     companion object : LazyLogging()
 
+    private var subscription: Disposable? = null
+
     override fun start(context: BundleContext) {
-        logger.info("Registering Vertx service")
-        context.registerService(VertxService::class.java.name, StressyVertxService(), Hashtable<Any, Any>())
+        logger.info("Starting Vertx service activator")
+
+        observeService<ConfigurationService>(ConfigurationService::class.java.name, context)
+                .doOnSubscribe { logger.info("Vertx service subscribes on Configuration services") }
+                .timeout(serviceAwaitTimeout().toMilliseconds(), TimeUnit.MILLISECONDS)
+                .doOnSuccess { logger.info("Registering Vertx service") }
+                .map { configurationService -> StressyVertxService(configurationService) }
+                .subscribe(
+                        { vertxService ->
+                            context.registerService(VertxService::class.java.name, vertxService, Hashtable<Any, Any>())
+                        },
+                        { t -> logger.error("Error registering HTTP client service", t) })
     }
 
     override fun stop(context: BundleContext) {
         logger.info("Stopping Verx service bundle")
+        subscription?.dispose()
     }
 }

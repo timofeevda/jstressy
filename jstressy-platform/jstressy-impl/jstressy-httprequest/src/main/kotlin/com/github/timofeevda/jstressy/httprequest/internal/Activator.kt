@@ -43,7 +43,7 @@ class Activator : BundleActivator {
     companion object : LazyLogging()
 
     override fun start(context: BundleContext) {
-        logger.info("Starting HTTP Request Executor service activator")
+            logger.info("Starting HTTP Request Executor service activator")
 
         val vertxServiceSingle = observeService<HttpClientService>(HttpClientService::class.java.name, context)
         val configurationServiceSingle = observeService<MetricsRegistryService>(MetricsRegistryService::class.java.name, context)
@@ -55,15 +55,15 @@ class Activator : BundleActivator {
                 httpSessionManagerServiceSingle.toObservable(),
                 Function3<HttpClientService, MetricsRegistryService, HttpSessionManagerService, StressyRequestExecutorService> { httpClientService, metricsRegistryService, httpSessionManagerService -> StressyRequestExecutorService(httpClientService, metricsRegistryService, httpSessionManagerService) })
                 .doOnSubscribe { logger.info("HTTP Request Executor subscribes on HTTPClient, Metrics Registry and Session Manager") }
-                .doOnNext { logger.info("Registering HTTP Request Executor service") }
                 .timeout(serviceAwaitTimeout().toMilliseconds(), TimeUnit.MILLISECONDS)
+                .doOnNext { logger.info("Registering HTTP Request Executor service") }
                 .subscribe { requestExecutorService ->
                     context.registerService(RequestExecutorService::class.java.name, requestExecutorService, Hashtable<Any, Any>())
                 }
     }
 
     override fun stop(context: BundleContext) {
-
+        logger.info("Stopping HTTP Request Executor service")
     }
 
 }

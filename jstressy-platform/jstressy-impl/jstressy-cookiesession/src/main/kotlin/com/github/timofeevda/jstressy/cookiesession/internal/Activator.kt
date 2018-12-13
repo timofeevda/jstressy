@@ -41,6 +41,7 @@ class Activator : BundleActivator {
     }
 
     override fun stop(context: BundleContext) {
+        logger.info("Stopping HTTP session manager service")
     }
 
 }

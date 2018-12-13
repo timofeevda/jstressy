@@ -35,7 +35,7 @@ class Activator : BundleActivator {
     }
 
     override fun stop(context: BundleContext) {
-
+        logger.info("Stopping metrics registry service")
     }
 
     private fun toMetricsRegistryService(vertxService: VertxService, configurationService: ConfigurationService): MetricsRegistryService {

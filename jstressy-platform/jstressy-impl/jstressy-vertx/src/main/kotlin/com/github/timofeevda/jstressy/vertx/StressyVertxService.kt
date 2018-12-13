@@ -23,16 +23,27 @@
 
 package com.github.timofeevda.jstressy.vertx
 
+import com.github.timofeevda.jstressy.api.config.ConfigurationService
 import com.github.timofeevda.jstressy.api.vertx.VertxService
+import com.github.timofeevda.jstressy.utils.StressyUtils.parseDuration
+import io.vertx.core.VertxOptions
 import io.vertx.reactivex.core.Vertx
+import java.util.concurrent.TimeUnit
 
 /**
  * Just a service providing Vertx instance
  *
  * @author timofeevda
  */
-open class StressyVertxService : VertxService {
-
-    override val vertx: Vertx = Vertx.vertx()
+open class StressyVertxService(configurationService: ConfigurationService) : VertxService {
+    override val vertx: Vertx
+        get() {
+            val blockedEventLoopThreadTimeout =
+                    parseDuration(System.getProperty("vertx.blocked.event.loop.timeout", "500ms"))
+            return Vertx.vertx(VertxOptions()
+                    .setWarningExceptionTime(blockedEventLoopThreadTimeout.toMilliseconds())
+                    .setWarningExceptionTimeUnit(TimeUnit.MILLISECONDS)
+            )
+        }
 
 }

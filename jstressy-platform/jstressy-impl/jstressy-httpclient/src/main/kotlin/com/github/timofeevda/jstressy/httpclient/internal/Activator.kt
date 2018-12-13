@@ -61,8 +61,8 @@ class Activator : BundleActivator {
                 configurationServiceSingle.toObservable(),
                 BiFunction<VertxService, ConfigurationService, StressyHttpClientService> { vxService, configService -> StressyHttpClientService(vxService, configService) })
                 .doOnSubscribe { logger.info("HTTP client service subscribes on VertX and Configuration services") }
-                .doOnNext { logger.info("Registering HTTP client service") }
                 .timeout(serviceAwaitTimeout().toMilliseconds(), TimeUnit.MILLISECONDS)
+                .doOnNext { logger.info("Registering HTTP client service") }
                 .subscribe(
                         { httpClientService ->
                             context.registerService(HttpClientService::class.java.name, httpClientService, Hashtable<Any, Any>())
@@ -71,6 +71,7 @@ class Activator : BundleActivator {
     }
 
     override fun stop(context: BundleContext) {
+        logger.info("Stopping HTTP client service")
         subscription?.dispose()
     }
 }

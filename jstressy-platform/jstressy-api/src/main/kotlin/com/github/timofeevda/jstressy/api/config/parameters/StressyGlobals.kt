@@ -77,4 +77,19 @@ interface StressyGlobals {
      * @return max number of connections
      */
     val maxConnections: Int
+
+    /**
+     * Denotes if WebSocket per message deflate should be turned off/on. Default is "true"
+     *
+     * @return true if WebSocket per message deflate should be turned on, otherwise false
+     */
+    val webSocketPerMessageDeflate: Boolean
+
+    /**
+     * WebSocket compression level. 0-9 levels are supported. Default is 6
+     *
+     * @return WebSocket compression level for standard zip algorithm
+     */
+    val webSocketCompressionLevel: Int
+
 }

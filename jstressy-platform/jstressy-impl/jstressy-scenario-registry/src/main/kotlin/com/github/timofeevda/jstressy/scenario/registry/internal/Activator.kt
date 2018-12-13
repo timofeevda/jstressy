@@ -43,7 +43,7 @@ class Activator : BundleActivator {
     }
 
     override fun stop(context: BundleContext) {
-
+        logger.info("Stopping scenario registry service")
     }
 
 }

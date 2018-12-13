@@ -24,7 +24,6 @@
 package com.github.timofeevda.jstressy.httpclient
 
 import com.github.timofeevda.jstressy.api.config.ConfigurationService
-import com.github.timofeevda.jstressy.api.config.parameters.StressyGlobals
 import com.github.timofeevda.jstressy.api.httpclient.HttpClientService
 import com.github.timofeevda.jstressy.api.vertx.VertxService
 import io.vertx.core.http.HttpClientOptions
@@ -46,7 +45,9 @@ open class StressyHttpClientService(vertxService: VertxService,
         this.client = vertxService.vertx.createHttpClient(HttpClientOptions()
                 .setSsl(globals.useSsl)
                 .setTrustAll(globals.insecureSsl)
-                .setMaxPoolSize(globals.maxConnections))
+                .setMaxPoolSize(globals.maxConnections)
+                .setTryUsePerMessageWebsocketCompression(globals.webSocketPerMessageDeflate)
+                .setWebsocketCompressionLevel(globals.webSocketCompressionLevel))
     }
 
     override fun get(): HttpClient {

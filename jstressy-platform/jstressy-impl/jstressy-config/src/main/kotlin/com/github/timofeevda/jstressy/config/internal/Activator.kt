@@ -47,6 +47,6 @@ class Activator : BundleActivator {
     }
 
     override fun stop(bundleContext: BundleContext) {
-
+        logger.info("Stopping configuration loader service")
     }
 }
