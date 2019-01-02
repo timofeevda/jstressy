@@ -12,7 +12,7 @@
     <packaging>bundle</packaging>
 
     <properties>
-        <bundle.symbolicName>com.github.timofeevda.jstressy-dummy-scenario</bundle.symbolicName>
+        <bundle.symbolicName>com.github.timofeevda.jstressy-dummy-scenario-kotlin</bundle.symbolicName>
         <bundle.namespace>com.github.timofeevda.jstressy.dummy.scenario</bundle.namespace>
     </properties>
 
