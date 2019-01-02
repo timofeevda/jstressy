@@ -27,7 +27,8 @@ open class Runner(
     companion object : LazyLogging()
 
     override fun run(args: ApplicationArguments?) {
-        metricsRegistryService.publishMetrics(vertxService, configService)
+        metricsRegistryService.setConfigurationService(configService)
+        metricsRegistryService.startServingMetrics(vertxService)
 
         val demoScenario = "TouchGoogle"
         scenarioRegistry.registerScenarioProviderService(

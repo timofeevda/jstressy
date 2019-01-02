@@ -15,9 +15,9 @@ import io.micrometer.core.instrument.binder.system.UptimeMetrics
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import io.micrometer.prometheus.PrometheusRenameFilter
-
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
+import java.util.function.Function
 import java.util.function.Supplier
 
 /**
@@ -79,10 +79,18 @@ class MicrometerMetricsRegistry internal constructor() : MetricsRegistry {
     }
 
     override fun gauge(name: String, valueSupplier: Supplier<Double>): Gauge {
-        prometheusRegistry.gauge(name, valueSupplier, {v -> v.get()})
+        prometheusRegistry.gauge(name, valueSupplier) { v -> v.get()}
         return object : Gauge {
             override val value: Double
                 get() = valueSupplier.get()
+        }
+    }
+
+    override fun gauge(name: String, ref: Any, valueSupplier: Function<Any, Double>): Gauge {
+        prometheusRegistry.gauge(name, ref) { value -> valueSupplier.apply(value) }
+        return object : Gauge {
+            override val value: Double
+                get() = valueSupplier.apply(ref)
         }
     }
 }

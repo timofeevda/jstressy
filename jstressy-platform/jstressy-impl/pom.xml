@@ -28,6 +28,7 @@
         <module>jstressy-httpsession</module>
         <module>jstressy-cookiesession</module>
         <module>jstressy-websocket-utils</module>
+        <module>jstressy-vertx-metrics</module>
     </modules>
 
 </project>

@@ -21,26 +21,30 @@
  *
  */
 
-package com.github.timofeevda.jstressy.api.metrics
+package com.github.timofeevda.jstressy.vertx.metrics
 
-import com.github.timofeevda.jstressy.api.metrics.type.Counter
-import com.github.timofeevda.jstressy.api.metrics.type.Gauge
-import com.github.timofeevda.jstressy.api.metrics.type.Timer
-import java.util.function.Function
+import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
+import io.vertx.core.metrics.MetricsOptions
+import io.vertx.core.spi.metrics.VertxMetrics
 
-import java.util.function.Supplier
+class StressyVertexMetricsOptions() : MetricsOptions() {
 
-/**
- * Metrics registry implementation
- *
- * @author timofeevda
- */
-interface MetricsRegistry {
-    fun counter(name: String): Counter
+    private lateinit var metricsRegistry : MetricsRegistry
 
-    fun timer(name: String): Timer
+    fun getMetrics(): VertxMetrics {
+        return StressyVertxMetrics(metricsRegistry)
+    }
 
-    fun gauge(name: String, valueSupplier: Supplier<Double>): Gauge
+    fun setMetricsRegistry(metricsRegistry: MetricsRegistry): MetricsOptions {
+        this.metricsRegistry = metricsRegistry
+        return this
 
-    fun gauge(name: String, ref: Any, valueSupplier: Function<Any, Double>): Gauge
+    }
+
+    override fun isEnabled(): Boolean {
+        return true
+    }
+
 }
+
+

@@ -26,25 +26,31 @@ package com.github.timofeevda.jstressy.vertx
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.vertx.VertxService
 import com.github.timofeevda.jstressy.utils.StressyUtils.getBlockedEventLoopThreadTimeout
+import com.github.timofeevda.jstressy.utils.osgi.SPIHelper
+import com.github.timofeevda.jstressy.utils.osgi.TcclSwitch.executeWithTCCLSwitch
 import com.github.timofeevda.jstressy.vertx.metrics.StressyVertexMetricsOptions
 import io.vertx.core.VertxOptions
+import io.vertx.core.spi.VertxMetricsFactory
 import io.vertx.reactivex.core.Vertx
+import org.osgi.framework.BundleContext
+import java.util.concurrent.Callable
 import java.util.concurrent.TimeUnit
 
 /**
- * Just a service providing Vertx instance - for non-OSGI mode
- *
- * @author timofeevda
+ * OSGI-fied version of VertX provider. Uses "TCCL switch" pattern for registering metrics collector
+ * through VertX SPI extensions
  */
-open class StressyVertxService(private val metricsRegistry: MetricsRegistry) : VertxService {
+class OSGIStressyVertxService(private val bundleContext: BundleContext, private val metricsRegistry: MetricsRegistry) : VertxService {
     override val vertx: Vertx
         get() {
-            return Vertx.vertx(VertxOptions()
+            val options = VertxOptions()
                     .setWarningExceptionTime(getBlockedEventLoopThreadTimeout().toMilliseconds())
                     .setWarningExceptionTimeUnit(TimeUnit.MILLISECONDS)
-                    .setMetricsOptions(StressyVertexMetricsOptions()
-                            .setMetricsRegistry(metricsRegistry))
-            )
+                    .setMetricsOptions(
+                            StressyVertexMetricsOptions()
+                                    .setMetricsRegistry(metricsRegistry)
+                                    .setFactory(SPIHelper.lookup(VertxMetricsFactory::class.java, bundleContext, "stressy")))
+            return executeWithTCCLSwitch(Callable<Vertx> { Vertx.vertx(options) })
         }
 
 }
