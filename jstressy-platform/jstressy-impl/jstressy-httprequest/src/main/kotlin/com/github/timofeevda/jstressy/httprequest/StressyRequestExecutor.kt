@@ -110,7 +110,7 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
         httpSessionManager.headers.forEach { header -> headersAdaptor.add(header.name, header.value) }
         customHeaders.forEach { name: String, value: String -> headersAdaptor.add(name, value) }
         return Single.create { emitter ->
-            val requestTimer = RequestTimer("WebSocket Connection Setup")
+            val requestTimer = RequestTimer("stressy.request.executor.websocket.setup.$host:$port")
             client.websocketStream(port, host, requestURI, MultiMap(headersAdaptor))
                     .toObservable()
                     .doOnSubscribe { requestTimer.start() }
@@ -157,17 +157,14 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
 
     private fun getMeasuredRequest(rq: HttpClientRequest, data: String?): Single<HttpClientResponse> {
         val rqUUID = UUID.randomUUID()
-        val requestTimer = RequestTimer("request_" + rq.uri())
         return Single.create { emitter ->
             rq.toObservable()
                     .timeout(httpTimeout().toMilliseconds(), TimeUnit.MILLISECONDS)
                     .doOnSubscribe {
                         logger.debug { "Invoking request ${buildRequestDescription(rqUUID, rq)}" }
-                        requestTimer.start()
                     }
                     .doOnNext { rp ->
                         logger.debug { "Processing response ${buildResponseDescription(rqUUID, rp)}" }
-                        requestTimer.stop()
                         httpSessionManager.processResponse(rp)
                     }
                     .doOnError { e ->

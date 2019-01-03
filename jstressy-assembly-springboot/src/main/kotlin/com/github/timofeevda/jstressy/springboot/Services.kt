@@ -29,7 +29,7 @@ class ConfigurationService() : ConfigLoader() {
 }
 
 @Service
-class VertxService(configurationService: ConfigurationService) : StressyVertxService(configurationService)
+class VertxService(metricsRegistryService: MetricsRegistryService) : StressyVertxService(metricsRegistryService.get())
 
 @Service
 class HttpSessionManager : CookieSessionManagerServiceImpl()

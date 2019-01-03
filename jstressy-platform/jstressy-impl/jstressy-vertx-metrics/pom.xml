@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>jstressy-impl</artifactId>
         <groupId>com.github.timofeevda.jstressy</groupId>
@@ -7,13 +9,13 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jstressy-vertx</artifactId>
+    <artifactId>jstressy-vertx-metrics</artifactId>
 
     <packaging>bundle</packaging>
 
     <properties>
-        <bundle.symbolicName>com.github.timofeevda.jstressy-vertx</bundle.symbolicName>
-        <bundle.namespace>com.github.timofeevda.jstressy.vertx</bundle.namespace>
+        <bundle.symbolicName>com.github.timofeevda.jstressy.vertx.metrics</bundle.symbolicName>
+        <bundle.namespace>com.github.timofeevda.jstressy.vertx.metrics</bundle.namespace>
     </properties>
 
     <build>
@@ -32,12 +34,13 @@
                     <instructions>
                         <Bundle-Activator>${bundle.namespace}.internal.Activator</Bundle-Activator>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
-                        <Export-Package>!*</Export-Package>
+                        <Export-Package>${bundle.namespace}*</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
 
     <dependencies>
         <dependency>
@@ -51,10 +54,6 @@
             <version>${kotlin.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-rx-java2</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
@@ -65,11 +64,6 @@
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
-            <artifactId>jstressy-vertx-metrics</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-api</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -77,7 +71,6 @@
             <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-utils</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 

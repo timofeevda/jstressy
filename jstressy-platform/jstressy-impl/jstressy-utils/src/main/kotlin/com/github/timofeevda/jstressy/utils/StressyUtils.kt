@@ -22,7 +22,6 @@
  */
 package com.github.timofeevda.jstressy.utils
 
-import com.github.timofeevda.jstressy.utils.utils.Duration
 import io.reactivex.Single
 import io.reactivex.plugins.RxJavaPlugins
 import org.osgi.framework.BundleContext
@@ -148,6 +147,9 @@ object StressyUtils {
     fun serviceAwaitTimeout() = parseDuration(System.getProperty("serviceTimeout", "30s"))
 
     fun httpTimeout() = parseDuration(System.getProperty("httpTimeout", "1m"))
+
+    fun getBlockedEventLoopThreadTimeout() =
+            StressyUtils.parseDuration(System.getProperty("vertx.blocked.event.loop.timeout", "500ms"))
 
 }
 

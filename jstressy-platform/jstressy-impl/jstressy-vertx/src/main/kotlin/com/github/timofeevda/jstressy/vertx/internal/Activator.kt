@@ -23,13 +23,16 @@
 
 package com.github.timofeevda.jstressy.vertx.internal
 
-import com.github.timofeevda.jstressy.api.config.ConfigurationService
+import com.github.timofeevda.jstressy.api.metrics.MetricsRegistryService
 import com.github.timofeevda.jstressy.api.vertx.VertxService
 import com.github.timofeevda.jstressy.utils.StressyUtils.observeService
 import com.github.timofeevda.jstressy.utils.StressyUtils.serviceAwaitTimeout
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
-import com.github.timofeevda.jstressy.vertx.StressyVertxService
+import com.github.timofeevda.jstressy.vertx.OSGIStressyVertxService
+import com.github.timofeevda.jstressy.vertx.metrics.StressyVertxMetricsService
+import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.BiFunction
 import org.osgi.framework.BundleActivator
 import org.osgi.framework.BundleContext
 import java.util.*
@@ -44,16 +47,19 @@ class Activator : BundleActivator {
     override fun start(context: BundleContext) {
         logger.info("Starting Vertx service activator")
 
-        observeService<ConfigurationService>(ConfigurationService::class.java.name, context)
-                .doOnSubscribe { logger.info("Vertx service subscribes on Configuration services") }
+        val stressyMetricsService = observeService<StressyVertxMetricsService>(StressyVertxMetricsService::class.java.name, context)
+        val metricsRegistryService = observeService<MetricsRegistryService>(MetricsRegistryService::class.java.name, context)
+
+        Observable.combineLatest<StressyVertxMetricsService, MetricsRegistryService, VertxService>(
+                stressyMetricsService.toObservable(),
+                metricsRegistryService.toObservable(),
+                BiFunction<StressyVertxMetricsService, MetricsRegistryService, VertxService> { vxService, metricsRegistry -> OSGIStressyVertxService(context, metricsRegistry.get()) })
+                .doOnSubscribe { logger.info("Vertx service subscribes on Configuration service and Metrics service") }
+                .doOnNext { logger.info("Registering Vertx service") }
                 .timeout(serviceAwaitTimeout().toMilliseconds(), TimeUnit.MILLISECONDS)
-                .doOnSuccess { logger.info("Registering Vertx service") }
-                .map { configurationService -> StressyVertxService(configurationService) }
-                .subscribe(
-                        { vertxService ->
-                            context.registerService(VertxService::class.java.name, vertxService, Hashtable<Any, Any>())
-                        },
-                        { t -> logger.error("Error registering HTTP client service", t) })
+                .subscribe { vertxService ->
+                    context.registerService(VertxService::class.java.name, vertxService, Hashtable<Any, Any>())
+                }
     }
 
     override fun stop(context: BundleContext) {

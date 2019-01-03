@@ -1,4 +1,4 @@
-package com.github.timofeevda.jstressy.utils.utils
+package com.github.timofeevda.jstressy.utils
 
 import java.util.concurrent.TimeUnit
 

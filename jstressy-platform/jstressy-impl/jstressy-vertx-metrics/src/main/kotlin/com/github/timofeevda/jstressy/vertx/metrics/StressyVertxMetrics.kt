@@ -21,26 +21,21 @@
  *
  */
 
-package com.github.timofeevda.jstressy.api.metrics
+package com.github.timofeevda.jstressy.vertx.metrics
 
-import com.github.timofeevda.jstressy.api.metrics.type.Counter
-import com.github.timofeevda.jstressy.api.metrics.type.Gauge
+import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.metrics.type.Timer
-import java.util.function.Function
+import com.github.timofeevda.jstressy.vertx.metrics.http.HttpEndpointMetric
+import com.github.timofeevda.jstressy.vertx.metrics.http.HttpRequestMetric
+import com.github.timofeevda.jstressy.vertx.metrics.http.WebSocketRequestMetric
+import io.vertx.core.http.HttpClientOptions
+import io.vertx.core.spi.metrics.HttpClientMetrics
+import io.vertx.core.spi.metrics.VertxMetrics
 
-import java.util.function.Supplier
+class StressyVertxMetrics(private val metricsRegistry: MetricsRegistry) : VertxMetrics {
 
-/**
- * Metrics registry implementation
- *
- * @author timofeevda
- */
-interface MetricsRegistry {
-    fun counter(name: String): Counter
+    override fun createHttpClientMetrics(options: HttpClientOptions?): HttpClientMetrics<HttpRequestMetric, WebSocketRequestMetric, String, HttpEndpointMetric, Timer> {
+        return StressyHTTPClientMetrics(metricsRegistry)
+    }
 
-    fun timer(name: String): Timer
-
-    fun gauge(name: String, valueSupplier: Supplier<Double>): Gauge
-
-    fun gauge(name: String, ref: Any, valueSupplier: Function<Any, Double>): Gauge
 }

@@ -21,26 +21,20 @@
  *
  */
 
-package com.github.timofeevda.jstressy.api.metrics
+package com.github.timofeevda.jstressy.vertx.metrics
 
-import com.github.timofeevda.jstressy.api.metrics.type.Counter
-import com.github.timofeevda.jstressy.api.metrics.type.Gauge
-import com.github.timofeevda.jstressy.api.metrics.type.Timer
-import java.util.function.Function
+import io.vertx.core.VertxOptions
+import io.vertx.core.spi.VertxMetricsFactory
+import io.vertx.core.spi.metrics.VertxMetrics
 
-import java.util.function.Supplier
+class StressyVertxMetricsFactory() : VertxMetricsFactory {
 
-/**
- * Metrics registry implementation
- *
- * @author timofeevda
- */
-interface MetricsRegistry {
-    fun counter(name: String): Counter
-
-    fun timer(name: String): Timer
-
-    fun gauge(name: String, valueSupplier: Supplier<Double>): Gauge
-
-    fun gauge(name: String, ref: Any, valueSupplier: Function<Any, Double>): Gauge
+    override fun metrics(options: VertxOptions?): VertxMetrics? {
+        val metricsOptions = options!!.metricsOptions
+        return if(metricsOptions is StressyVertexMetricsOptions) {
+            metricsOptions.getMetrics()
+        } else {
+            null
+        }
+    }
 }

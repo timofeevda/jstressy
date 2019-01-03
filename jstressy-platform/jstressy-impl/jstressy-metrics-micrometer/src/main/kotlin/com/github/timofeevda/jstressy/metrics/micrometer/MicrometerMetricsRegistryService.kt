@@ -11,11 +11,18 @@ open class MicrometerMetricsRegistryService : MetricsRegistryService {
 
     private val metricsRegistry: MicrometerMetricsRegistry = MicrometerMetricsRegistry()
 
+    private lateinit var configurationService: ConfigurationService
+
     override fun get(): MetricsRegistry {
         return metricsRegistry
     }
 
-    fun publishMetrics(vertxService: VertxService, configurationService: ConfigurationService) {
+    fun setConfigurationService(configurationService: ConfigurationService): MetricsRegistryService {
+        this.configurationService = configurationService
+        return this
+    }
+
+    fun startServingMetrics(vertxService: VertxService) {
         val router = Router.router(vertxService.vertx)
         val metricsPath = configurationService.configuration.globals.stressyMetricsPath
         router.get(metricsPath).handler { event ->
@@ -32,7 +39,7 @@ open class MicrometerMetricsRegistryService : MetricsRegistryService {
 
         val port = configurationService.configuration.globals.stressyMetricsPort
         if (port != null) {
-            vertxService.vertx.createHttpServer().requestHandler { router.accept(it) }.listen(port)
+            vertxService.vertx.createHttpServer().requestHandler(router).listen(port)
         }
     }
 }

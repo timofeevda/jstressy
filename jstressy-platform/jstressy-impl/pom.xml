@@ -20,14 +20,15 @@
         <module>jstressy-httpclient</module>
         <module>jstressy-httprequest</module>
         <module>jstressy-scheduler</module>
-        <module>jstressy-dummy-scenario</module>
         <module>jstressy-scenario-registry</module>
         <module>jstressy-metrics-micrometer</module>
-        <module>jstressy-dummy-scenario-kotlin</module>
-        <module>jstressy-dummy-scenario-scala</module>
         <module>jstressy-httpsession</module>
         <module>jstressy-cookiesession</module>
         <module>jstressy-websocket-utils</module>
+        <module>jstressy-vertx-metrics</module>
+        <module>jstressy-dummy-scenario-java</module>
+        <module>jstressy-dummy-scenario-kotlin</module>
+        <module>jstressy-dummy-scenario-scala</module>
     </modules>
 
 </project>
