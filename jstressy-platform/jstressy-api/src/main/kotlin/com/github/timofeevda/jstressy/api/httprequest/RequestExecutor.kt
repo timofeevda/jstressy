@@ -55,7 +55,7 @@ interface RequestExecutor {
      * @param requestURI request URI
      * @return [HttpClientResponse] response
      */
-    operator fun get(host: String, port: Int, requestURI: String): Single<HttpClientResponse>
+    fun get(host: String, port: Int, requestURI: String): Single<HttpClientResponse>
 
     /**
      * Invokes POST method
@@ -166,7 +166,7 @@ interface RequestExecutor {
      * @param request arbitrary request
      * @return [HttpClientResponse] response
      */
-    operator fun invoke(request: HttpClientRequest): Single<HttpClientResponse>
+    fun invoke(request: HttpClientRequest): Single<HttpClientResponse>
 
     /**
      * Adds custom header for all subsequent requests
