@@ -26,6 +26,5 @@ package com.github.timofeevda.jstressy.vertx.metrics.http
 import io.vertx.core.http.HttpMethod
 
 class HttpRequestMetric(val endpointMetric: HttpEndpointMetric, val uri : String, val method : HttpMethod) {
-    var requestStart : Long = System.nanoTime()
     var requestEnd : Long = 0
 }

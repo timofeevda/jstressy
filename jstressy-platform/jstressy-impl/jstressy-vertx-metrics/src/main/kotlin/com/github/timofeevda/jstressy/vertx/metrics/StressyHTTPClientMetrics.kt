@@ -44,14 +44,15 @@ const val METRIC_PREFIX = "vertx.metrics.http.client."
 private const val METRIC_PREFIX_RECEIVED = "${METRIC_PREFIX}bytes.received"
 private const val METRIC_PREFIX_SENT = "${METRIC_PREFIX}bytes.sent"
 
-private val bytesReceived : AtomicLong = AtomicLong()
-private val bytesSent : AtomicLong = AtomicLong()
+private val bytesReceived: AtomicLong = AtomicLong()
+private val bytesSent: AtomicLong = AtomicLong()
 
 private val queueSize = ConcurrentHashMap<String, AtomicInteger>()
 private val openSockets = ConcurrentHashMap<String, AtomicInteger>()
-private val openWebSockets = ConcurrentHashMap<String, AtomicInteger>()
 private val exceptions = ConcurrentHashMap<String, AtomicInteger>()
 private val httpRequestStatuses = ConcurrentHashMap<String, AtomicInteger>()
+
+private val openWebSockets: AtomicLong = AtomicLong()
 
 class StressyHTTPClientMetrics(private val metricsRegistry: MetricsRegistry) : HttpClientMetrics<HttpRequestMetric, WebSocketRequestMetric, String, HttpEndpointMetric, Timer> {
 
@@ -61,16 +62,16 @@ class StressyHTTPClientMetrics(private val metricsRegistry: MetricsRegistry) : H
     }
 
     override fun disconnected(webSocketMetric: WebSocketRequestMetric?) {
-        if (webSocketMetric?.endpointMetric != null) {
-            openWebSockets.getOrDefault(webSocketMetric.endpointMetric.endpointName, AtomicInteger(0)).decrementAndGet()
+        if (webSocketMetric?.webSocket != null) {
+            openWebSockets.decrementAndGet()
         }
     }
 
     override fun connected(endpointMetric: HttpEndpointMetric?, socketMetric: String?, webSocket: WebSocket?): WebSocketRequestMetric {
-        if (endpointMetric != null) {
-            openWebSockets.getOrDefault(endpointMetric.endpointName, AtomicInteger(0)).incrementAndGet()
+        if (webSocket != null) {
+            openWebSockets.incrementAndGet()
         }
-        return WebSocketRequestMetric(endpointMetric)
+        return WebSocketRequestMetric(webSocket)
     }
 
     override fun disconnected(socketMetric: String?, remoteAddress: SocketAddress?) {
@@ -92,7 +93,7 @@ class StressyHTTPClientMetrics(private val metricsRegistry: MetricsRegistry) : H
     override fun createEndpoint(host: String, port: Int, maxPoolSize: Int): HttpEndpointMetric {
         val endpointName = "$host:$port"
         metricsRegistry.gauge("$METRIC_PREFIX${endpointName}_open_sockets", openSockets, Function { openSockets.getOrDefault(endpointName, AtomicInteger(0)).toDouble() })
-        metricsRegistry.gauge("$METRIC_PREFIX${endpointName}_open_websockets", openWebSockets, Function { openWebSockets.getOrDefault(endpointName, AtomicInteger(0)).toDouble() })
+        metricsRegistry.gauge("${METRIC_PREFIX}_open_websockets", openWebSockets, Function { openWebSockets.toDouble() })
         metricsRegistry.gauge("$METRIC_PREFIX${endpointName}_queue_size", queueSize, Function { queueSize.getOrDefault(endpointName, AtomicInteger(0)).toDouble() })
         return HttpEndpointMetric(endpointName, metricsRegistry)
     }
@@ -126,7 +127,7 @@ class StressyHTTPClientMetrics(private val metricsRegistry: MetricsRegistry) : H
     }
 
     override fun requestBegin(endpointMetric: HttpEndpointMetric?, socketMetric: String?, localAddress: SocketAddress?, remoteAddress: SocketAddress?, request: HttpClientRequest?): HttpRequestMetric? {
-        return if (endpointMetric !=  null && request != null) {
+        return if (endpointMetric != null && request != null) {
             HttpRequestMetric(endpointMetric, request.uri(), request.method())
         } else {
             null
@@ -174,18 +175,16 @@ class StressyHTTPClientMetrics(private val metricsRegistry: MetricsRegistry) : H
 
     private fun reportRequestEnd(requestMetric: HttpRequestMetric?, statusCode: Int) {
         if (requestMetric != null) {
-            val duration = System.nanoTime() - requestMetric.requestStart
-            val name = "${requestMetric.endpointMetric.endpointName}_path_${requestMetric.uri}"
-            metricsRegistry.timer("$METRIC_PREFIX$name").record(duration, TimeUnit.NANOSECONDS)
-            val statusCounterName = "$METRIC_PREFIX${name}_status_${statusCodeToStatusRange(statusCode)}"
-            val statusCounter = httpRequestStatuses.computeIfAbsent(statusCounterName) {AtomicInteger(0)}.incrementAndGet()
-            if (statusCounter != 0) {
-                metricsRegistry.gauge("$METRIC_PREFIX$statusCounterName", httpRequestStatuses, Function { httpRequestStatuses.getOrDefault(statusCounterName, AtomicInteger(0)).toDouble() })
+            val statusCounterName = "$METRIC_PREFIX${requestMetric.endpointMetric.endpointName}_status_${statusCodeToStatusRange(statusCode)}"
+            if (httpRequestStatuses.computeIfAbsent(statusCounterName) { AtomicInteger(0) }.incrementAndGet() != 0) {
+                metricsRegistry.gauge(statusCounterName,
+                        httpRequestStatuses,
+                        Function { httpRequestStatuses.getOrDefault(statusCounterName, AtomicInteger(0)).toDouble() })
             }
         }
     }
 
-    private fun statusCodeToStatusRange(statusCode : Int): String {
+    private fun statusCodeToStatusRange(statusCode: Int): String {
         return "${statusCode / 100}xx"
     }
 }

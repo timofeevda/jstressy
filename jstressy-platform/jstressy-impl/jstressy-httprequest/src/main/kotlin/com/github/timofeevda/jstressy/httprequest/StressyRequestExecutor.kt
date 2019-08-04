@@ -114,7 +114,7 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
             client.websocketStream(port, host, requestURI, MultiMap(headersAdaptor))
                     .toObservable()
                     .doOnSubscribe { requestTimer.start() }
-                    .doOnNext { requestTimer.stop() }
+                    .doFinally { requestTimer.stop() }
                     .subscribe(
                             { emitter.onSuccess(it) },
                             { emitter.onError(it) })

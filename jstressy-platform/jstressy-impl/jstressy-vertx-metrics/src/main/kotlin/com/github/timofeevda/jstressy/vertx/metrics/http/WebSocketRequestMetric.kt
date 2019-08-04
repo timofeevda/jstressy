@@ -23,5 +23,7 @@
 
 package com.github.timofeevda.jstressy.vertx.metrics.http
 
-class WebSocketRequestMetric(val endpointMetric: HttpEndpointMetric?) {
+import io.vertx.core.http.WebSocket
+
+class WebSocketRequestMetric(val webSocket: WebSocket?) {
 }

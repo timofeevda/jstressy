@@ -4,6 +4,7 @@ import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.metrics.type.Counter
 import com.github.timofeevda.jstressy.api.metrics.type.Gauge
 import com.github.timofeevda.jstressy.api.metrics.type.Timer
+import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
@@ -12,10 +13,11 @@ import io.micrometer.core.instrument.binder.logging.LogbackMetrics
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics
 import io.micrometer.core.instrument.binder.system.UptimeMetrics
+import io.micrometer.core.instrument.config.MeterFilter
+import io.micrometer.core.instrument.distribution.DistributionStatisticConfig
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import io.micrometer.prometheus.PrometheusRenameFilter
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import java.util.function.Function
 import java.util.function.Supplier
@@ -27,12 +29,20 @@ import java.util.function.Supplier
  */
 class MicrometerMetricsRegistry internal constructor() : MetricsRegistry {
 
-    internal val prometheusRegistry: PrometheusMeterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
-
-    private val timers = ConcurrentHashMap<String, Timer>()
+    internal var prometheusRegistry: PrometheusMeterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 
     init {
-        prometheusRegistry.config().meterFilter(PrometheusRenameFilter())
+        prometheusRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
+        prometheusRegistry.config()
+                .meterFilter(PrometheusRenameFilter())
+                .meterFilter(object : MeterFilter {
+                    override fun configure(id: Meter.Id?, config: DistributionStatisticConfig): DistributionStatisticConfig? {
+                        return DistributionStatisticConfig.builder()
+                                .percentiles(0.5, 0.75, 0.95)
+                                .build()
+                                .merge(config)
+                    }
+                })
         JvmMemoryMetrics().bindTo(prometheusRegistry)
         JvmGcMetrics().bindTo(prometheusRegistry)
         JvmThreadMetrics().bindTo(prometheusRegistry)
@@ -53,14 +63,7 @@ class MicrometerMetricsRegistry internal constructor() : MetricsRegistry {
     }
 
     override fun timer(name: String): Timer {
-        return timers.computeIfAbsent(name) {createTimer(name)
-        }
-    }
-
-    private fun createTimer(name: String): Timer {
-        val timer = io.micrometer.core.instrument.Timer.builder(name)
-                .publishPercentiles(0.5, 0.75, 0.95)
-                .register(prometheusRegistry)
+        val timer = prometheusRegistry.timer(name)
 
         return object : Timer {
             override fun context(): Timer.Context {
@@ -79,7 +82,7 @@ class MicrometerMetricsRegistry internal constructor() : MetricsRegistry {
     }
 
     override fun gauge(name: String, valueSupplier: Supplier<Double>): Gauge {
-        prometheusRegistry.gauge(name, valueSupplier) { v -> v.get()}
+        prometheusRegistry.gauge(name, valueSupplier) { v -> v.get() }
         return object : Gauge {
             override val value: Double
                 get() = valueSupplier.get()
