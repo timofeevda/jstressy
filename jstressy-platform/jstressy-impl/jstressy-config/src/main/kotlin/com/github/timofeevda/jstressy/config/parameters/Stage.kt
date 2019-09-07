@@ -77,4 +77,6 @@ class Stage : StressyStage {
      */
     override val scenarioProviderParameters: Map<String, String> = emptyMap()
 
+    override val scenariosLimit: Int? = null
+
 }

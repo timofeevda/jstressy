@@ -100,4 +100,6 @@ interface StressyStage {
      * @return map of scenario provider parameters
      */
     val scenarioProviderParameters: Map<String, String>
+
+    val scenariosLimit: Int?
 }

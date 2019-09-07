@@ -37,10 +37,12 @@ object ScenarioRateScheduler {
     fun observeScenarioTicks(stage: StressyStage): Observable<Long> {
         val delay = StressyUtils.parseDuration(stage.stageDelay ?: "0ms").toMilliseconds()
         val duration = StressyUtils.parseDuration(stage.stageDuration).toMilliseconds()
-        return Observable
+        val scenariosLimit = stage.scenariosLimit
+        val timeBoundedScenariosStream = Observable
                 .timer(delay, TimeUnit.MILLISECONDS)
                 .flatMap { observeWithRamping(stage) ?: observeWithoutRamping(stage) }
                 .take(delay + duration, TimeUnit.MILLISECONDS)
+        return if (scenariosLimit != null) timeBoundedScenariosStream.take(scenariosLimit.toLong()) else timeBoundedScenariosStream
     }
 
     /**
