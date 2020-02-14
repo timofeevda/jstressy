@@ -21,21 +21,32 @@
  *
  */
 
-package com.github.timofeevda.jstressy.utils.logging
+package com.github.timofeevda.jstressy.structured.logger.internal
 
 import com.github.structlog4j.SLoggerFactory
+import com.github.structlog4j.StructLog4J
+import com.github.structlog4j.json.JsonFormatter
+import org.osgi.framework.BundleActivator
+import org.osgi.framework.BundleContext
 
-object LazyLoggerFactory {
+/**
+ * Activator for setting up structured logging
+ *
+ * @author timofeevda
+ */
+class Activator : BundleActivator {
 
-    internal fun logger(o: Any): LazyLogger =
-            logger(getClassForLogging(o.javaClass).name)
-
-    private fun <T : Any> getClassForLogging(clazz: Class<T>): Class<*> {
-        if (clazz.kotlin.isCompanion) {
-            return clazz.enclosingClass ?: clazz
-        }
-        return clazz
+    companion object {
+        private val logger = SLoggerFactory.getLogger(Activator::class.java)
     }
 
-    private fun logger(name: String): LazyLogger = LazyLoggerImpl(SLoggerFactory.getLogger(name))
+    override fun start(bundleContext: BundleContext) {
+        logger.info("Registering JSON log formatting")
+        StructLog4J.setFormatter(JsonFormatter.getInstance())
+        logger.info("Starting logger activator")
+    }
+
+    override fun stop(bundleContext: BundleContext) {
+        logger.info("Stopping logger activator")
+    }
 }

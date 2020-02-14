@@ -20,15 +20,16 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <prometheusclient.version>0.3.0</prometheusclient.version>
-        <vertx.version>3.8.0</vertx.version>
+        <vertx.version>3.8.4</vertx.version>
         <slf4j.version>1.7.25</slf4j.version>
         <rxjava.version>2.2.9</rxjava.version>
-        <jackson-databind.version>2.9.10.1</jackson-databind.version>
+        <jackson-databind.version>2.10.2</jackson-databind.version>
         <osgi-core.version>4.2.0</osgi-core.version>
         <osgi-util-tracker.version>1.5.1</osgi-util-tracker.version>
         <logback-classic.version>1.2.3</logback-classic.version>
-        <jackson-dataformat-yaml.version>2.9.9</jackson-dataformat-yaml.version>
+        <jackson-dataformat-yaml.version>2.10.2</jackson-dataformat-yaml.version>
         <felix-fileinstall.version>3.6.4</felix-fileinstall.version>
+        <structuredlog4j.version>1.0.0</structuredlog4j.version>
 
         <kotlin.version>1.3.0</kotlin.version>
 
@@ -78,6 +79,13 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>jcenter</id>
+            <url>https://jcenter.bintray.com</url>
+        </repository>
+    </repositories>
 
     <scm>
         <url>https://github.com/timofeevda/jstressy</url>
@@ -383,6 +391,16 @@
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
                 <version>${junit-jupiter-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>structlog4j</groupId>
+                <artifactId>structlog4j-api</artifactId>
+                <version>${structuredlog4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>structlog4j</groupId>
+                <artifactId>structlog4j-json</artifactId>
+                <version>${structuredlog4j.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

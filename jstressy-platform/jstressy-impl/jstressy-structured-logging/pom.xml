@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>jstressy-impl</artifactId>
         <groupId>com.github.timofeevda.jstressy</groupId>
@@ -7,13 +9,15 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jstressy-logger</artifactId>
+    <artifactId>jstressy-structured-logging</artifactId>
 
     <packaging>bundle</packaging>
 
+    <description>Additional wrapper over structlog4j cause it doesn't support OSGI out of the box</description>
+
     <properties>
-        <bundle.symbolicName>com.github.timofeevda.jstressy-logger</bundle.symbolicName>
-        <bundle.namespace>com.github.timofeevda.jstressy.logger</bundle.namespace>
+        <bundle.symbolicName>com.github.timofeevda.jstressy-structured-logger</bundle.symbolicName>
+        <bundle.namespace>com.github.timofeevda.jstressy.structured.logger</bundle.namespace>
     </properties>
 
     <build>
@@ -32,6 +36,9 @@
                     <instructions>
                         <Bundle-Activator>${bundle.namespace}.internal.Activator</Bundle-Activator>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
+                        <Export-Package>com.github.structlog4j.*,com.github.structlog4j.json.*</Export-Package>
+                        <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+                        <Embed-Transitive>false</Embed-Transitive>
                     </instructions>
                 </configuration>
             </plugin>
@@ -48,6 +55,7 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-osgi-bundle</artifactId>
             <version>${kotlin.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -55,18 +63,14 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>structlog4j</groupId>
+            <artifactId>structlog4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.timofeevda.jstressy</groupId>
-            <artifactId>jstressy-structured-logging</artifactId>
-            <version>${project.version}</version>
+            <groupId>structlog4j</groupId>
+            <artifactId>structlog4j-json</artifactId>
         </dependency>
     </dependencies>
+
 
 </project>

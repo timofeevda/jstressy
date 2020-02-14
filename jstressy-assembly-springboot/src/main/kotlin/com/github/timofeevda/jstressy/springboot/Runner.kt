@@ -1,5 +1,7 @@
 package com.github.timofeevda.jstressy.springboot
 
+import com.github.structlog4j.StructLog4J
+import com.github.structlog4j.json.JsonFormatter
 import com.github.timofeevda.jstressy.api.config.ConfigurationService
 import com.github.timofeevda.jstressy.api.scenario.ScenarioProvider
 import com.github.timofeevda.jstressy.api.scenario.ScenarioProviderService
@@ -27,6 +29,10 @@ open class Runner(
     companion object : LazyLogging()
 
     override fun run(args: ApplicationArguments?) {
+
+        logger.info("Registering JSON log formatting")
+        StructLog4J.setFormatter(JsonFormatter.getInstance())
+
         metricsRegistryService.setConfigurationService(configService)
         metricsRegistryService.startServingMetrics(vertxService)
 
