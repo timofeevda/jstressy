@@ -4,7 +4,7 @@
 
     <groupId>com.github.timofeevda.jstressy</groupId>
     <artifactId>jstressy</artifactId>
-    <version>1.0.18-SNAPSHOT</version>
+    <version>1.0.17-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -44,13 +44,6 @@
         <maven.enforcer.plugin.version>1.4.1</maven.enforcer.plugin.version>
         <junit-jupiter-api.version>5.1.0</junit-jupiter-api.version>
     </properties>
-
-    <modules>
-        <module>jstressy-maven-plugin</module>
-        <module>jstressy-platform</module>
-        <module>jstressy-assembly-osgi</module>
-        <module>jstressy-assembly-springboot</module>
-    </modules>
 
     <licenses>
         <license>
@@ -107,6 +100,12 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <modules>
+                <module>jstressy-maven-plugin</module>
+                <module>jstressy-platform</module>
+                <module>jstressy-assembly-osgi</module>
+                <module>jstressy-assembly-springboot</module>
+            </modules>
             <build>
                 <plugins>
                     <plugin>
@@ -139,6 +138,10 @@
         </profile>
         <profile>
             <id>release</id>
+            <modules>
+                <module>jstressy-maven-plugin</module>
+                <module>jstressy-platform</module>
+            </modules>
             <build>
                 <plugins>
                     <plugin>
