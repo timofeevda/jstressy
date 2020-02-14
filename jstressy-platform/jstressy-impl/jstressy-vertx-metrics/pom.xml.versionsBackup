@@ -3,17 +3,17 @@
     <parent>
         <artifactId>jstressy-impl</artifactId>
         <groupId>com.github.timofeevda.jstressy</groupId>
-        <version>1.0.17-SNAPSHOT</version>
+        <version>1.0.18-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jstressy-logger</artifactId>
+    <artifactId>jstressy-vertx-metrics</artifactId>
 
     <packaging>bundle</packaging>
 
     <properties>
-        <bundle.symbolicName>com.github.timofeevda.jstressy-logger</bundle.symbolicName>
-        <bundle.namespace>com.github.timofeevda.jstressy.logger</bundle.namespace>
+        <bundle.symbolicName>com.github.timofeevda.jstressy.vertx.metrics</bundle.symbolicName>
+        <bundle.namespace>com.github.timofeevda.jstressy.vertx.metrics</bundle.namespace>
     </properties>
 
     <build>
@@ -32,11 +32,13 @@
                     <instructions>
                         <Bundle-Activator>${bundle.namespace}.internal.Activator</Bundle-Activator>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
+                        <Export-Package>${bundle.namespace}*</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
 
     <dependencies>
         <dependency>
@@ -59,12 +61,13 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
+            <groupId>com.github.timofeevda.jstressy</groupId>
+            <artifactId>jstressy-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
-            <artifactId>jstressy-structured-logging</artifactId>
+            <artifactId>jstressy-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

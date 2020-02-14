@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>jstressy-impl</artifactId>
-        <groupId>com.github.timofeevda.jstressy</groupId>
-        <version>1.0.17-SNAPSHOT</version>
-    </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jstressy-logger</artifactId>
+    <parent>
+        <groupId>com.github.timofeevda.jstressy</groupId>
+        <artifactId>jstressy-impl</artifactId>
+        <version>1.0.18-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>jstressy-config</artifactId>
 
     <packaging>bundle</packaging>
 
     <properties>
-        <bundle.symbolicName>com.github.timofeevda.jstressy-logger</bundle.symbolicName>
-        <bundle.namespace>com.github.timofeevda.jstressy.logger</bundle.namespace>
+        <bundle.symbolicName>com.github.timofeevda.jstressy-config</bundle.symbolicName>
+        <bundle.namespace>com.github.timofeevda.jstressy.config</bundle.namespace>
     </properties>
 
     <build>
@@ -32,6 +33,7 @@
                     <instructions>
                         <Bundle-Activator>${bundle.namespace}.internal.Activator</Bundle-Activator>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
+                        <Export-Package>!*</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -50,6 +52,14 @@
             <version>${kotlin.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
@@ -59,13 +69,16 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
+            <groupId>com.github.timofeevda.jstressy</groupId>
+            <artifactId>jstressy-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
-            <artifactId>jstressy-structured-logging</artifactId>
+            <artifactId>jstressy-utils</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

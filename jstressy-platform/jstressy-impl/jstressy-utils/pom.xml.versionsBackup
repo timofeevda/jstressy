@@ -3,17 +3,17 @@
     <parent>
         <artifactId>jstressy-impl</artifactId>
         <groupId>com.github.timofeevda.jstressy</groupId>
-        <version>1.0.17-SNAPSHOT</version>
+        <version>1.0.18-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jstressy-logger</artifactId>
+    <artifactId>jstressy-utils</artifactId>
 
     <packaging>bundle</packaging>
 
     <properties>
-        <bundle.symbolicName>com.github.timofeevda.jstressy-logger</bundle.symbolicName>
-        <bundle.namespace>com.github.timofeevda.jstressy.logger</bundle.namespace>
+        <bundle.symbolicName>com.github.timofeevda.jstressy-utils</bundle.symbolicName>
+        <bundle.namespace>com.github.timofeevda.jstressy.utils</bundle.namespace>
     </properties>
 
     <build>
@@ -24,14 +24,15 @@
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <groupId>org.jetbrains.kotlin</groupId>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>${bundle.namespace}.internal.Activator</Bundle-Activator>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
+                        <Export-Package>${bundle.namespace}.*</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -55,17 +56,17 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>io.reactivex.rxjava2</groupId>
+            <artifactId>rxjava</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-rx-java2</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.timofeevda.jstressy</groupId>
-            <artifactId>jstressy-structured-logging</artifactId>
-            <version>${project.version}</version>
+            <groupId>structlog4j</groupId>
+            <artifactId>structlog4j-api</artifactId>
         </dependency>
     </dependencies>
 

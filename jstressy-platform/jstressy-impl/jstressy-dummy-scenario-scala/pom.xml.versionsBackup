@@ -3,26 +3,43 @@
     <parent>
         <artifactId>jstressy-impl</artifactId>
         <groupId>com.github.timofeevda.jstressy</groupId>
-        <version>1.0.17-SNAPSHOT</version>
+        <version>1.0.18-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jstressy-httpclient</artifactId>
+    <artifactId>jstressy-dummy-scenario-scala</artifactId>
 
     <packaging>bundle</packaging>
 
     <properties>
-        <bundle.symbolicName>com.github.timofeevda.jstressy-httpclient</bundle.symbolicName>
-        <bundle.namespace>com.github.timofeevda.jstressy.httpclient</bundle.namespace>
+        <bundle.symbolicName>com.github.timofeevda.jstressy-dummy-scenario-scala</bundle.symbolicName>
+        <bundle.namespace>com.github.timofeevda.jstressy.dummy.scenario</bundle.namespace>
     </properties>
 
     <build>
-        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
+        <sourceDirectory>src/main/scala</sourceDirectory>
         <plugins>
             <plugin>
-                <artifactId>kotlin-maven-plugin</artifactId>
-                <groupId>org.jetbrains.kotlin</groupId>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.2.2</version>
+                <executions>
+                    <execution>
+                        <id>scala-compile-first</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>scala-test-compile</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -33,6 +50,8 @@
                         <Bundle-Activator>${bundle.namespace}.internal.Activator</Bundle-Activator>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
                         <Export-Package>!*</Export-Package>
+                        <Embed-Dependency>*;scope=compile|runtime;inline=true</Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
             </plugin>
@@ -40,20 +59,16 @@
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-osgi-bundle</artifactId>
-            <version>${kotlin.version}</version>
-        </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>2.12.6</version>
+            </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-utils</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -63,6 +78,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
@@ -71,5 +87,4 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
 </project>

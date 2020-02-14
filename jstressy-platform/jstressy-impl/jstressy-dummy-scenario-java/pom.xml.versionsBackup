@@ -3,27 +3,21 @@
     <parent>
         <artifactId>jstressy-impl</artifactId>
         <groupId>com.github.timofeevda.jstressy</groupId>
-        <version>1.0.17-SNAPSHOT</version>
+        <version>1.0.18-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jstressy-logger</artifactId>
+    <artifactId>jstressy-dummy-scenario-java</artifactId>
 
     <packaging>bundle</packaging>
 
     <properties>
-        <bundle.symbolicName>com.github.timofeevda.jstressy-logger</bundle.symbolicName>
-        <bundle.namespace>com.github.timofeevda.jstressy.logger</bundle.namespace>
+        <bundle.symbolicName>com.github.timofeevda.jstressy-dummy-scenario-scala</bundle.symbolicName>
+        <bundle.namespace>com.github.timofeevda.jstressy.dummy.scenario</bundle.namespace>
     </properties>
 
     <build>
-        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
-            <plugin>
-                <artifactId>kotlin-maven-plugin</artifactId>
-                <groupId>org.jetbrains.kotlin</groupId>
-            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -32,6 +26,9 @@
                     <instructions>
                         <Bundle-Activator>${bundle.namespace}.internal.Activator</Bundle-Activator>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
+                        <Export-Package>!*</Export-Package>
+                        <Embed-Dependency>*;scope=compile|runtime;inline=true</Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
             </plugin>
@@ -40,14 +37,10 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib</artifactId>
+            <groupId>com.github.timofeevda.jstressy</groupId>
+            <artifactId>jstressy-utils</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-osgi-bundle</artifactId>
-            <version>${kotlin.version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -57,15 +50,13 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
-            <artifactId>jstressy-structured-logging</artifactId>
+            <artifactId>jstressy-api</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
