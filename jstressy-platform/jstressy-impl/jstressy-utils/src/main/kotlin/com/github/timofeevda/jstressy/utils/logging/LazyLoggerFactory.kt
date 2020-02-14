@@ -23,7 +23,7 @@
 
 package com.github.timofeevda.jstressy.utils.logging
 
-import org.slf4j.LoggerFactory
+import com.github.structlog4j.SLoggerFactory
 
 object LazyLoggerFactory {
 
@@ -37,5 +37,5 @@ object LazyLoggerFactory {
         return clazz
     }
 
-    private fun logger(name: String): LazyLogger = LazyLoggerImpl(LoggerFactory.getLogger(name))
+    private fun logger(name: String): LazyLogger = LazyLoggerImpl(SLoggerFactory.getLogger(name))
 }

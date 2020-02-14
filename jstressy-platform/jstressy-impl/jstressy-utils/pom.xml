@@ -65,8 +65,8 @@
             <artifactId>vertx-rx-java2</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>structlog4j</groupId>
+            <artifactId>structlog4j-api</artifactId>
         </dependency>
     </dependencies>
 

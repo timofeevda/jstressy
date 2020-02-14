@@ -29,6 +29,7 @@
         <module>jstressy-dummy-scenario-java</module>
         <module>jstressy-dummy-scenario-kotlin</module>
         <module>jstressy-dummy-scenario-scala</module>
+        <module>jstressy-structured-logging</module>
     </modules>
 
 </project>

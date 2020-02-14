@@ -101,5 +101,10 @@ interface StressyStage {
      */
     val scenarioProviderParameters: Map<String, String>
 
+    /**
+     * Limits the number of scenarios to run
+     *
+     * @return max number of scenarios to run
+     */
     val scenariosLimit: Int?
 }
