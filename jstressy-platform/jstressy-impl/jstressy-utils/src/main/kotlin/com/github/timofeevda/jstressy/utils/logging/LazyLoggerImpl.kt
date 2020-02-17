@@ -25,166 +25,166 @@ package com.github.timofeevda.jstressy.utils.logging
 
 import com.github.structlog4j.ILogger
 
-internal class LazyLoggerImpl(private val jLogger: ILogger) : LazyLogger {
+internal class LazyLoggerImpl(private val structLogger: ILogger) : LazyLogger {
 
     override fun trace(msg: String?) {
-        if (jLogger.isTraceEnabled) jLogger.trace(msg)
+        if (structLogger.isTraceEnabled) structLogger.trace(msg)
     }
 
     override fun trace(msg: String?, vararg params: Any?) {
-        if (jLogger.isTraceEnabled) jLogger.trace(msg, params)
+        if (structLogger.isTraceEnabled) structLogger.trace(msg, *params)
     }
 
     override fun debug(msg: String?) {
-        if (jLogger.isDebugEnabled) jLogger.debug(msg)
+        if (structLogger.isDebugEnabled) structLogger.debug(msg)
     }
 
     override fun debug(msg: String?, vararg params: Any?) {
-        if (jLogger.isDebugEnabled) jLogger.debug(msg, params)
+        if (structLogger.isDebugEnabled) structLogger.debug(msg, *params)
     }
 
     override fun info(msg: String?) {
-        if (jLogger.isInfoEnabled) jLogger.info(msg)
+        if (structLogger.isInfoEnabled) structLogger.info(msg)
     }
 
     override fun info(msg: String?, vararg params: Any?) {
-        if (jLogger.isInfoEnabled) jLogger.info(msg, params)
+        if (structLogger.isInfoEnabled) structLogger.info(msg, *params)
     }
 
     override fun warn(msg: String?) {
-        if (jLogger.isWarnEnabled) jLogger.warn(msg)
+        if (structLogger.isWarnEnabled) structLogger.warn(msg)
     }
 
     override fun warn(msg: String?, vararg params: Any?) {
-        if (jLogger.isWarnEnabled) jLogger.warn(msg, params)
+        if (structLogger.isWarnEnabled) structLogger.warn(msg, *params)
     }
 
     override fun error(msg: String?) {
-        if (jLogger.isErrorEnabled) jLogger.error(msg)
+        if (structLogger.isErrorEnabled) structLogger.error(msg)
     }
 
     override fun error(msg: String?, vararg params: Any?) {
-        if (jLogger.isErrorEnabled) jLogger.error(msg, params)
+        if (structLogger.isErrorEnabled) structLogger.error(msg, *params)
     }
 
     override fun trace(msg: () -> Any?) {
-        if (jLogger.isTraceEnabled) jLogger.trace(msg.toSafeString())
+        if (structLogger.isTraceEnabled) structLogger.trace(msg.toSafeString())
     }
 
     override fun trace(msg: () -> Any?, vararg params: Any?) {
-        if (jLogger.isTraceEnabled) jLogger.trace(msg.toSafeString(), params)
+        if (structLogger.isTraceEnabled) structLogger.trace(msg.toSafeString(), *params)
     }
 
     override fun debug(msg: () -> Any?) {
-        if (jLogger.isDebugEnabled) jLogger.debug(msg.toSafeString())
+        if (structLogger.isDebugEnabled) structLogger.debug(msg.toSafeString())
     }
 
     override fun debug(msg: () -> Any?, vararg params: Any?) {
-        if (jLogger.isDebugEnabled) jLogger.debug(msg.toSafeString(), params)
+        if (structLogger.isDebugEnabled) structLogger.debug(msg.toSafeString(), *params)
     }
 
     override fun info(msg: () -> Any?) {
-        if (jLogger.isInfoEnabled) jLogger.info(msg.toSafeString())
+        if (structLogger.isInfoEnabled) structLogger.info(msg.toSafeString())
     }
 
     override fun info(msg: () -> Any?, vararg params: Any?) {
-        if (jLogger.isInfoEnabled) jLogger.info(msg.toSafeString(), params)
+        if (structLogger.isInfoEnabled) structLogger.info(msg.toSafeString(), *params)
     }
 
     override fun warn(msg: () -> Any?) {
-        if (jLogger.isWarnEnabled) jLogger.warn(msg.toSafeString())
+        if (structLogger.isWarnEnabled) structLogger.warn(msg.toSafeString())
     }
 
     override fun warn(msg: () -> Any?, vararg params: Any?) {
-        if (jLogger.isWarnEnabled) jLogger.warn(msg.toSafeString(), params)
+        if (structLogger.isWarnEnabled) structLogger.warn(msg.toSafeString(), *params)
     }
 
     override fun error(msg: () -> Any?) {
-        if (jLogger.isErrorEnabled) jLogger.error(msg.toSafeString())
+        if (structLogger.isErrorEnabled) structLogger.error(msg.toSafeString())
     }
 
     override fun error(msg: () -> Any?, vararg params: Any?) {
-        if (jLogger.isErrorEnabled) jLogger.error(msg.toSafeString(), params)
+        if (structLogger.isErrorEnabled) structLogger.error(msg.toSafeString(), *params)
     }
 
     override fun trace(msg: () -> Any?, t: Throwable?) {
-        if (jLogger.isTraceEnabled) jLogger.trace(msg.toSafeString(), t)
+        if (structLogger.isTraceEnabled) structLogger.trace(msg.toSafeString(), t)
     }
 
     override fun trace(msg: () -> Any?, vararg params: Any?, t: Throwable?) {
-        if (jLogger.isTraceEnabled) jLogger.trace(msg.toSafeString(), params, t)
+        if (structLogger.isTraceEnabled) structLogger.trace(msg.toSafeString(), *params, t)
     }
 
     override fun debug(msg: () -> Any?, t: Throwable?) {
-        if (jLogger.isDebugEnabled) jLogger.debug(msg.toSafeString(), t)
+        if (structLogger.isDebugEnabled) structLogger.debug(msg.toSafeString(), t)
     }
 
     override fun debug(msg: () -> Any?, vararg params: Any?, t: Throwable?) {
-        if (jLogger.isDebugEnabled) jLogger.debug(msg.toSafeString(), params, t)
+        if (structLogger.isDebugEnabled) structLogger.debug(msg.toSafeString(), *params, t)
     }
 
     override fun info(msg: () -> Any?, t: Throwable?) {
-        if (jLogger.isInfoEnabled) jLogger.info(msg.toSafeString(), t)
+        if (structLogger.isInfoEnabled) structLogger.info(msg.toSafeString(), t)
     }
 
     override fun info(msg: () -> Any?, vararg params: Any?, t: Throwable?) {
-        if (jLogger.isInfoEnabled) jLogger.info(msg.toSafeString(), params, t)
+        if (structLogger.isInfoEnabled) structLogger.info(msg.toSafeString(), *params, t)
     }
 
     override fun warn(msg: () -> Any?, t: Throwable?) {
-        if (jLogger.isWarnEnabled) jLogger.warn(msg.toSafeString(), t)
+        if (structLogger.isWarnEnabled) structLogger.warn(msg.toSafeString(), t)
     }
 
     override fun warn(msg: () -> Any?, vararg params: Any?, t: Throwable?) {
-        if (jLogger.isWarnEnabled) jLogger.warn(msg.toSafeString(), params, t)
+        if (structLogger.isWarnEnabled) structLogger.warn(msg.toSafeString(), *params, t)
     }
 
     override fun error(msg: () -> Any?, t: Throwable?) {
-        if (jLogger.isErrorEnabled) jLogger.error(msg.toSafeString(), t)
+        if (structLogger.isErrorEnabled) structLogger.error(msg.toSafeString(), t)
     }
 
     override fun error(msg: () -> Any?, vararg params: Any?, t: Throwable?) {
-        if (jLogger.isErrorEnabled) jLogger.error(msg.toSafeString(), params, t)
+        if (structLogger.isErrorEnabled) structLogger.error(msg.toSafeString(), *params, t)
     }
 
     override fun trace(msg: String?, t: Throwable?) {
-        if (jLogger.isTraceEnabled) jLogger.trace(msg, t)
+        if (structLogger.isTraceEnabled) structLogger.trace(msg, t)
     }
 
     override fun trace(msg: String?, vararg params: Any?, t: Throwable?) {
-        if (jLogger.isTraceEnabled) jLogger.trace(msg, params, t)
+        if (structLogger.isTraceEnabled) structLogger.trace(msg, *params, t)
     }
 
     override fun debug(msg: String?, t: Throwable?) {
-        if (jLogger.isDebugEnabled) jLogger.debug(msg, t)
+        if (structLogger.isDebugEnabled) structLogger.debug(msg, t)
     }
 
     override fun debug(msg: String?, vararg params: Any?, t: Throwable?) {
-        if (jLogger.isDebugEnabled) jLogger.debug(msg, params, t)
+        if (structLogger.isDebugEnabled) structLogger.debug(msg, *params, t)
     }
 
     override fun info(msg: String?, t: Throwable?) {
-        if (jLogger.isInfoEnabled) jLogger.info(msg, t)
+        if (structLogger.isInfoEnabled) structLogger.info(msg, t)
     }
 
     override fun info(msg: String?, vararg params: Any?, t: Throwable?) {
-        if (jLogger.isInfoEnabled) jLogger.info(msg, params, t)
+        if (structLogger.isInfoEnabled) structLogger.info(msg, *params, t)
     }
 
     override fun warn(msg: String?, t: Throwable?) {
-        if (jLogger.isWarnEnabled) jLogger.warn(msg, t)
+        if (structLogger.isWarnEnabled) structLogger.warn(msg, t)
     }
 
     override fun warn(msg: String?, vararg params: Any?, t: Throwable?) {
-        if (jLogger.isWarnEnabled) jLogger.warn(msg, params, t)
+        if (structLogger.isWarnEnabled) structLogger.warn(msg, *params, t)
     }
 
     override fun error(msg: String?, t: Throwable?) {
-        if (jLogger.isErrorEnabled) jLogger.error(msg, t)
+        if (structLogger.isErrorEnabled) structLogger.error(msg, t)
     }
 
     override fun error(msg: String?, vararg params: Any?, t: Throwable?) {
-        if (jLogger.isErrorEnabled) jLogger.error(msg, params, t)
+        if (structLogger.isErrorEnabled) structLogger.error(msg, *params, t)
     }
 
     private fun (() -> Any?).toSafeString(): String {
