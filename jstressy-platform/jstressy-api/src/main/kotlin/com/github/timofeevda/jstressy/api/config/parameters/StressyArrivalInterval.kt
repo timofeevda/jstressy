@@ -21,35 +21,28 @@
  *
  */
 
-package com.github.timofeevda.jstressy.api.scenario
+package com.github.timofeevda.jstressy.api.config.parameters
 
-/**
- * Scenario
- *
- * @author timofeevda
- */
-interface Scenario {
-    /**
-     * Method for starting scenario
-     */
-    fun start()
+interface StressyArrivalInterval : StressyArrivalDefinition {
 
     /**
-     * Method for stopping scenario
-     */
-    fun stop()
-
-    /**
-     * Passes arrival interval definition within which this scenario was invoked
+     * Identifier to distinguish different arrival intervals
      *
-     * @param intervalId arrival interval definition id
+     * @return arrival interval identifier
      */
-    fun withArrivalInterval(intervalId: String): Scenario
+    val id: String
 
     /**
-     * Passes key/value pair as scenario parameters
-     * @param parameters  key/value pairs
-     * @return
+     * Scenarios arrival duration
+     *
+     * @return scenarios arrival duration
      */
-    fun withParameters(parameters: Map<String, String>): Scenario
+    val duration: String
+
+    /**
+     * Delays scenario invocation
+     *
+     * @return scenario invocation delay
+     */
+    val delay: String?
 }

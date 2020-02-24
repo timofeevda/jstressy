@@ -52,4 +52,6 @@ class TouchGoogleScenario private[scenario](val metricsRegistry: MetricsRegistry
   }
 
   override def withParameters(parameters: util.Map[String, String]): Scenario = this
+
+  override def withArrivalInterval(intervalId: String): Scenario = this
 }

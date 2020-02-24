@@ -35,6 +35,7 @@ import com.github.timofeevda.jstressy.utils.logging.LazyLogging
 class TouchGoogleScenario internal constructor(private val metricsRegistry: MetricsRegistry,
                                                private val requestExecutor: RequestExecutor,
                                                configurationService: ConfigurationService) : Scenario {
+
     companion object : LazyLogging()
 
     private val host: String = configurationService.configuration.globals.host
@@ -57,6 +58,10 @@ class TouchGoogleScenario internal constructor(private val metricsRegistry: Metr
 
     override fun stop() {
 
+    }
+
+    override fun withArrivalInterval(intervalId: String): Scenario {
+        return this
     }
 
     override fun withParameters(parameters: Map<String, String>): Scenario {

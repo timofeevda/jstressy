@@ -29,21 +29,21 @@ import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.github.timofeevda.jstressy.api.config.ConfigurationService
+import com.github.timofeevda.jstressy.api.config.parameters.StressyArrivalInterval
 import com.github.timofeevda.jstressy.api.config.parameters.StressyConfiguration
 import com.github.timofeevda.jstressy.api.config.parameters.StressyGlobals
 import com.github.timofeevda.jstressy.api.config.parameters.StressyStage
 import com.github.timofeevda.jstressy.api.config.parameters.StressyStressPlan
+import com.github.timofeevda.jstressy.config.parameters.ArrivalInterval
 import com.github.timofeevda.jstressy.config.parameters.Config
 import com.github.timofeevda.jstressy.config.parameters.Globals
 import com.github.timofeevda.jstressy.config.parameters.Stage
 import com.github.timofeevda.jstressy.config.parameters.StressPlan
-import com.github.timofeevda.jstressy.utils.logging.LazyLogger
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import sun.awt.ConstrainableGraphics
-
 import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
+import java.io.InputStream
 
 private const val STRESSY_YML = "stressy.yml"
 
@@ -60,27 +60,45 @@ open class ConfigLoader : ConfigurationService {
 
     override var configurationFolder: String? = null
 
+    @Throws(IOException::class)
     override fun readConfiguration(configurationFolder: String) {
         this.configurationFolder = configurationFolder
-        try {
-            val configFile = File(configurationFolder + File.separator + STRESSY_YML)
+        val configFile = File(configurationFolder + File.separator + STRESSY_YML)
+        readConfigurationFile(FileInputStream(configFile))
+    }
 
-            val mapper = ObjectMapper(YAMLFactory())
+    internal fun readConfigurationFile(configFileStream: InputStream) {
+        val mapper = ObjectMapper(YAMLFactory())
 
-            val typeResolver = SimpleAbstractTypeResolver()
-                    .addMapping(StressyConfiguration::class.java, Config::class.java)
-                    .addMapping(StressyGlobals::class.java, Globals::class.java)
-                    .addMapping(StressyStage::class.java, Stage::class.java)
-                    .addMapping(StressyStressPlan::class.java, StressPlan::class.java)
+        val typeResolver = SimpleAbstractTypeResolver()
+                .addMapping(StressyConfiguration::class.java, Config::class.java)
+                .addMapping(StressyGlobals::class.java, Globals::class.java)
+                .addMapping(StressyStage::class.java, Stage::class.java)
+                .addMapping(StressyStressPlan::class.java, StressPlan::class.java)
+                .addMapping(StressyArrivalInterval::class.java, ArrivalInterval::class.java)
 
-            val configurationModule = SimpleModule("StressyConfiguration", Version.unknownVersion())
-            configurationModule.setAbstractTypes(typeResolver)
+        val configurationModule = SimpleModule("StressyConfiguration", Version.unknownVersion())
+        configurationModule.setAbstractTypes(typeResolver)
 
-            mapper.registerModule(configurationModule)
+        mapper.registerModule(configurationModule)
 
-            configuration = mapper.readValue(configFile, Config::class.java)
-        } catch (e: Exception) {
-            logger.error("Error loading configuration file: $configurationFolder${File.separator}$STRESSY_YML", e)
+        configuration = mapper.readValue(configFileStream, Config::class.java)
+
+        // process stages and add arrival intervals from separate configs if needed
+        configuration.stressPlan.stages.forEach { stage ->
+            if (stage.arrivalIntervalsPath != null) {
+                val configFile = File(stage.arrivalIntervalsPath)
+                val arrivalIntervals = when {
+                    configFile.isAbsolute -> mapper.readValue(FileInputStream(configFile),
+                            Array<StressyArrivalInterval>::class.java).asList()
+                    else -> {
+                        mapper.readValue(FileInputStream(File(
+                                configurationFolder + File.separator + stage.arrivalIntervalsPath)),
+                                Array<StressyArrivalInterval>::class.java).asList()
+                    }
+                }
+                stage.arrivalIntervals.addAll(arrivalIntervals)
+            }
         }
     }
 

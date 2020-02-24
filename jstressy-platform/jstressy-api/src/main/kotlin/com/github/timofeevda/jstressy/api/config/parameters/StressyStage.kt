@@ -28,7 +28,7 @@ package com.github.timofeevda.jstressy.api.config.parameters
  *
  * @author timofeevda
  */
-interface StressyStage {
+interface StressyStage : StressyArrivalDefinition {
     /**
      * Stress stage name
      *
@@ -58,35 +58,6 @@ interface StressyStage {
     val stageDuration: String
 
     /**
-     * Determines how ofter scenario is invoked
-     *
-     * @return scenario invocation rate
-     */
-    val arrivalRate: Double
-
-    /**
-     * Determines target value of arrival rate. Must be used along with rampArrivalRate and rampInterval
-     *
-     * @return target value of arrival rate
-     */
-    val rampArrival: Double?
-
-    /**
-     * Determines how often arrival rate must be adjusted to match target value of arrival rate (rampArrival)
-     * in the end of ramp interval
-     *
-     * @return arrivalRate adjustment rate
-     */
-    val rampArrivalRate: Double?
-
-    /**
-     * Determines time interval within which arrival rate must match target arrival rate (rampArrivalRate)
-     *
-     * @return arrayRate adjustment interval
-     */
-    val rampInterval: String?
-
-    /**
      * Scenario parameters. Can be used to pass arbitrary parameters for each scenario invocation
      *
      * @return map of scenario parameters
@@ -107,4 +78,12 @@ interface StressyStage {
      * @return max number of scenarios to run
      */
     val scenariosLimit: Int?
+
+    /**
+     * Defines several intervals with different arrival rate to configure different
+     * scenario arrival rates within different time intervals
+     */
+    val arrivalIntervals: MutableList<StressyArrivalInterval>
+
+    val arrivalIntervalsPath: String?
 }

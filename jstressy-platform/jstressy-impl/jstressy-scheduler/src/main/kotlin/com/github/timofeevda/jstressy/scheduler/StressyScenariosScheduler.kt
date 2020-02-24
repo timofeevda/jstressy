@@ -57,11 +57,14 @@ open class StressyScenariosScheduler(private val vertxService: VertxService,
 
     private fun observeScenarios(stages: List<StressyStage>): Observable<Scenario> {
         return stages.stream()
-                .map<Observable<Scenario>> { stage -> observeScenarioTicks(stage).flatMap { createScenario(stage) } }
+                .map<Observable<Scenario>> { stage ->
+                    observeScenarioTicks(stage)
+                            .flatMap { arrivalIntervalId -> createScenario(stage, arrivalIntervalId) }
+                }
                 .reduce(Observable.empty()) { source1, source2 -> Observable.merge(source1, source2) }
     }
 
-    private fun createScenario(stage: StressyStage): Observable<Scenario> {
+    private fun createScenario(stage: StressyStage, arrivalIntervalId: String?): Observable<Scenario> {
         val scenarioProviderService = scenarioRegistryService[stage.scenarioName]
         val scenarioProvider = scenarioProviderService?.get(stage.scenarioProviderParameters)
         try {
@@ -69,7 +72,12 @@ open class StressyScenariosScheduler(private val vertxService: VertxService,
         } catch (e: Throwable) {
             return Observable.error(e)
         }
-        return Observable.just(scenarioProvider?.get()?.withParameters(stage.scenarioParameters))
+        return if (arrivalIntervalId != null) {
+            Observable.just(scenarioProvider?.get()?.withArrivalInterval(arrivalIntervalId)!!
+                    .withParameters(stage.scenarioParameters));
+        } else {
+            Observable.just(scenarioProvider?.get()?.withParameters(stage.scenarioParameters))
+        }
     }
 
 }

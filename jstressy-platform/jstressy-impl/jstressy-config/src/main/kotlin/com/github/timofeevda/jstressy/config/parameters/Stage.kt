@@ -23,6 +23,7 @@
 
 package com.github.timofeevda.jstressy.config.parameters
 
+import com.github.timofeevda.jstressy.api.config.parameters.StressyArrivalInterval
 import com.github.timofeevda.jstressy.api.config.parameters.StressyStage
 
 /**
@@ -50,11 +51,11 @@ class Stage : StressyStage {
     /**
      * Rate of scenario invocation
      */
-    override val arrivalRate: Double = 0.0
+    override val arrivalRate: Double = 1.0
     /**
-     * Determines target value of arrival rate. 
-     * 
-     * This property can be used to increase or decrease rate of scenario invocation. rampArrivalRate and rampInterval 
+     * Determines target value of arrival rate.
+     *
+     * This property can be used to increase or decrease rate of scenario invocation. rampArrivalRate and rampDuration
      * must be set to support this property
      */
     override val rampArrival: Double? = null
@@ -64,9 +65,21 @@ class Stage : StressyStage {
      */
     override val rampArrivalRate: Double? = null
     /**
+     * Determines arrival rate adjustment period for achieving target arrival rate (rampArrival). Exists for
+     * convenience only, the same thing can be achieved by defining rampArrivalRate which has higher priority
+     * than rampArrivalPeriod
+     *
+     * Note: if rampArrivalRate is defined it has higher priority than rampArrivalPeriod
+     *
+     * @return arrival rate adjustment period
+     */
+    override val rampArrivalPeriod: String? = null
+
+    /**
      * Determines time interval within which arrival rate must match target arrival rate (rampArrivalRate)
      */
-    override val rampInterval: String? = null
+    override val rampDuration: String? = null
+
     /**
      * Scenario parameters. Can be used to pass arbitrary parameters for each scenario invocation
      */
@@ -79,4 +92,7 @@ class Stage : StressyStage {
 
     override val scenariosLimit: Int? = null
 
+    override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
+
+    override val arrivalIntervalsPath: String? = null
 }

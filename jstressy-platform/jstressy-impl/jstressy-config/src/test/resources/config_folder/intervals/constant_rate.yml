@@ -1,0 +1,6 @@
+- id: first
+  arrivalRate: 1.0
+  duration: 10min
+- id: second
+  arrivalRate: 1.0
+  duration: 10min

@@ -16,6 +16,7 @@ import com.github.timofeevda.jstressy.scenario.registry.StressyScenarioRegistry
 import com.github.timofeevda.jstressy.scheduler.StressyScenariosScheduler
 import com.github.timofeevda.jstressy.vertx.StressyVertxService
 import org.springframework.stereotype.Service
+import java.io.IOException
 import javax.annotation.PostConstruct
 
 @Service
@@ -24,7 +25,11 @@ class ConfigurationService() : ConfigLoader() {
     fun init() {
         val configFolder = System.getProperty("configFolder")
         logger.info("Reading configuration from folder $configFolder")
-        readConfiguration(configFolder)
+        try {
+            readConfiguration(configFolder)
+        } catch (e: IOException) {
+            logger.error("Error reading configuration file", e)
+        }
     }
 }
 

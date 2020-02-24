@@ -1,0 +1,12 @@
+- id: first
+  arrivalRate: 1
+  delay: 1m
+  duration: 10m
+- id: second
+  delay: 12m
+  duration: 10m
+  arrivalRate: 1.0
+  rampArrival: 2.0
+  rampArrivalRate: 0.2
+  rampArrivalPeriod: 5s
+  rampDuration: 5min

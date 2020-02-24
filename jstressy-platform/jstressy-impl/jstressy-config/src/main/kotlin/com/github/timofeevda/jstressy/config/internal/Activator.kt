@@ -28,6 +28,7 @@ import com.github.timofeevda.jstressy.config.ConfigLoader
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
 import org.osgi.framework.BundleActivator
 import org.osgi.framework.BundleContext
+import java.io.IOException
 import java.util.*
 
 class Activator : BundleActivator {
@@ -40,7 +41,11 @@ class Activator : BundleActivator {
         val configLoader = ConfigLoader()
         val configFolder = System.getProperty("configFolder")
         logger.info("Reading configuration from folder $configFolder")
-        configLoader.readConfiguration(configFolder)
+        try {
+            configLoader.readConfiguration(configFolder)
+        } catch (e: IOException) {
+            logger.error("Error reading configuration file", e)
+        }
 
         logger.info("Registering configuration loader")
         bundleContext.registerService(ConfigurationService::class.java.name, configLoader, Hashtable<Any, Any>())

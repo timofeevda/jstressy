@@ -1,0 +1,22 @@
+---
+globals:
+  host: google.com
+  port: 443
+  stressyMetricsPort: 8089
+  stressyMetricsPath: /metrics
+  useSsl: true
+  insecureSsl: true
+  maxConnections: 1000
+stressPlan:
+  stages:
+    - name: First
+      scenarioName: TouchGoogle
+      stageDelay: 1s
+      stageDuration: 20m
+      arrivalRate: 0.2
+      rampArrival: 0.5
+      rampArrivalRate: 0.0169
+      rampArrivalPeriod: 10m
+      scenarioParameters:
+        foo: bar
+      arrivalIntervalsPath: ./intervals/constant_rate.yml

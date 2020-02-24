@@ -72,4 +72,9 @@ public class TouchGoogleScenario implements Scenario {
     public Scenario withParameters(Map<String, String> parameters) {
         return this;
     }
+
+    @Override
+    public Scenario withArrivalInterval(String intervalId) {
+        return this;
+    }
 }
