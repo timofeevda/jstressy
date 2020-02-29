@@ -328,9 +328,7 @@ class ScenarioRateSchedulerTest {
 
         val eventsProcessed = observer.events[0].size
 
-        print(eventsProcessed)
-
-        assertTrue(eventsProcessed in 0..40)
+        assertTrue(eventsProcessed in 0..45)
 
         observer.assertNoErrors()
         observer.assertComplete()
