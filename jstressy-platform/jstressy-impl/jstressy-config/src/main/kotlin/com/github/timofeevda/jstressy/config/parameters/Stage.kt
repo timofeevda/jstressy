@@ -74,7 +74,6 @@ class Stage : StressyStage {
      * @return arrival rate adjustment period
      */
     override val rampArrivalPeriod: String? = null
-
     /**
      * Determines time interval within which arrival rate must match target arrival rate (rampArrivalRate)
      */
@@ -84,15 +83,17 @@ class Stage : StressyStage {
      * Scenario parameters. Can be used to pass arbitrary parameters for each scenario invocation
      */
     override val scenarioParameters: Map<String, String> = emptyMap()
+
     /**
      * Scenario provider parameters. Can be used to pass arbitrary parameters for each scenario provider. This can be
      * used for scenario provider initialization logic if it requires some long-running tasks
      */
     override val scenarioProviderParameters: Map<String, String> = emptyMap()
-
     override val scenariosLimit: Int? = null
 
     override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
 
     override val arrivalIntervalsPath: String? = null
+
+    override val poissonArrival: Boolean? = null
 }

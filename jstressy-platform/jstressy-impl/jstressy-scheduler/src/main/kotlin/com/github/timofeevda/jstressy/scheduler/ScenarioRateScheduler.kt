@@ -24,9 +24,11 @@ package com.github.timofeevda.jstressy.scheduler
 
 import com.github.timofeevda.jstressy.api.config.parameters.StressyArrivalDefinition
 import com.github.timofeevda.jstressy.api.config.parameters.StressyStage
+import com.github.timofeevda.jstressy.utils.SchedulerUtils
 import com.github.timofeevda.jstressy.utils.StressyUtils
 import com.github.timofeevda.jstressy.utils.StressyUtils.parseDuration
 import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
 import java.util.concurrent.TimeUnit
 
 /**
@@ -35,10 +37,22 @@ import java.util.concurrent.TimeUnit
  */
 object ScenarioRateScheduler {
 
-    private const val constantRateId = "ConstantRate"
-    private const val rampingRateId = "RampingRate"
+    private const val constantRateId = "ConstantArrivaRate"
+    private const val constantPoissonId = "ConstantPoissonArrival"
 
-    fun observeScenarioTicks(stage: StressyStage): Observable<String> {
+    private const val rampingRateId = "RampingArrivalRate"
+    private const val rampingPoissonId = "RampingPoissonArrival"
+
+    /**
+     * Observe scenario arrivals based on arrival definitions. Observable stream generates arrival interval identifier
+     * which can be used to implement custom scenario logic based on arrival interval
+     *
+     * In case arrival interval defition doesn't have specific identifier one of the default identifier set is selected
+     * based on the type of arrival interval (constant, ramping, constant Poisson, ramping Poisson)
+     *
+     * @param stage stage definition
+     */
+    fun observeScenarioArrivals(stage: StressyStage): Observable<String> {
         val delay = StressyUtils.parseDuration(stage.stageDelay ?: "0ms").toMilliseconds()
         val duration = StressyUtils.parseDuration(stage.stageDuration).toMilliseconds()
         val scenariosLimit = stage.scenariosLimit
@@ -70,16 +84,20 @@ object ScenarioRateScheduler {
     }
 
     /**
-     * Observe "tick" events for the case when constant scenario invocation rate is specified in configuration
+     * Observe arrival events for the case when constant scenario invocation rate is specified in configuration
      */
     private fun observeWithoutRamping(arrivalDefinition: StressyArrivalDefinition,
                                       arrivalIntervalId: String = constantRateId): Observable<String> {
-        return Observable.interval(0, toPeriod(arrivalDefinition.arrivalRate ?: 1.0), TimeUnit.MILLISECONDS)
-                .map { arrivalIntervalId }
+        return if (isPoissonArrival(arrivalDefinition)) {
+            observePoissonArrivals(arrivalDefinition.arrivalRate, if (arrivalIntervalId == constantRateId) constantPoissonId else arrivalIntervalId)
+        } else {
+            Observable.interval(0, toPeriod(arrivalDefinition.arrivalRate ?: 1.0), TimeUnit.MILLISECONDS)
+                    .map { arrivalIntervalId }
+        }
     }
 
     /**
-     * Observe "tick" events for the case when non-constant scenario invocation rate is specified in configuration.
+     * Observe arrival events for the case when non-constant scenario invocation rate is specified in configuration.
      * Invocation rate can be "ramped" during some interval with constant "ramping" rate to the target one
      */
     private fun observeWithRamping(arrivalDefinition: StressyArrivalDefinition,
@@ -103,12 +121,50 @@ object ScenarioRateScheduler {
                     .interval(0, rampPeriod, TimeUnit.MILLISECONDS)
                     .take(rampSteps.toLong())
                     .map { (arrivalDefinition.arrivalRate ?: 1.0) + rampIncrease * it }
-                    .switchMap { newRate -> Observable.interval(toPeriod(newRate), TimeUnit.MILLISECONDS) }
+                    .switchMap { newRate ->
+                        if (isPoissonArrival(arrivalDefinition)) {
+                            observePoissonArrivals(newRate, rampingPoissonId)
+                        } else {
+                            Observable.interval(toPeriod(newRate), TimeUnit.MILLISECONDS)
+                        }
+                    }
                     .map { arrivalIntervalId }
         } else {
             null
         }
     }
+
+    /**
+     * Observe Poisson arrival events recursively scheduling next Poisson arrival after processing the previous one
+     *
+     * @param arrivalRate arrival rate which is used to determine the next Poisson arrival
+     * @param arrivalIntervalId arrival interval reference id
+     */
+    private fun observePoissonArrivals(arrivalRate: Double?, arrivalIntervalId: String): Observable<String> {
+        return Observable.create { emitter -> observePoissonArrivals(emitter, arrivalRate, arrivalIntervalId) }
+    }
+
+    /**
+     * Observe Poisson arrival events recursively scheduling next Poisson arrival after processing the previous one
+     *
+     * @param emitter Poisson arrival event consumer
+     * @param arrivalRate arrival rate which is used to determine the next Poisson arrival
+     * @param arrivalIntervalId arrival interval reference id
+     */
+    private fun observePoissonArrivals(emitter: ObservableEmitter<String>,
+                                       arrivalRate: Double?,
+                                       arrivalIntervalId: String) {
+        SchedulerUtils.observeNextPoissonArrival(arrivalRate)
+                .map { arrivalIntervalId }
+                .doAfterNext { observePoissonArrivals(emitter, arrivalRate, arrivalIntervalId) }
+                .subscribe { id -> emitter.onNext(id) }
+    }
+
+    /**
+     * Check if arrival interval should be treated as Poisson arrivals
+     */
+    private fun isPoissonArrival(arrivalDefinition: StressyArrivalDefinition) =
+            arrivalDefinition.poissonArrival != null && arrivalDefinition.poissonArrival == true
 
     private fun toPeriod(rate: Double) = (1000 / rate).toLong()
 }

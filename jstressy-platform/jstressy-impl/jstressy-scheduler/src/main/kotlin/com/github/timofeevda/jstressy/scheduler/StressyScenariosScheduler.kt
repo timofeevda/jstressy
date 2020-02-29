@@ -31,7 +31,7 @@ import com.github.timofeevda.jstressy.api.scenario.Scenario
 import com.github.timofeevda.jstressy.api.scenario.ScenarioRegistryService
 import com.github.timofeevda.jstressy.api.scenario.ScenarioSchedulerService
 import com.github.timofeevda.jstressy.api.vertx.VertxService
-import com.github.timofeevda.jstressy.scheduler.ScenarioRateScheduler.observeScenarioTicks
+import com.github.timofeevda.jstressy.scheduler.ScenarioRateScheduler.observeScenarioArrivals
 import io.reactivex.Observable
 
 /**
@@ -58,7 +58,7 @@ open class StressyScenariosScheduler(private val vertxService: VertxService,
     private fun observeScenarios(stages: List<StressyStage>): Observable<Scenario> {
         return stages.stream()
                 .map<Observable<Scenario>> { stage ->
-                    observeScenarioTicks(stage)
+                    observeScenarioArrivals(stage)
                             .flatMap { arrivalIntervalId -> createScenario(stage, arrivalIntervalId) }
                 }
                 .reduce(Observable.empty()) { source1, source2 -> Observable.merge(source1, source2) }

@@ -2,9 +2,10 @@ package com.github.timofeevda.jstressy.scheduler
 
 import com.github.timofeevda.jstressy.api.config.parameters.StressyArrivalInterval
 import com.github.timofeevda.jstressy.api.config.parameters.StressyStage
-import com.github.timofeevda.jstressy.scheduler.ScenarioRateScheduler.observeScenarioTicks
+import com.github.timofeevda.jstressy.scheduler.ScenarioRateScheduler.observeScenarioArrivals
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.TestScheduler
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.util.concurrent.TimeUnit
 
@@ -28,9 +29,27 @@ class ScenarioRateSchedulerTest {
             override val rampArrivalPeriod: String? = null
             override val rampDuration: String? = null
             override val scenariosLimit: Int? = null
+            override val poissonArrival: Boolean? = false
             override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
         }
 
+        private val constantRatePoissonStage = object : StressyStage {
+            override val arrivalIntervalsPath: String? = null
+            override val scenarioParameters: Map<String, String> = emptyMap()
+            override val scenarioProviderParameters: Map<String, String> = emptyMap()
+            override val name: String = "Constant Rate Stage"
+            override val scenarioName: String = ""
+            override val stageDelay: String? = "1min"
+            override val stageDuration: String = "100min"
+            override val arrivalRate: Double = 0.005555 // one time per 3 minutes
+            override val rampArrival: Double? = null
+            override val rampArrivalRate: Double? = null
+            override val rampArrivalPeriod: String? = null
+            override val rampDuration: String? = null
+            override val scenariosLimit: Int? = null
+            override val poissonArrival: Boolean? = true
+            override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
+        }
         private val rampingRateStage = object : StressyStage {
             override val arrivalIntervalsPath: String? = null
             override val scenarioParameters: Map<String, String> = emptyMap()
@@ -45,6 +64,7 @@ class ScenarioRateSchedulerTest {
             override val rampArrivalPeriod: String? = "5s"
             override val rampDuration: String? = "5min" // increase arrival rate to target value in 5 minutes
             override val scenariosLimit: Int? = null
+            override val poissonArrival: Boolean? = false
             override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
         }
 
@@ -63,6 +83,7 @@ class ScenarioRateSchedulerTest {
             override val rampArrivalPeriod: String? = "5s" // increase arrival rate each 5 seconds
             override val rampDuration: String? = "5min" // increase arrival rate to target value in 5 minutes
             override val scenariosLimit: Int? = null
+            override val poissonArrival: Boolean? = false
             override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
         }
 
@@ -80,6 +101,7 @@ class ScenarioRateSchedulerTest {
             override val rampArrivalPeriod: String? = null
             override val rampDuration: String? = null
             override val scenariosLimit: Int? = 30
+            override val poissonArrival: Boolean? = false
             override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
         }
 
@@ -96,6 +118,7 @@ class ScenarioRateSchedulerTest {
             override val rampArrivalRate: Double? = null
             override val rampArrivalPeriod: String? = null
             override val rampDuration: String? = null
+            override val poissonArrival: Boolean? = false
             override val scenariosLimit: Int? = null
             override val arrivalIntervals: MutableList<StressyArrivalInterval>
                 get() = mutableListOf(
@@ -108,6 +131,7 @@ class ScenarioRateSchedulerTest {
                             override val rampArrivalRate: Double? = null
                             override val rampArrivalPeriod: String? = null
                             override val rampDuration: String? = null
+                            override val poissonArrival: Boolean? = false
                         },
                         object : StressyArrivalInterval {
                             override val id: String = "second"
@@ -118,6 +142,7 @@ class ScenarioRateSchedulerTest {
                             override val rampArrivalRate: Double? = 0.2
                             override val rampArrivalPeriod: String? = "5s"
                             override val rampDuration: String? = "5min"
+                            override val poissonArrival: Boolean? = false
                         }
                 )
         }
@@ -129,7 +154,7 @@ class ScenarioRateSchedulerTest {
         RxJavaPlugins.setComputationSchedulerHandler { testScheduler }
         RxJavaPlugins.setNewThreadSchedulerHandler { testScheduler }
 
-        val observer = observeScenarioTicks(constantRateStage)
+        val observer = observeScenarioArrivals(constantRateStage)
                 .subscribeOn(testScheduler)
                 .test()
 
@@ -169,7 +194,7 @@ class ScenarioRateSchedulerTest {
         RxJavaPlugins.setComputationSchedulerHandler { testScheduler }
         RxJavaPlugins.setNewThreadSchedulerHandler { testScheduler }
 
-        val observer = observeScenarioTicks(stage)
+        val observer = observeScenarioArrivals(stage)
                 .subscribeOn(testScheduler)
                 .test()
 
@@ -203,7 +228,7 @@ class ScenarioRateSchedulerTest {
         RxJavaPlugins.setComputationSchedulerHandler { testScheduler }
         RxJavaPlugins.setNewThreadSchedulerHandler { testScheduler }
 
-        val observer = observeScenarioTicks(scenariosLimitStage)
+        val observer = observeScenarioArrivals(scenariosLimitStage)
                 .subscribeOn(testScheduler)
                 .test()
 
@@ -234,7 +259,7 @@ class ScenarioRateSchedulerTest {
         RxJavaPlugins.setComputationSchedulerHandler { testScheduler }
         RxJavaPlugins.setNewThreadSchedulerHandler { testScheduler }
 
-        val observer = observeScenarioTicks(arrivalIntervalsStage)
+        val observer = observeScenarioArrivals(arrivalIntervalsStage)
                 .subscribeOn(testScheduler)
                 .test()
 
@@ -275,6 +300,37 @@ class ScenarioRateSchedulerTest {
 
         // check that we've got right number of ticks in the end of stage interval
         observer.assertValueCount(eventsProcessed + 596)
+
+        observer.assertNoErrors()
+        observer.assertComplete()
+    }
+
+    @Test
+    fun testConstantRatePoissonSchedule() {
+        RxJavaPlugins.setIoSchedulerHandler { testScheduler }
+        RxJavaPlugins.setComputationSchedulerHandler { testScheduler }
+        RxJavaPlugins.setNewThreadSchedulerHandler { testScheduler }
+
+        val observer = observeScenarioArrivals(constantRatePoissonStage)
+                .subscribeOn(testScheduler)
+                .test()
+
+        testScheduler.advanceTimeBy(30, TimeUnit.SECONDS)
+
+        // check that we haven't got any values during stage delay interval
+        observer.assertSubscribed()
+        observer.assertNotComplete()
+        observer.assertValueCount(0)
+
+        testScheduler.advanceTimeBy(30, TimeUnit.SECONDS)
+
+        testScheduler.advanceTimeBy(100, TimeUnit.MINUTES)
+
+        val eventsProcessed = observer.events[0].size
+
+        print(eventsProcessed)
+
+        assertTrue(eventsProcessed in 0..40)
 
         observer.assertNoErrors()
         observer.assertComplete()

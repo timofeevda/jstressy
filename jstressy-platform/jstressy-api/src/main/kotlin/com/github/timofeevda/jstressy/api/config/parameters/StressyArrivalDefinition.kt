@@ -64,4 +64,10 @@ interface StressyArrivalDefinition {
      */
     val rampDuration: String?
 
+    /**
+     * Denotes if arrival process is Poisson arrival process and should be modelled as random
+     * arrivals with corresponding arrival rate
+     */
+    val poissonArrival: Boolean?
+
 }
