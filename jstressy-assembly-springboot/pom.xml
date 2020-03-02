@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.github.timofeevda.jstressy</groupId>
         <artifactId>jstressy</artifactId>
-        <version>1.0.20-SNAPSHOT</version>
+        <version>1.0.21-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -14,7 +14,7 @@
         <kotlin.version>1.3.0</kotlin.version>
         <spring.version>5.1.3.RELEASE</spring.version>
         <springboot.version>2.1.1.RELEASE</springboot.version>
-        <jstressy.version>1.0.20-SNAPSHOT</jstressy.version>
+        <jstressy.version>1.0.21-SNAPSHOT</jstressy.version>
         <javax.inject.version>1</javax.inject.version>
     </properties>
 
