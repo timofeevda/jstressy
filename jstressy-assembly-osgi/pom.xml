@@ -69,6 +69,11 @@
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
+            <artifactId>jstressy-echo-websocket-scenario-kotlin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-scenario-registry</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -119,6 +124,10 @@
                         <scenarioBundle>
                             <groupId>com.github.timofeevda.jstressy</groupId>
                             <artifactId>jstressy-dummy-scenario-kotlin</artifactId>
+                        </scenarioBundle>
+                        <scenarioBundle>
+                            <groupId>com.github.timofeevda.jstressy</groupId>
+                            <artifactId>jstressy-echo-websocket-scenario-kotlin</artifactId>
                         </scenarioBundle>
                     </scenarioBundles>
                 </configuration>

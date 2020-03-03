@@ -30,6 +30,7 @@
         <module>jstressy-dummy-scenario-kotlin</module>
         <module>jstressy-dummy-scenario-scala</module>
         <module>jstressy-structured-logging</module>
+        <module>jstressy-echo-websocket-scenario-kotlin</module>
     </modules>
 
 </project>

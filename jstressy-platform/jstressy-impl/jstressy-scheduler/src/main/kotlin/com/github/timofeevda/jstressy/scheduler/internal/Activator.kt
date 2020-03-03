@@ -71,7 +71,7 @@ class Activator : BundleActivator {
     }
 
     override fun stop(context: BundleContext) {
-        logger.info("Starting scenarios scheduler service")
+        logger.info("Stopping scenarios scheduler service")
     }
 
     private fun toObservableScenarioScheduler(context: BundleContext, stressyScenariosScheduler: StressyScenariosScheduler): ObservableSource<out StressyScenariosScheduler> {

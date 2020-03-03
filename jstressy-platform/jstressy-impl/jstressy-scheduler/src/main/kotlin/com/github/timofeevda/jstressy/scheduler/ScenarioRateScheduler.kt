@@ -89,7 +89,9 @@ object ScenarioRateScheduler {
     private fun observeWithoutRamping(arrivalDefinition: StressyArrivalDefinition,
                                       arrivalIntervalId: String = constantRateId): Observable<String> {
         return if (isPoissonArrival(arrivalDefinition)) {
-            observePoissonArrivals(arrivalDefinition.arrivalRate, if (arrivalIntervalId == constantRateId) constantPoissonId else arrivalIntervalId)
+            observePoissonArrivals(arrivalDefinition.arrivalRate,
+                    arrivalDefinition.poissonMaxRandom,
+                    if (arrivalIntervalId == constantRateId) constantPoissonId else arrivalIntervalId)
         } else {
             Observable.interval(0, toPeriod(arrivalDefinition.arrivalRate ?: 1.0), TimeUnit.MILLISECONDS)
                     .map { arrivalIntervalId }
@@ -123,7 +125,7 @@ object ScenarioRateScheduler {
                     .map { (arrivalDefinition.arrivalRate ?: 1.0) + rampIncrease * it }
                     .switchMap { newRate ->
                         if (isPoissonArrival(arrivalDefinition)) {
-                            observePoissonArrivals(newRate, rampingPoissonId)
+                            observePoissonArrivals(newRate, arrivalDefinition.poissonMaxRandom, rampingPoissonId)
                         } else {
                             Observable.interval(toPeriod(newRate), TimeUnit.MILLISECONDS)
                         }
@@ -138,10 +140,11 @@ object ScenarioRateScheduler {
      * Observe Poisson arrival events recursively scheduling next Poisson arrival after processing the previous one
      *
      * @param arrivalRate arrival rate which is used to determine the next Poisson arrival
+     * @param poissonMaxRandom max random value which can be used to achieve bigger intervals between Poisson arrivals
      * @param arrivalIntervalId arrival interval reference id
      */
-    private fun observePoissonArrivals(arrivalRate: Double?, arrivalIntervalId: String): Observable<String> {
-        return Observable.create { emitter -> observePoissonArrivals(emitter, arrivalRate, arrivalIntervalId) }
+    private fun observePoissonArrivals(arrivalRate: Double?, poissonMaxRandom: Double?, arrivalIntervalId: String): Observable<String> {
+        return Observable.create { emitter -> observePoissonArrivals(emitter, arrivalRate, poissonMaxRandom, arrivalIntervalId) }
     }
 
     /**
@@ -149,14 +152,22 @@ object ScenarioRateScheduler {
      *
      * @param emitter Poisson arrival event consumer
      * @param arrivalRate arrival rate which is used to determine the next Poisson arrival
+     * @param poissonMaxRandom max random value which can be used to achieve bigger intervals between Poisson arrivals
      * @param arrivalIntervalId arrival interval reference id
      */
     private fun observePoissonArrivals(emitter: ObservableEmitter<String>,
                                        arrivalRate: Double?,
+                                       poissonMaxRandom: Double?,
                                        arrivalIntervalId: String) {
-        SchedulerUtils.observeNextPoissonArrival(arrivalRate)
+        val nextPoissonArrival = if (poissonMaxRandom == null) {
+            SchedulerUtils.observeNextPoissonArrival(arrivalRate
+                    ?: 1.0)
+        } else {
+            SchedulerUtils.observeNextPoissonArrival(arrivalRate ?: 1.0, poissonMaxRandom)
+        }
+        nextPoissonArrival
                 .map { arrivalIntervalId }
-                .doAfterNext { observePoissonArrivals(emitter, arrivalRate, arrivalIntervalId) }
+                .doAfterNext { observePoissonArrivals(emitter, arrivalRate, poissonMaxRandom, arrivalIntervalId) }
                 .subscribe { id -> emitter.onNext(id) }
     }
 

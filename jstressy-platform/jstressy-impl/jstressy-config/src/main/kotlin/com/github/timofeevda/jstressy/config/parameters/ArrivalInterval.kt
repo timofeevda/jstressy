@@ -27,6 +27,7 @@ import com.github.timofeevda.jstressy.api.config.parameters.StressyArrivalInterv
 
 class ArrivalInterval : StressyArrivalInterval {
     override val poissonArrival: Boolean? = null
+    override val poissonMaxRandom: Double? = null
     override val id: String = ""
     override val duration: String =  "1min"
     override val delay: String? = null

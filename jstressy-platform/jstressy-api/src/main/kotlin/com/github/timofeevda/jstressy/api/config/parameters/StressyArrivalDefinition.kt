@@ -70,4 +70,10 @@ interface StressyArrivalDefinition {
      */
     val poissonArrival: Boolean?
 
+    /**
+     * Allows to redefine max random number in Poisson arrivals formula. It can be used to achieve bigger time
+     * intervals between arrival invocations
+     */
+    val poissonMaxRandom: Double?
+
 }

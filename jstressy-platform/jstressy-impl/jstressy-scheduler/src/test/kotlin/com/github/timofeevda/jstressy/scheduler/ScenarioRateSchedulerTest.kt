@@ -30,6 +30,7 @@ class ScenarioRateSchedulerTest {
             override val rampDuration: String? = null
             override val scenariosLimit: Int? = null
             override val poissonArrival: Boolean? = false
+            override val poissonMaxRandom: Double? = null
             override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
         }
 
@@ -48,6 +49,7 @@ class ScenarioRateSchedulerTest {
             override val rampDuration: String? = null
             override val scenariosLimit: Int? = null
             override val poissonArrival: Boolean? = true
+            override val poissonMaxRandom: Double? = null
             override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
         }
         private val rampingRateStage = object : StressyStage {
@@ -65,6 +67,7 @@ class ScenarioRateSchedulerTest {
             override val rampDuration: String? = "5min" // increase arrival rate to target value in 5 minutes
             override val scenariosLimit: Int? = null
             override val poissonArrival: Boolean? = false
+            override val poissonMaxRandom: Double? = null
             override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
         }
 
@@ -84,6 +87,7 @@ class ScenarioRateSchedulerTest {
             override val rampDuration: String? = "5min" // increase arrival rate to target value in 5 minutes
             override val scenariosLimit: Int? = null
             override val poissonArrival: Boolean? = false
+            override val poissonMaxRandom: Double? = null
             override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
         }
 
@@ -102,6 +106,7 @@ class ScenarioRateSchedulerTest {
             override val rampDuration: String? = null
             override val scenariosLimit: Int? = 30
             override val poissonArrival: Boolean? = false
+            override val poissonMaxRandom: Double? = null
             override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
         }
 
@@ -119,6 +124,7 @@ class ScenarioRateSchedulerTest {
             override val rampArrivalPeriod: String? = null
             override val rampDuration: String? = null
             override val poissonArrival: Boolean? = false
+            override val poissonMaxRandom: Double? = null
             override val scenariosLimit: Int? = null
             override val arrivalIntervals: MutableList<StressyArrivalInterval>
                 get() = mutableListOf(
@@ -132,6 +138,7 @@ class ScenarioRateSchedulerTest {
                             override val rampArrivalPeriod: String? = null
                             override val rampDuration: String? = null
                             override val poissonArrival: Boolean? = false
+                            override val poissonMaxRandom: Double? = null
                         },
                         object : StressyArrivalInterval {
                             override val id: String = "second"
@@ -143,6 +150,7 @@ class ScenarioRateSchedulerTest {
                             override val rampArrivalPeriod: String? = "5s"
                             override val rampDuration: String? = "5min"
                             override val poissonArrival: Boolean? = false
+                            override val poissonMaxRandom: Double? = null
                         }
                 )
         }
