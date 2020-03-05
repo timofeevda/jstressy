@@ -5,9 +5,6 @@
     <groupId>com.github.timofeevda.jstressy</groupId>
     <artifactId>jstressy</artifactId>
     <version>1.0.22-SNAPSHOT</version>
-    <modules>
-        <module>jstressy-assembly-docker</module>
-    </modules>
 
     <packaging>pom</packaging>
 
@@ -109,6 +106,7 @@
                 <module>jstressy-platform</module>
                 <module>jstressy-assembly-osgi</module>
                 <module>jstressy-assembly-springboot</module>
+                <module>jstressy-assembly-docker</module>
             </modules>
             <build>
                 <plugins>
