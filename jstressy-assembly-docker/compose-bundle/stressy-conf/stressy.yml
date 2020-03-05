@@ -1,0 +1,16 @@
+---
+globals:
+  host: echo.websocket.org           # required: path to the host
+  port: 443                # required: port
+  stressyMetricsPort: 8089  # required: port for exporting metrics (currently Prometheus format is supported)
+  stressyMetricsPath: /metrics
+  useSsl: true             # optional: turn on/off ssl (default: false)
+  insecureSsl: false        # optional: trust all certificates (default: false)
+  maxConnections: 3000      # optional: max connections pool size (default: 1000)
+stressPlan:
+  stages:
+    - name: First
+      scenarioName: EchoWebSocket
+      stageDelay: 10s
+      stageDuration: 48h
+      arrivalRate: 0.5

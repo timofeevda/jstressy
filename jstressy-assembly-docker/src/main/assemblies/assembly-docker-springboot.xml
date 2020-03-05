@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+    <id>zip</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <fileSets>
+        <fileSet>
+            <directory>./compose-bundle/grafana</directory>
+            <outputDirectory>stressy-bundle/grafana</outputDirectory>
+	    <lineEnding>unix</lineEnding>	
+        </fileSet>
+        <fileSet>
+            <directory>./compose-bundle/prometheus</directory>
+            <outputDirectory>stressy-bundle/prometheus</outputDirectory>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+        <fileSet>
+            <directory>./compose-bundle/stressy-conf</directory>
+            <outputDirectory>stressy-bundle/stressy-conf</outputDirectory>
+            <lineEnding>unix</lineEnding> 
+        </fileSet>
+        <fileSet>
+            <directory>./compose-bundle/stressy-boot</directory>
+            <outputDirectory>stressy-bundle/stressy</outputDirectory>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+    </fileSets>
+
+    <files>
+        <file>
+            <source>./compose-bundle/docker-compose.yml</source>
+            <outputDirectory>stressy-bundle</outputDirectory>
+            <lineEnding>unix</lineEnding> 
+        </file>
+        <file>
+            <source>../jstressy-assembly-springboot/target/jstressy.jar</source>
+            <outputDirectory>stressy-bundle/stressy</outputDirectory>
+        </file>
+    </files>
+
+</assembly>

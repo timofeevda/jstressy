@@ -1,0 +1,6 @@
+global:
+  scrape_interval: 15s
+scrape_configs:
+  - job_name: 'stressy'
+    static_configs:
+      - targets: ['stressy:8089']

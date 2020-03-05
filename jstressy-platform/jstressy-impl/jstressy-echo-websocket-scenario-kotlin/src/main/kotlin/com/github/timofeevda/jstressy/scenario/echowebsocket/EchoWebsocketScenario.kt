@@ -11,6 +11,9 @@ import java.util.function.Supplier
 
 private val echoWebsockets = AtomicLong(0)
 
+private val messagesSent = AtomicLong(0)
+private val messagesReceived = AtomicLong(0)
+
 class EchoWebSocketScenario internal constructor(private val metricsRegistry: MetricsRegistry,
                                                  private val requestExecutor: RequestExecutor,
                                                  configurationService: ConfigurationService) : Scenario {
@@ -24,6 +27,8 @@ class EchoWebSocketScenario internal constructor(private val metricsRegistry: Me
 
     init {
         metricsRegistry.gauge("echo-websockets", Supplier { echoWebsockets.toDouble() })
+        metricsRegistry.gauge("messages-sent", Supplier { messagesSent.toDouble() })
+        metricsRegistry.gauge("messages-received", Supplier { messagesReceived.toDouble() })
     }
 
     override fun start() {
@@ -31,13 +36,15 @@ class EchoWebSocketScenario internal constructor(private val metricsRegistry: Me
                 .subscribe({ websocket ->
                     websocket.textMessageHandler { text ->
                         logger.info("rcv: $text")
-                        websocket.writeTextMessage(text)
+                        messagesReceived.incrementAndGet()
+                        //websocket.writeTextMessage(text)
                     }
                     websocket.closeHandler {
                         logger.info("closed")
                         echoWebsockets.decrementAndGet()
                     }
-                    websocket.writeTextMessage("hello!")
+                    //websocket.writeTextMessage("hello!")
+                    messagesSent.incrementAndGet()
                     echoWebsockets.incrementAndGet()
                 }, { error ->
                     logger.error("Error establishing websocket connection", error)
