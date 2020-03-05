@@ -112,6 +112,8 @@ stressPlan:
 ```
 Note: *rampArrivalRate* can be used instead of *rampArrivalPeriod* to describe how often we need to adjust arrival rate
 
+![](https://github.com/timofeevda/jstressy/blob/master/docs/figures/ramping_rate.PNG)
+
 ### Poisson arrivals
 
 JStressy supports modeling of homogeneous Poisson arrivals by using constant arrival rate and *poissonArrival* option.
@@ -128,6 +130,8 @@ stressPlan:
 
 Note: by default, JStressy uses [0,1) random numbers interval to calculation the next Poisson arrival. *poissonMaxRandom* property can be used to set the random number maximum value (exclusive) to control the number of Poisson arrivals and the interval between Poisson arrival. Low max random values give you fewer arrivals with bigger intervals between each arrival.
 
+![](https://github.com/timofeevda/jstressy/blob/master/docs/figures/poisson_rate.PNG)
+
 JStressy also supports modeling of non-homogeneous Poisson arrivals by using ramping arrival rate and *poissonArrival* option. In this mode, the next arrival time will be determined based on the current arrival rate.
 ```yaml
 stressPlan:                     
@@ -143,7 +147,31 @@ stressPlan:
 ```
 
 ### Interval arrivals
-JStressy can combine different arrival types using *arrivalIntervals* property allowing to model different use cases and make scenario arrivals close to real life. Below is the example of mixing different arrivals type for one stage. Constant rate is mixed with Poisson arrivals and ramping rate in the end.
+JStressy can combine different arrival types using *arrivalIntervals* property allowing to model different use cases and make scenario arrivals close to real life. 
+
+Below is the example of defining arrival rates for one stage. Several constant rates defined.
+```yaml
+stressPlan:                     
+  stages:                       
+    - name: IntervalArrivals
+      ....
+      arrivalIntervals:
+      - id: first
+        arrivalRate: 1
+        duration: 5m
+      - id: second
+        arrivalRate: 3
+        delay: 5m
+        duration: 5m
+      - id: third
+        arrivalRate: 1        
+        delay: 10m
+        duration: 5m
+      ...
+```
+![](https://github.com/timofeevda/jstressy/blob/master/docs/figures/intervals_rate.PNG)
+
+Below is the example of mixing different arrivals type for one stage. Constant rate is mixed with Poisson arrivals and ramping rate in the end.
 ```yaml
 stressPlan:                     
   stages:                       
@@ -167,3 +195,4 @@ stressPlan:
         duration: 10m
       ...
 ```
+![](https://github.com/timofeevda/jstressy/blob/master/docs/figures/mixed_rate.PNG)
