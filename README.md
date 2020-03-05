@@ -96,6 +96,7 @@ stressPlan:
       arrivalRate: 1 # constant rate - 1 per second
       ...
 ```
+![](docs/figures/const_rate.png)
 
 ### Ramping rate arrivals
 ```yaml
