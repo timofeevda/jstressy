@@ -96,7 +96,7 @@ stressPlan:
       arrivalRate: 1 # constant rate - 1 per second
       ...
 ```
-![](docs/figures/const_rate.png)
+![](https://github.com/timofeevda/jstressy/blob/master/docs/figures/const_rate.PNG)
 
 ### Ramping rate arrivals
 ```yaml
