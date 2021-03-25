@@ -25,7 +25,6 @@ package com.github.timofeevda.jstressy.scheduler
 import com.github.timofeevda.jstressy.api.config.parameters.StressyArrivalDefinition
 import com.github.timofeevda.jstressy.api.config.parameters.StressyStage
 import com.github.timofeevda.jstressy.utils.SchedulerUtils
-import com.github.timofeevda.jstressy.utils.StressyUtils
 import com.github.timofeevda.jstressy.utils.StressyUtils.parseDuration
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
@@ -37,7 +36,7 @@ import java.util.concurrent.TimeUnit
  */
 object ScenarioRateScheduler {
 
-    private const val constantRateId = "ConstantArrivaRate"
+    private const val constantRateId = "ConstantArrivalRate"
     private const val constantPoissonId = "ConstantPoissonArrival"
 
     private const val rampingRateId = "RampingArrivalRate"
@@ -53,8 +52,8 @@ object ScenarioRateScheduler {
      * @param stage stage definition
      */
     fun observeScenarioArrivals(stage: StressyStage): Observable<String> {
-        val delay = StressyUtils.parseDuration(stage.stageDelay ?: "0ms").toMilliseconds()
-        val duration = StressyUtils.parseDuration(stage.stageDuration).toMilliseconds()
+        val delay = parseDuration(stage.stageDelay ?: "0ms").toMilliseconds()
+        val duration = parseDuration(stage.stageDuration).toMilliseconds()
         val scenariosLimit = stage.scenariosLimit
         val timeBoundedScenariosStream = Observable
                 .timer(delay, TimeUnit.MILLISECONDS)
@@ -71,7 +70,7 @@ object ScenarioRateScheduler {
             null
         } else {
             Observable.merge(stage.arrivalIntervals.map { arrivalInterval ->
-                val delay = StressyUtils.parseDuration(arrivalInterval.delay ?: "0ms").toMilliseconds()
+                val delay = parseDuration(arrivalInterval.delay ?: "0ms").toMilliseconds()
                 val observable = Observable.timer(delay, TimeUnit.MILLISECONDS)
                         .flatMap {
                             observeWithRamping(arrivalInterval, arrivalInterval.id)

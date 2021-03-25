@@ -46,8 +46,8 @@ open class StressyHttpClientService(vertxService: VertxService,
                 .setSsl(globals.useSsl)
                 .setTrustAll(globals.insecureSsl)
                 .setMaxPoolSize(globals.maxConnections)
-                .setTryUsePerMessageWebsocketCompression(globals.webSocketPerMessageDeflate)
-                .setWebsocketCompressionLevel(globals.webSocketCompressionLevel))
+                .setTryUsePerMessageWebSocketCompression(globals.webSocketPerMessageDeflate)
+                .setWebSocketCompressionLevel(globals.webSocketCompressionLevel))
     }
 
     override fun get(): HttpClient {

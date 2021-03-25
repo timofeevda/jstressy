@@ -11,19 +11,12 @@
     <artifactId>jstressy-assembly-springboot</artifactId>
 
     <properties>
-        <kotlin.version>1.3.0</kotlin.version>
-        <spring.version>5.1.3.RELEASE</spring.version>
-        <springboot.version>2.1.1.RELEASE</springboot.version>
-        <jstressy.version>1.0.23-SNAPSHOT</jstressy.version>
+        <spring.version>5.3.4</spring.version>
+        <springboot.version>2.4.3</springboot.version>
         <javax.inject.version>1</javax.inject.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib</artifactId>
-            <version>${kotlin.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
@@ -37,52 +30,52 @@
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-utils</artifactId>
-            <version>${jstressy.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-vertx</artifactId>
-            <version>${jstressy.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-config</artifactId>
-            <version>${jstressy.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-cookiesession</artifactId>
-            <version>${jstressy.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-httpclient</artifactId>
-            <version>${jstressy.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-httprequest</artifactId>
-            <version>${jstressy.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-scenario-registry</artifactId>
-            <version>${jstressy.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-scheduler</artifactId>
-            <version>${jstressy.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-echo-websocket-scenario-kotlin</artifactId>
-            <version>${jstressy.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-metrics-micrometer</artifactId>
-            <version>${jstressy.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.inject</groupId>

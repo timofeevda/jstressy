@@ -44,12 +44,9 @@ open class StressyScenariosScheduler(private val vertxService: VertxService,
                                      private val requestExecutorService: RequestExecutorService,
                                      private val configurationService: ConfigurationService,
                                      metricsRegistryService: MetricsRegistryService,
-                                     val scenarioRegistryService: ScenarioRegistryService) : ScenarioSchedulerService {
+                                     private val scenarioRegistryService: ScenarioRegistryService) : ScenarioSchedulerService {
 
     private val metricsRegistry = metricsRegistryService.get()
-
-    val listOfStages: List<StressyStage>
-        get() = configurationService.configuration.stressPlan.stages
 
     override fun observeScenarios(): Observable<Scenario> {
         return observeScenarios(configurationService.configuration.stressPlan.stages)
@@ -74,7 +71,7 @@ open class StressyScenariosScheduler(private val vertxService: VertxService,
         }
         return if (arrivalIntervalId != null) {
             Observable.just(scenarioProvider?.get()?.withArrivalInterval(arrivalIntervalId)!!
-                    .withParameters(stage.scenarioParameters));
+                    .withParameters(stage.scenarioParameters))
         } else {
             Observable.just(scenarioProvider?.get()?.withParameters(stage.scenarioParameters))
         }

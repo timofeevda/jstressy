@@ -35,8 +35,8 @@ import com.github.timofeevda.jstressy.utils.logging.LazyLogging
 import io.netty.handler.codec.http.DefaultHttpHeaders
 import io.reactivex.Single
 import io.vertx.core.http.HttpMethod
+import io.vertx.core.http.WebSocketConnectOptions
 import io.vertx.core.http.impl.HeadersAdaptor
-import io.vertx.reactivex.core.MultiMap
 import io.vertx.reactivex.core.http.HttpClient
 import io.vertx.reactivex.core.http.HttpClientRequest
 import io.vertx.reactivex.core.http.HttpClientResponse
@@ -108,16 +108,18 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
     override fun websocket(host: String, port: Int, requestURI: String): Single<WebSocket> {
         val headersAdaptor = HeadersAdaptor(DefaultHttpHeaders())
         httpSessionManager.headers.forEach { header -> headersAdaptor.add(header.name, header.value) }
-        customHeaders.forEach { name: String, value: String -> headersAdaptor.add(name, value) }
+        customHeaders.forEach { (name: String, value: String) -> headersAdaptor.add(name, value) }
         return Single.create { emitter ->
             val requestTimer = RequestTimer("stressy.request.executor.websocket.setup.$host:$port")
-            client.websocketStream(port, host, requestURI, MultiMap(headersAdaptor))
-                    .toObservable()
-                    .doOnSubscribe { requestTimer.start() }
-                    .doFinally { requestTimer.stop() }
-                    .subscribe(
-                            { emitter.onSuccess(it) },
-                            { emitter.onError(it) })
+
+            val connectOptions = WebSocketConnectOptions().setHost(host).setPort(port).setURI(requestURI).setHeaders(headersAdaptor)
+
+            client.rxWebSocket(connectOptions)
+                .doOnSubscribe { requestTimer.start() }
+                .doFinally { requestTimer.stop() }
+                .subscribe(
+                    { emitter.onSuccess(it) },
+                    { emitter.onError(it) })
         }
     }
 
@@ -134,7 +136,7 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
     }
 
     private fun addCustomHeaders(request: HttpClientRequest): HttpClientRequest {
-        customHeaders.forEach { name: String, value: String -> request.putHeader(name, value) }
+        customHeaders.forEach { (name: String, value: String) -> request.putHeader(name, value) }
         return request
     }
 
@@ -182,13 +184,13 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
 
     private fun processFormDataRequest(request: HttpClientRequest, data: String): HttpClientRequest {
         return addCustomHeaders(httpSessionManager.processRequest(request))
-                .putHeader("Content-Length", Integer.toString(data.toByteArray().size))
+                .putHeader("Content-Length", data.toByteArray().size.toString())
                 .putHeader("Content-Type", "application/x-www-form-urlencoded")
     }
 
     private fun processJsonDataRequest(request: HttpClientRequest, jsonData: String): HttpClientRequest {
         return addCustomHeaders(httpSessionManager.processRequest(request))
-                .putHeader("Content-Length", Integer.toString(jsonData.toByteArray().size))
+                .putHeader("Content-Length", jsonData.toByteArray().size.toString())
                 .putHeader("Content-Type", "application/json")
     }
 
@@ -213,7 +215,7 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
         return "id: $uuid uri: ${rs.request().uri()} headers: ${multiMapToString(rs.headers())}"
     }
 
-    private fun multiMapToString(multiMap: MultiMap): String {
+    private fun multiMapToString(multiMap: io.vertx.reactivex.core.MultiMap): String {
         return multiMap.delegate.entries().joinToString(";") { "[${it.key} -> ${it.value}]" }
     }
 }

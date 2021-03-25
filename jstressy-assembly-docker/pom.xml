@@ -16,12 +16,6 @@
     <dependencies>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
-            <artifactId>jstressy-assembly-osgi</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-assembly-springboot</artifactId>
             <version>${project.version}</version>
             <type>pom</type>
@@ -34,21 +28,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
-                    <execution>
-                        <id>osgi</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>src/main/assemblies/assembly-docker-osgi.xml</descriptor>
-                            </descriptors>
-                            <finalName>stressy-docker-compose-osgi</finalName>
-                            <outputDirectory>target</outputDirectory>
-                            <appendAssemblyId>false</appendAssemblyId>
-                        </configuration>
-                    </execution>
                     <execution>
                         <id>springboot</id>
                         <phase>package</phase>

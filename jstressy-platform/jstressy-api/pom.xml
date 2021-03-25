@@ -10,13 +10,6 @@
 
     <artifactId>jstressy-api</artifactId>
 
-    <packaging>bundle</packaging>
-
-    <properties>
-        <bundle.symbolicName>com.github.timofeevda.jstressy-api</bundle.symbolicName>
-        <bundle.namespace>com.github.timofeevda.jstressy.api</bundle.namespace>
-    </properties>
-
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
@@ -25,17 +18,6 @@
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <groupId>org.jetbrains.kotlin</groupId>
             </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
-                        <Export-Package>${bundle.namespace}.*;version="${project.version}"</Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
@@ -43,7 +25,6 @@
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>

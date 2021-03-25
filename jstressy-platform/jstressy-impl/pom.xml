@@ -14,7 +14,6 @@
 
     <modules>
         <module>jstressy-config</module>
-        <module>jstressy-logger</module>
         <module>jstressy-vertx</module>
         <module>jstressy-utils</module>
         <module>jstressy-httpclient</module>
@@ -26,10 +25,7 @@
         <module>jstressy-cookiesession</module>
         <module>jstressy-websocket-utils</module>
         <module>jstressy-vertx-metrics</module>
-        <module>jstressy-dummy-scenario-java</module>
         <module>jstressy-dummy-scenario-kotlin</module>
-        <module>jstressy-dummy-scenario-scala</module>
-        <module>jstressy-structured-logging</module>
         <module>jstressy-echo-websocket-scenario-kotlin</module>
     </modules>
 

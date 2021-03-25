@@ -37,13 +37,13 @@ class EchoWebSocketScenario internal constructor(private val metricsRegistry: Me
                     websocket.textMessageHandler { text ->
                         logger.info("rcv: $text")
                         messagesReceived.incrementAndGet()
-                        //websocket.writeTextMessage(text)
+                        websocket.writeTextMessage(text)
                     }
                     websocket.closeHandler {
                         logger.info("closed")
                         echoWebsockets.decrementAndGet()
                     }
-                    //websocket.writeTextMessage("hello!")
+                    websocket.writeTextMessage("hello!")
                     messagesSent.incrementAndGet()
                     echoWebsockets.incrementAndGet()
                 }, { error ->
