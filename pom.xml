@@ -98,6 +98,9 @@
     <profiles>
         <profile>
             <id>release</id>
+            <modules>
+                <module>jstressy-platform</module>
+            </modules>
             <build>
                 <plugins>
                     <plugin>

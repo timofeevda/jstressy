@@ -26,11 +26,6 @@
             <artifactId>kotlin-stdlib</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-osgi-bundle</artifactId>
-            <version>${kotlin.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-utils</artifactId>
             <version>${project.version}</version>
