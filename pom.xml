@@ -26,6 +26,7 @@
         <structuredlog4j.version>1.0.0</structuredlog4j.version>
 
         <kotlin.version>1.4.31</kotlin.version>
+<!--        <dokka.version>1.4.30</dokka.version>-->
         <junit-jupiter-api.version>5.1.0</junit-jupiter-api.version>
         <micrometer.version>1.6.5</micrometer.version>
 
@@ -33,7 +34,6 @@
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
-        <maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <maven-nexus-stating-plugin.version>1.6.7</maven-nexus-stating-plugin.version>
         <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
@@ -82,6 +82,14 @@
         </repository>
     </repositories>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jcenter</id>
+            <name>JCenter</name>
+            <url>https://jcenter.bintray.com/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <scm>
         <url>https://github.com/timofeevda/jstressy</url>
         <connection>scm:git:git@github.com:timofeevda/jstressy.git</connection>
@@ -115,9 +123,10 @@
                     <plugin>
                         <artifactId>maven-source-plugin</artifactId>
                     </plugin>
-                    <plugin>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                    </plugin>
+<!--                    <plugin>-->
+<!--                        <groupId>org.jetbrains.dokka</groupId>-->
+<!--                        <artifactId>dokka-maven-plugin</artifactId>-->
+<!--                    </plugin>-->
                     <plugin>
                         <artifactId>maven-gpg-plugin</artifactId>
                     </plugin>
@@ -165,7 +174,28 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>${maven-jar-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>build-jar</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                        <!-- Workaround to follow Sonatype requirements https://central.sonatype.org/pages/requirements.html
+                     while Dokka doesn't work -->
+                        <execution>
+                            <id>empty-javadoc-jar</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                            <configuration>
+                                <classifier>javadoc</classifier>
+                                <classesDirectory>${basedir}/javadoc</classesDirectory>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -180,19 +210,33 @@
                         </execution>
                     </executions>
                 </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${maven-javadoc-plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>attach-javadocs</id>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
+<!-- has conflicts in coroutines-core library and doesn't work -->
+<!--                <plugin>-->
+<!--                    <groupId>org.jetbrains.dokka</groupId>-->
+<!--                    <artifactId>dokka-maven-plugin</artifactId>-->
+<!--                    <version>${dokka.version}</version>-->
+<!--                    <executions>-->
+<!--                        <execution>-->
+<!--                            <phase>prepare-package</phase>-->
+<!--                            <goals>-->
+<!--                                <goal>javadoc</goal>-->
+<!--                                <goal>javadocJar</goal>-->
+<!--                            </goals>-->
+<!--                        </execution>-->
+<!--                    </executions>-->
+<!--                    <dependencies>-->
+<!--                        <dependency>-->
+<!--                            <groupId>org.jetbrains.dokka</groupId>-->
+<!--                            <artifactId>dokka-base</artifactId>-->
+<!--                            <version>${dokka.version}</version>-->
+<!--                        </dependency>-->
+<!--                        <dependency>-->
+<!--                            <groupId>org.jetbrains.kotlinx</groupId>-->
+<!--                            <artifactId>kotlinx-html-jvm</artifactId>-->
+<!--                            <version>0.7.2</version>-->
+<!--                        </dependency>-->
+<!--                    </dependencies>-->
+<!--                </plugin>-->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
