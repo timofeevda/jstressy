@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.github.timofeevda.jstressy</groupId>
         <artifactId>jstressy-platform</artifactId>
-        <version>1.1.1</version>
+        <version>1.1.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>jstressy-impl</artifactId>
@@ -25,8 +25,6 @@
         <module>jstressy-cookiesession</module>
         <module>jstressy-websocket-utils</module>
         <module>jstressy-vertx-metrics</module>
-        <module>jstressy-dummy-scenario-kotlin</module>
-        <module>jstressy-echo-websocket-scenario-kotlin</module>
     </modules>
 
 </project>

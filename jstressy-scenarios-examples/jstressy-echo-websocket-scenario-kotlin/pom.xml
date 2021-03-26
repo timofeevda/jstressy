@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>jstressy-impl</artifactId>
+        <artifactId>jstressy-scenarios-examples</artifactId>
         <groupId>com.github.timofeevda.jstressy</groupId>
-        <version>1.1.1</version>
+        <version>1.1.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jstressy-dummy-scenario-kotlin</artifactId>
+    <artifactId>jstressy-echo-websocket-scenario-kotlin</artifactId>
+
+    <description>Scenario demonstrating WebSocket functionality</description>
 
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
@@ -40,4 +42,5 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+
 </project>

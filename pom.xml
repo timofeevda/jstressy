@@ -4,7 +4,10 @@
 
     <groupId>com.github.timofeevda.jstressy</groupId>
     <artifactId>jstressy</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2-SNAPSHOT</version>
+    <modules>
+        <module>jstressy-scenarios-examples</module>
+    </modules>
 
     <packaging>pom</packaging>
 
@@ -99,6 +102,7 @@
                 <module>jstressy-platform</module>
                 <module>jstressy-assembly-springboot</module>
                 <module>jstressy-assembly-docker</module>
+                <module>jstressy-scenarios-examples</module>
             </modules>
         </profile>
         <profile>
