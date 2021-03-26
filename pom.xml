@@ -89,13 +89,18 @@
         <tag>HEAD</tag>
     </scm>
 
-    <modules>
-        <module>jstressy-platform</module>
-        <module>jstressy-assembly-springboot</module>
-        <module>jstressy-assembly-docker</module>
-    </modules>
-
     <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>jstressy-platform</module>
+                <module>jstressy-assembly-springboot</module>
+                <module>jstressy-assembly-docker</module>
+            </modules>
+        </profile>
         <profile>
             <id>release</id>
             <modules>
