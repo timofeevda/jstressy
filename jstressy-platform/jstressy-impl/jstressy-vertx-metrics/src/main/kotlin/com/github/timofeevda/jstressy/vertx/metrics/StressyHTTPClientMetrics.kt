@@ -25,166 +25,171 @@ package com.github.timofeevda.jstressy.vertx.metrics
 
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.metrics.type.Timer
-import com.github.timofeevda.jstressy.vertx.metrics.http.HttpEndpointMetric
-import com.github.timofeevda.jstressy.vertx.metrics.http.HttpRequestMetric
-import com.github.timofeevda.jstressy.vertx.metrics.http.WebSocketRequestMetric
-import io.vertx.core.http.HttpClientRequest
-import io.vertx.core.http.HttpClientResponse
 import io.vertx.core.http.WebSocket
 import io.vertx.core.net.SocketAddress
+import io.vertx.core.spi.metrics.ClientMetrics
 import io.vertx.core.spi.metrics.HttpClientMetrics
-import java.util.concurrent.ConcurrentHashMap
+import io.vertx.core.spi.observability.HttpRequest
+import io.vertx.core.spi.observability.HttpResponse
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
-import java.util.function.Function
-import java.util.function.Supplier
 
-const val METRIC_PREFIX = "vertx.metrics.http.client."
-private const val METRIC_PREFIX_RECEIVED = "${METRIC_PREFIX}bytes.received"
-private const val METRIC_PREFIX_SENT = "${METRIC_PREFIX}bytes.sent"
+const val METRIC_PREFIX = "vertx.http.client"
 
 private val bytesReceived: AtomicLong = AtomicLong()
 private val bytesSent: AtomicLong = AtomicLong()
-
-private val queueSize = ConcurrentHashMap<String, AtomicInteger>()
-private val openSockets = ConcurrentHashMap<String, AtomicInteger>()
-private val exceptions = ConcurrentHashMap<String, AtomicInteger>()
-private val httpRequestStatuses = ConcurrentHashMap<String, AtomicInteger>()
-
+private val requests: AtomicLong = AtomicLong()
+private val requestResets: AtomicLong = AtomicLong()
+private val requestCount: AtomicLong = AtomicLong()
+private val queueSize: AtomicLong = AtomicLong()
+private val connections: AtomicLong = AtomicLong()
 private val openWebSockets: AtomicLong = AtomicLong()
 
-class StressyHTTPClientMetrics(private val metricsRegistry: MetricsRegistry) : HttpClientMetrics<HttpRequestMetric, WebSocketRequestMetric, String, HttpEndpointMetric, Timer> {
+/**
+ * Custom implementation of Vert.X HTTP client metrics which can be used for more fine-grained control over
+ * metrics provided by HTTP client
+ */
+class StressyHTTPClientMetrics(private val metricsRegistry: MetricsRegistry) :
+    HttpClientMetrics<HTTPRequestMetric, WebSocketRequestMetric, HTTPSocketMetric, Timer.Context> {
 
-    init {
-        metricsRegistry.gauge(METRIC_PREFIX_RECEIVED, Supplier { bytesReceived.toDouble() })
-        metricsRegistry.gauge(METRIC_PREFIX_SENT, Supplier { bytesSent.toDouble() })
+    override fun createEndpointMetrics(
+        remoteAddress: SocketAddress?,
+        maxPoolSize: Int
+    ): ClientMetrics<HTTPRequestMetric, Timer.Context, HttpRequest, HttpResponse> {
+        metricsRegistry.gauge("${METRIC_PREFIX}.connections",
+            "Number of connections to the remote host currently opened", { connections.toDouble() })
+
+        metricsRegistry.gauge("${METRIC_PREFIX}.ws.connections",
+            "Number of websockets currently opened", { openWebSockets.toDouble() })
+
+        metricsRegistry.gauge("${METRIC_PREFIX}.queue.size",
+            "Number of pending requests in queue", { queueSize.toDouble() })
+
+        metricsRegistry.gauge("${METRIC_PREFIX}.bytes.received",
+            "Number of bytes received from the remote host", { bytesReceived.toDouble() })
+
+        metricsRegistry.gauge("${METRIC_PREFIX}.bytes.sent",
+            "Number of bytes sent to the remote host", { bytesSent.toDouble() })
+
+        metricsRegistry.gauge("${METRIC_PREFIX}.requests",
+            "Number of requests waiting for the response", { requests.toDouble() })
+
+        metricsRegistry.gauge("${METRIC_PREFIX}.requests",
+            "Number of requests sent", { requestCount.toDouble() })
+
+        return HTTPEndpointMetrics(metricsRegistry)
     }
 
     override fun disconnected(webSocketMetric: WebSocketRequestMetric?) {
-        if (webSocketMetric?.webSocket != null) {
+        if (webSocketMetric != null) {
             openWebSockets.decrementAndGet()
         }
     }
 
-    override fun connected(endpointMetric: HttpEndpointMetric?, socketMetric: String?, webSocket: WebSocket?): WebSocketRequestMetric {
+    override fun connected(webSocket: WebSocket?): WebSocketRequestMetric {
         if (webSocket != null) {
             openWebSockets.incrementAndGet()
         }
-        return WebSocketRequestMetric(webSocket)
+        return WebSocketRequestMetric()
     }
 
-    override fun disconnected(socketMetric: String?, remoteAddress: SocketAddress?) {
+    override fun disconnected(socketMetric: HTTPSocketMetric?, remoteAddress: SocketAddress?) {
         if (socketMetric != null) {
-            openSockets.getOrDefault("${socketMetric}_open_sockets", AtomicInteger(0)).decrementAndGet()
+            connections.decrementAndGet()
         }
     }
 
-
-    override fun connected(remoteAddress: SocketAddress?, remoteName: String?): String {
-        if (remoteAddress != null) {
-            val endpointName = "$remoteName:${remoteAddress.port()}"
-            openSockets.getOrDefault("${endpointName}_open_sockets", AtomicInteger(0)).incrementAndGet()
-            return endpointName
-        }
-        return ""
+    override fun connected(remoteAddress: SocketAddress?, remoteName: String?): HTTPSocketMetric {
+        connections.incrementAndGet()
+        return HTTPSocketMetric()
     }
 
-    override fun createEndpoint(host: String, port: Int, maxPoolSize: Int): HttpEndpointMetric {
-        val endpointName = "$host:$port"
-        metricsRegistry.gauge("$METRIC_PREFIX${endpointName}_open_sockets", openSockets, Function { openSockets.getOrDefault(endpointName, AtomicInteger(0)).toDouble() })
-        metricsRegistry.gauge("${METRIC_PREFIX}_open_websockets", openWebSockets, Function { openWebSockets.toDouble() })
-        metricsRegistry.gauge("$METRIC_PREFIX${endpointName}_queue_size", queueSize, Function { queueSize.getOrDefault(endpointName, AtomicInteger(0)).toDouble() })
-        return HttpEndpointMetric(endpointName, metricsRegistry)
-    }
-
-    override fun endpointConnected(endpointMetric: HttpEndpointMetric?, socketMetric: String?) {
-        if (endpointMetric != null) {
-            openSockets.computeIfAbsent(endpointMetric.endpointName) { AtomicInteger(0) }.incrementAndGet()
-        }
-    }
-
-    override fun endpointDisconnected(endpointMetric: HttpEndpointMetric?, socketMetric: String?) {
-        if (endpointMetric != null) {
-            openSockets[endpointMetric.endpointName]?.decrementAndGet()
-        }
-    }
-
-    override fun enqueueRequest(endpointMetric: HttpEndpointMetric?): Timer? {
-        return if (endpointMetric != null) {
-            queueSize.getOrDefault(endpointMetric.endpointName, AtomicInteger(0)).incrementAndGet()
-            endpointMetric.queueDelay
-        } else {
-            null
-        }
-    }
-
-    override fun dequeueRequest(endpointMetric: HttpEndpointMetric?, taskMetric: Timer?) {
-        if (endpointMetric != null) {
-            taskMetric?.context()?.stop()
-            queueSize.getOrDefault(endpointMetric.endpointName, AtomicInteger(0)).decrementAndGet()
-        }
-    }
-
-    override fun requestBegin(endpointMetric: HttpEndpointMetric?, socketMetric: String?, localAddress: SocketAddress?, remoteAddress: SocketAddress?, request: HttpClientRequest?): HttpRequestMetric? {
-        return if (endpointMetric != null && request != null) {
-            HttpRequestMetric(endpointMetric, request.uri(), request.method())
-        } else {
-            null
-        }
-    }
-
-    override fun requestEnd(requestMetric: HttpRequestMetric?) {
-        requestMetric?.requestEnd = System.nanoTime()
-    }
-
-    override fun responseBegin(requestMetric: HttpRequestMetric?, response: HttpClientResponse?) {
-        if (requestMetric != null && response != null) {
-            val waitTime = System.nanoTime() - requestMetric.requestEnd
-            requestMetric.endpointMetric.ttfb.record(waitTime, TimeUnit.NANOSECONDS)
-        }
-    }
-
-    override fun responseEnd(requestMetric: HttpRequestMetric?, response: HttpClientResponse?) {
-        if (requestMetric != null && response != null) {
-            reportRequestEnd(requestMetric, response.statusCode())
-        }
-    }
-
-    override fun requestReset(requestMetric: HttpRequestMetric?) {
-        reportRequestEnd(requestMetric, -1)
-    }
-
-    override fun responsePushed(endpointMetric: HttpEndpointMetric?, socketMetric: String?, localAddress: SocketAddress?, remoteAddress: SocketAddress?, request: HttpClientRequest?): HttpRequestMetric? {
-        return requestBegin(endpointMetric, socketMetric, localAddress, remoteAddress, request)
-    }
-
-    override fun bytesRead(socketMetric: String?, remoteAddress: SocketAddress?, numberOfBytes: Long) {
+    override fun bytesRead(socketMetric: HTTPSocketMetric?, remoteAddress: SocketAddress?, numberOfBytes: Long) {
         bytesReceived.addAndGet(numberOfBytes)
     }
 
-    override fun bytesWritten(socketMetric: String?, remoteAddress: SocketAddress?, numberOfBytes: Long) {
+    override fun bytesWritten(socketMetric: HTTPSocketMetric?, remoteAddress: SocketAddress?, numberOfBytes: Long) {
         bytesSent.addAndGet(numberOfBytes)
     }
 
-    override fun exceptionOccurred(socketMetric: String?, remoteAddress: SocketAddress?, t: Throwable?) {
+    override fun exceptionOccurred(socketMetric: HTTPSocketMetric?, remoteAddress: SocketAddress?, t: Throwable?) {
         if (remoteAddress != null) {
-            exceptions.getOrDefault("${remoteAddress.host()}:${remoteAddress.port()}", AtomicInteger(0)).incrementAndGet()
+            metricsRegistry.counter(
+                "${METRIC_PREFIX}.errors",
+                "Number of errors occurred for the connections to the remote host"
+            ).inc()
         }
     }
 
-    private fun reportRequestEnd(requestMetric: HttpRequestMetric?, statusCode: Int) {
+}
+
+class WebSocketRequestMetric
+class HTTPRequestMetric {
+    val requestStart = System.nanoTime()
+    var requestEnd: Long = 0
+    var response: HttpResponse? = null
+}
+
+class HTTPSocketMetric
+
+class HTTPEndpointMetrics(
+    private val metricsRegistry: MetricsRegistry
+) : ClientMetrics<HTTPRequestMetric, Timer.Context, HttpRequest, HttpResponse> {
+
+    override fun enqueueRequest(): Timer.Context {
+        queueSize.incrementAndGet()
+        return metricsRegistry.timer("${METRIC_PREFIX}.queue.delay", "Time spent in queue before being processed")
+            .context()
+    }
+
+    override fun dequeueRequest(timerContext: Timer.Context?) {
+        timerContext?.stop()
+        queueSize.decrementAndGet()
+    }
+
+    override fun requestBegin(uri: String?, request: HttpRequest?): HTTPRequestMetric? {
+        return if (request != null) {
+            requests.incrementAndGet()
+            requestCount.incrementAndGet()
+            HTTPRequestMetric()
+        } else {
+            null
+        }
+    }
+
+    override fun requestEnd(requestMetric: HTTPRequestMetric?, bytesWritten: Long) {
+        requests.decrementAndGet()
+        requestMetric?.requestEnd = System.nanoTime()
+    }
+
+    override fun responseBegin(requestMetric: HTTPRequestMetric?, response: HttpResponse?) {
         if (requestMetric != null) {
-            val statusCounterName = "$METRIC_PREFIX${requestMetric.endpointMetric.endpointName}_status_${statusCodeToStatusRange(statusCode)}"
-            if (httpRequestStatuses.computeIfAbsent(statusCounterName) { AtomicInteger(0) }.incrementAndGet() != 0) {
-                metricsRegistry.gauge(statusCounterName,
-                        httpRequestStatuses,
-                        Function { httpRequestStatuses.getOrDefault(statusCounterName, AtomicInteger(0)).toDouble() })
-            }
+            val waitTime = System.nanoTime() - requestMetric.requestEnd
+            metricsRegistry.timer("${METRIC_PREFIX}.ttfb", "Time till first byte received for response")
+                .record(waitTime, TimeUnit.NANOSECONDS)
+            requestMetric.response = response
         }
     }
 
-    private fun statusCodeToStatusRange(statusCode: Int): String {
-        return "${statusCode / 100}xx"
+    override fun requestReset(requestMetric: HTTPRequestMetric?) {
+        if (requestMetric != null) {
+            requests.decrementAndGet()
+            requestResets.incrementAndGet()
+            metricsRegistry.counter("${METRIC_PREFIX}.resets", "Number of request resets").inc()
+        }
     }
+
+    override fun responseEnd(requestMetric: HTTPRequestMetric?) {
+        if (requestMetric != null) {
+            val waitTime = System.nanoTime() - requestMetric.requestStart
+            metricsRegistry.timer("${METRIC_PREFIX}.responseTime", "Response time")
+                .record(waitTime, TimeUnit.NANOSECONDS)
+            metricsRegistry.counter("${METRIC_PREFIX}.responseCount", "Response count").inc()
+        }
+    }
+
+    override fun responseEnd(requestMetric: HTTPRequestMetric?, bytesRead: Long) {
+        return responseEnd(requestMetric)
+    }
+
 }

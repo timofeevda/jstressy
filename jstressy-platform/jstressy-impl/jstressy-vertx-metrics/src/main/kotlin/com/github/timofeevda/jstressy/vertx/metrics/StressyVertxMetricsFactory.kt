@@ -24,10 +24,11 @@
 package com.github.timofeevda.jstressy.vertx.metrics
 
 import io.vertx.core.VertxOptions
+import io.vertx.core.metrics.MetricsOptions
 import io.vertx.core.spi.VertxMetricsFactory
 import io.vertx.core.spi.metrics.VertxMetrics
 
-class StressyVertxMetricsFactory() : VertxMetricsFactory {
+class StressyVertxMetricsFactory : VertxMetricsFactory {
 
     override fun metrics(options: VertxOptions?): VertxMetrics? {
         val metricsOptions = options!!.metricsOptions
@@ -35,6 +36,14 @@ class StressyVertxMetricsFactory() : VertxMetricsFactory {
             metricsOptions.getMetrics()
         } else {
             null
+        }
+    }
+
+    override fun newOptions(options: MetricsOptions?): MetricsOptions {
+        return if (options is StressyVertexMetricsOptions) {
+            options
+        } else {
+            super.newOptions(options)
         }
     }
 }

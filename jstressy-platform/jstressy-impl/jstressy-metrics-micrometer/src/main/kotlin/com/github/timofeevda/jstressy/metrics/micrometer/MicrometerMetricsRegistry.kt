@@ -5,6 +5,7 @@ import com.github.timofeevda.jstressy.api.metrics.type.Counter
 import com.github.timofeevda.jstressy.api.metrics.type.Gauge
 import com.github.timofeevda.jstressy.api.metrics.type.Timer
 import io.micrometer.core.instrument.Meter
+import io.micrometer.core.instrument.Tags
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
@@ -19,7 +20,6 @@ import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import io.micrometer.prometheus.PrometheusRenameFilter
 import java.util.concurrent.TimeUnit
-import java.util.function.Function
 import java.util.function.Supplier
 
 /**
@@ -29,10 +29,9 @@ import java.util.function.Supplier
  */
 class MicrometerMetricsRegistry internal constructor() : MetricsRegistry {
 
-    internal var prometheusRegistry: PrometheusMeterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
+    val prometheusRegistry: PrometheusMeterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 
     init {
-        prometheusRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
         prometheusRegistry.config()
                 .meterFilter(PrometheusRenameFilter())
                 .meterFilter(object : MeterFilter {
@@ -53,8 +52,12 @@ class MicrometerMetricsRegistry internal constructor() : MetricsRegistry {
         FileDescriptorMetrics().bindTo(prometheusRegistry)
     }
 
-    override fun counter(name: String): Counter {
-        val counter = prometheusRegistry.counter(name)
+    override fun counter(name: String, description: String, vararg tags: String): Counter {
+        val counter = io.micrometer.core.instrument.Counter
+            .builder(name)
+            .description(description)
+            .tags(Tags.of(*tags))
+            .register(prometheusRegistry)
         return object : Counter {
             override fun inc() {
                 counter.increment()
@@ -62,8 +65,12 @@ class MicrometerMetricsRegistry internal constructor() : MetricsRegistry {
         }
     }
 
-    override fun timer(name: String): Timer {
-        val timer = prometheusRegistry.timer(name)
+    override fun timer(name: String, description: String, vararg tags: String): Timer {
+        val timer = io.micrometer.core.instrument.Timer
+            .builder(name)
+            .description(description)
+            .tags(Tags.of(*tags))
+            .register(prometheusRegistry)
 
         return object : Timer {
             override fun context(): Timer.Context {
@@ -81,19 +88,14 @@ class MicrometerMetricsRegistry internal constructor() : MetricsRegistry {
         }
     }
 
-    override fun gauge(name: String, valueSupplier: Supplier<Double>): Gauge {
-        prometheusRegistry.gauge(name, valueSupplier) { v -> v.get() }
+    override fun gauge(name: String,  description: String, valueSupplier: Supplier<Double>, vararg tags: String): Gauge {
+        io.micrometer.core.instrument.Gauge.builder(name) { valueSupplier.get() }
+            .description(description)
+            .tags(Tags.of(*tags)).register(prometheusRegistry)
         return object : Gauge {
             override val value: Double
                 get() = valueSupplier.get()
         }
     }
 
-    override fun gauge(name: String, ref: Any, valueSupplier: Function<Any, Double>): Gauge {
-        prometheusRegistry.gauge(name, ref) { value -> valueSupplier.apply(value) }
-        return object : Gauge {
-            override val value: Double
-                get() = valueSupplier.apply(ref)
-        }
-    }
 }

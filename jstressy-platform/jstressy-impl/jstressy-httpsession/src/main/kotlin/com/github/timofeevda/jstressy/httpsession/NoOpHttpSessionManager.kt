@@ -25,6 +25,7 @@ package com.github.timofeevda.jstressy.httpsession
 
 import com.github.timofeevda.jstressy.api.httpsession.HttpRequestHeader
 import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManager
+import io.reactivex.Single
 import io.vertx.reactivex.core.http.HttpClientRequest
 import io.vertx.reactivex.core.http.HttpClientResponse
 
@@ -33,7 +34,7 @@ class NoOpHttpSessionManager : HttpSessionManager {
     override val headers: Collection<HttpRequestHeader>
         get() = emptyList()
 
-    override fun processRequest(request: HttpClientRequest): HttpClientRequest {
+    override fun processRequest(request: Single<HttpClientRequest>): Single<HttpClientRequest> {
         return request
     }
 

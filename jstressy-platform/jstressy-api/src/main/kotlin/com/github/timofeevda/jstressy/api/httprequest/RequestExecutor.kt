@@ -166,7 +166,7 @@ interface RequestExecutor {
      * @param request arbitrary request
      * @return [HttpClientResponse] response
      */
-    fun invoke(request: HttpClientRequest): Single<HttpClientResponse>
+    fun invoke(request: Single<HttpClientRequest>): Single<HttpClientResponse>
 
     /**
      * Adds custom header for all subsequent requests

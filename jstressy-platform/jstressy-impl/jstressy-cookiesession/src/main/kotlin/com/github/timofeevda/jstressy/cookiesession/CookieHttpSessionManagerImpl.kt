@@ -26,6 +26,7 @@ package com.github.timofeevda.jstressy.cookiesession
 import com.github.timofeevda.jstressy.api.config.ConfigurationService
 import com.github.timofeevda.jstressy.api.httpsession.HttpRequestHeader
 import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManager
+import io.reactivex.Single
 import io.vertx.reactivex.core.http.HttpClientRequest
 import io.vertx.reactivex.core.http.HttpClientResponse
 import java.util.concurrent.ConcurrentHashMap
@@ -55,25 +56,32 @@ internal class CookieHttpSessionManagerImpl : HttpSessionManager {
         }
     }
 
-    override fun processRequest(request: HttpClientRequest): HttpClientRequest {
-        val cookieHeader = sessionCookieHeader.get()
-        if (cookieHeader != null) {
-            request.putHeader(cookieHeader.name, cookieHeader.value)
+    override fun processRequest(request: Single<HttpClientRequest>): Single<HttpClientRequest> {
+        return request.map { r ->
+            val cookieHeader = sessionCookieHeader.get()
+            if (cookieHeader != null) {
+                r.putHeader(cookieHeader.name, cookieHeader.value)
+            }
+            r
         }
-        return request
     }
 
     override fun processResponse(response: HttpClientResponse): HttpClientResponse {
         response.cookies()
-                .map { it.substringBefore(";") }
-                .map { it.split("=") }
-                .forEach { sessionCookies[it[0]] = it[1] }
+            .map { it.substringBefore(";") }
+            .map { it.split("=") }
+            .forEach { sessionCookies[it[0]] = it[1] }
         if (sessionCookies.isNotEmpty()) {
-            sessionCookieHeader.set(HttpRequestHeaderImpl("Cookie", sessionCookies.entries.joinToString("; ") { "${it.key}=${it.value}" }))
+            sessionCookieHeader.set(
+                HttpRequestHeaderImpl(
+                    "Cookie",
+                    sessionCookies.entries.joinToString("; ") { "${it.key}=${it.value}" })
+            )
         }
         return response
     }
 
-    private data class HttpRequestHeaderImpl constructor(override val name: String, override val value: String) : HttpRequestHeader
+    private data class HttpRequestHeaderImpl constructor(override val name: String, override val value: String) :
+        HttpRequestHeader
 
 }

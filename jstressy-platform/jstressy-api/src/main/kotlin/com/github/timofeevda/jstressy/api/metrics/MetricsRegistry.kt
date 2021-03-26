@@ -26,8 +26,6 @@ package com.github.timofeevda.jstressy.api.metrics
 import com.github.timofeevda.jstressy.api.metrics.type.Counter
 import com.github.timofeevda.jstressy.api.metrics.type.Gauge
 import com.github.timofeevda.jstressy.api.metrics.type.Timer
-import java.util.function.Function
-
 import java.util.function.Supplier
 
 /**
@@ -36,11 +34,11 @@ import java.util.function.Supplier
  * @author timofeevda
  */
 interface MetricsRegistry {
-    fun counter(name: String): Counter
 
-    fun timer(name: String): Timer
+    fun counter(name: String, description: String, vararg tags: String): Counter
 
-    fun gauge(name: String, valueSupplier: Supplier<Double>): Gauge
+    fun timer(name: String, description: String, vararg tags: String): Timer
 
-    fun gauge(name: String, ref: Any, valueSupplier: Function<Any, Double>): Gauge
+    fun gauge(name: String, description:String, valueSupplier: Supplier<Double>, vararg tags: String): Gauge
+
 }

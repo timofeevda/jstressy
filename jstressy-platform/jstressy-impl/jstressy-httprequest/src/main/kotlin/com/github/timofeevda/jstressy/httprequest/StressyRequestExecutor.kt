@@ -36,7 +36,7 @@ import io.netty.handler.codec.http.DefaultHttpHeaders
 import io.reactivex.Single
 import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.WebSocketConnectOptions
-import io.vertx.core.http.impl.HeadersAdaptor
+import io.vertx.core.http.impl.headers.HeadersAdaptor
 import io.vertx.reactivex.core.http.HttpClient
 import io.vertx.reactivex.core.http.HttpClientRequest
 import io.vertx.reactivex.core.http.HttpClientResponse
@@ -50,9 +50,11 @@ import java.util.concurrent.TimeUnit
  *
  * @author timofeevda
  */
-internal class StressyRequestExecutor(httpClientService: HttpClientService,
-                                      metricsRegistryService: MetricsRegistryService,
-                                      httpSessionManagerService: HttpSessionManagerService) : RequestExecutor {
+internal class StressyRequestExecutor(
+    httpClientService: HttpClientService,
+    metricsRegistryService: MetricsRegistryService,
+    httpSessionManagerService: HttpSessionManagerService
+) : RequestExecutor {
 
     companion object : LazyLogging()
 
@@ -65,8 +67,10 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
 
     override fun get(host: String, port: Int, requestURI: String): Single<HttpClientResponse> {
         return getMeasuredRequest(
-                addCustomHeaders(
-                        httpSessionManager.processRequest(client.request(HttpMethod.GET, port, host, requestURI))), null)
+            addCustomHeaders(
+                httpSessionManager.processRequest(client.rxRequest(HttpMethod.GET, port, host, requestURI))
+            ), null
+        )
     }
 
     override fun post(host: String, port: Int, requestURI: String): Single<HttpClientResponse> {
@@ -110,9 +114,10 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
         httpSessionManager.headers.forEach { header -> headersAdaptor.add(header.name, header.value) }
         customHeaders.forEach { (name: String, value: String) -> headersAdaptor.add(name, value) }
         return Single.create { emitter ->
-            val requestTimer = RequestTimer("stressy.request.executor.websocket.setup.$host:$port")
+            val requestTimer = WSRequestTimer()
 
-            val connectOptions = WebSocketConnectOptions().setHost(host).setPort(port).setURI(requestURI).setHeaders(headersAdaptor)
+            val connectOptions =
+                WebSocketConnectOptions().setHost(host).setPort(port).setURI(requestURI).setHeaders(headersAdaptor)
 
             client.rxWebSocket(connectOptions)
                 .doOnSubscribe { requestTimer.start() }
@@ -123,7 +128,7 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
         }
     }
 
-    override fun invoke(request: HttpClientRequest): Single<HttpClientResponse> {
+    override fun invoke(request: Single<HttpClientRequest>): Single<HttpClientResponse> {
         return getMeasuredRequest(request, null)
     }
 
@@ -135,68 +140,95 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
         customHeaders.remove(headerName)
     }
 
-    private fun addCustomHeaders(request: HttpClientRequest): HttpClientRequest {
-        customHeaders.forEach { (name: String, value: String) -> request.putHeader(name, value) }
-        return request
-    }
-
-    private fun createMeasuredRequest(host: String, port: Int, requestURI: String, method: HttpMethod): Single<HttpClientResponse> {
-        return getMeasuredRequest(
-                addCustomHeaders(
-                        httpSessionManager.processRequest(client.request(method, port, host, requestURI))), null)
-    }
-
-    private fun createMeasuredJSONPayloadRequest(host: String, port: Int, requestURI: String, method: HttpMethod, data: String): Single<HttpClientResponse> {
-        return getMeasuredRequest(
-                processJsonDataRequest(client.request(method, port, host, requestURI), data), data)
-    }
-
-
-    private fun createMeasuredFormDataRequest(host: String, port: Int, requestURI: String, method: HttpMethod, data: String): Single<HttpClientResponse> {
-        return getMeasuredRequest(
-                processFormDataRequest(client.request(method, port, host, requestURI), data), data)
-    }
-
-    private fun getMeasuredRequest(rq: HttpClientRequest, data: String?): Single<HttpClientResponse> {
-        val rqUUID = UUID.randomUUID()
-        return Single.create { emitter ->
-            rq.toObservable()
-                    .timeout(httpTimeout().toMilliseconds(), TimeUnit.MILLISECONDS)
-                    .doOnSubscribe {
-                        logger.debug { "Invoking request ${buildRequestDescription(rqUUID, rq)}" }
-                    }
-                    .doOnNext { rp ->
-                        logger.debug { "Processing response ${buildResponseDescription(rqUUID, rp)}" }
-                        httpSessionManager.processResponse(rp)
-                    }
-                    .doOnError { e ->
-                        logger.debug({ "Error invoking request ${buildRequestDescription(rqUUID, rq)}" }, e)
-                    }
-                    .subscribe(
-                            { emitter.onSuccess(it) },
-                            { emitter.onError(it) })
-            if (data != null) {
-                rq.write(data)
-            }
-            rq.end()
+    private fun addCustomHeaders(request: Single<HttpClientRequest>): Single<HttpClientRequest> {
+        return request.map { r ->
+            customHeaders.forEach { (name: String, value: String) -> r.putHeader(name, value) }
+            r
         }
     }
 
-    private fun processFormDataRequest(request: HttpClientRequest, data: String): HttpClientRequest {
-        return addCustomHeaders(httpSessionManager.processRequest(request))
-                .putHeader("Content-Length", data.toByteArray().size.toString())
-                .putHeader("Content-Type", "application/x-www-form-urlencoded")
+    private fun createMeasuredRequest(
+        host: String,
+        port: Int,
+        requestURI: String,
+        method: HttpMethod
+    ): Single<HttpClientResponse> {
+        return getMeasuredRequest(
+            addCustomHeaders(
+                httpSessionManager.processRequest(client.rxRequest(method, port, host, requestURI))
+            ), null
+        )
     }
 
-    private fun processJsonDataRequest(request: HttpClientRequest, jsonData: String): HttpClientRequest {
-        return addCustomHeaders(httpSessionManager.processRequest(request))
-                .putHeader("Content-Length", jsonData.toByteArray().size.toString())
-                .putHeader("Content-Type", "application/json")
+    private fun createMeasuredJSONPayloadRequest(
+        host: String,
+        port: Int,
+        requestURI: String,
+        method: HttpMethod,
+        data: String
+    ): Single<HttpClientResponse> {
+        return getMeasuredRequest(
+            processJsonDataRequest(client.rxRequest(method, port, host, requestURI), data), data
+        )
     }
 
-    private inner class RequestTimer constructor(name: String) {
+
+    private fun createMeasuredFormDataRequest(
+        host: String,
+        port: Int,
+        requestURI: String,
+        method: HttpMethod,
+        data: String
+    ): Single<HttpClientResponse> {
+        return getMeasuredRequest(
+            processFormDataRequest(client.rxRequest(method, port, host, requestURI), data), data
+        )
+    }
+
+    private fun getMeasuredRequest(rq: Single<HttpClientRequest>, data: String?): Single<HttpClientResponse> {
+        val rqUUID = UUID.randomUUID()
+        return rq.flatMap { r ->
+            r.rxConnect().timeout(httpTimeout().toMilliseconds(), TimeUnit.MILLISECONDS)
+                .doOnSubscribe {
+                    if (data != null) {
+                        r.write(data)
+                    }
+                    r.end()
+                    logger.debug { "Invoking request ${buildRequestDescription(rqUUID, r)}" }
+                }
+                .doOnSuccess { rp ->
+                    logger.debug { "Processing response ${buildResponseDescription(rqUUID, rp)}" }
+                    httpSessionManager.processResponse(rp)
+                }
+                .doOnError { e ->
+                    logger.debug({ "Error invoking request ${buildRequestDescription(rqUUID, r)}" }, e)
+                }
+        }
+    }
+
+    private fun processFormDataRequest(request: Single<HttpClientRequest>, data: String): Single<HttpClientRequest> {
+        return addCustomHeaders(httpSessionManager.processRequest(request))
+            .map { r ->
+                r.putHeader("Content-Length", data.toByteArray().size.toString())
+                r.putHeader("Content-Type", "application/x-www-form-urlencoded")
+            }
+    }
+
+    private fun processJsonDataRequest(
+        request: Single<HttpClientRequest>,
+        jsonData: String
+    ): Single<HttpClientRequest> {
+        return addCustomHeaders(httpSessionManager.processRequest(request))
+            .map { r ->
+                r.putHeader("Content-Length", jsonData.toByteArray().size.toString())
+                r.putHeader("Content-Type", "application/json")
+            }
+    }
+
+    private inner class WSRequestTimer {
         private var context: Timer.Context? = null
-        private val timer: Timer = metricsRegistry.timer(name)
+        private val timer: Timer = metricsRegistry.timer(
+            "stressy.request.executor.websocket.setup", "Time to establish websocket connection")
 
         fun start() {
             context = timer.context()
@@ -208,11 +240,11 @@ internal class StressyRequestExecutor(httpClientService: HttpClientService,
     }
 
     private fun buildRequestDescription(uuid: UUID, rq: HttpClientRequest): String {
-        return "id: $uuid uri: ${rq.uri()} headers: ${multiMapToString(rq.headers())}"
+        return "id: $uuid uri: ${rq.uri} headers: ${multiMapToString(rq.headers())}"
     }
 
     private fun buildResponseDescription(uuid: UUID, rs: HttpClientResponse): String {
-        return "id: $uuid uri: ${rs.request().uri()} headers: ${multiMapToString(rs.headers())}"
+        return "id: $uuid uri: ${rs.request().uri} headers: ${multiMapToString(rs.headers())}"
     }
 
     private fun multiMapToString(multiMap: io.vertx.reactivex.core.MultiMap): String {

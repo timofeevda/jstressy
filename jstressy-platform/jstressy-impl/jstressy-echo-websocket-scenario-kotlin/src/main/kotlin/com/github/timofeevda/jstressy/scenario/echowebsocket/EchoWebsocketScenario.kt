@@ -26,9 +26,12 @@ class EchoWebSocketScenario internal constructor(private val metricsRegistry: Me
     var websocketDisposable: Disposable? = null
 
     init {
-        metricsRegistry.gauge("echo-websockets", Supplier { echoWebsockets.toDouble() })
-        metricsRegistry.gauge("messages-sent", Supplier { messagesSent.toDouble() })
-        metricsRegistry.gauge("messages-received", Supplier { messagesReceived.toDouble() })
+        metricsRegistry.gauge("echo-websockets", "The number of open echo WebSocket connections ",
+            { echoWebsockets.toDouble() })
+        metricsRegistry.gauge("messages-sent", "The number of messages sent to WebSocket stream",
+            { messagesSent.toDouble() })
+        metricsRegistry.gauge("messages-received", "The number of messages received from WebSocket stream",
+            { messagesReceived.toDouble() })
     }
 
     override fun start() {

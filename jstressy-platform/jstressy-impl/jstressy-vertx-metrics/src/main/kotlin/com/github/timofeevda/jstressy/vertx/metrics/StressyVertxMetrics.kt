@@ -25,16 +25,13 @@ package com.github.timofeevda.jstressy.vertx.metrics
 
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.metrics.type.Timer
-import com.github.timofeevda.jstressy.vertx.metrics.http.HttpEndpointMetric
-import com.github.timofeevda.jstressy.vertx.metrics.http.HttpRequestMetric
-import com.github.timofeevda.jstressy.vertx.metrics.http.WebSocketRequestMetric
 import io.vertx.core.http.HttpClientOptions
 import io.vertx.core.spi.metrics.HttpClientMetrics
 import io.vertx.core.spi.metrics.VertxMetrics
 
 class StressyVertxMetrics(private val metricsRegistry: MetricsRegistry) : VertxMetrics {
 
-    override fun createHttpClientMetrics(options: HttpClientOptions?): HttpClientMetrics<HttpRequestMetric, WebSocketRequestMetric, String, HttpEndpointMetric, Timer> {
+    override fun createHttpClientMetrics(options: HttpClientOptions?): HttpClientMetrics<HTTPRequestMetric, WebSocketRequestMetric, HTTPSocketMetric, Timer.Context> {
         return StressyHTTPClientMetrics(metricsRegistry)
     }
 

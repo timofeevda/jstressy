@@ -9,7 +9,7 @@ import io.vertx.reactivex.ext.web.Router
 
 open class MicrometerMetricsRegistryService : MetricsRegistryService {
 
-    private val metricsRegistry: MicrometerMetricsRegistry = MicrometerMetricsRegistry()
+    val metricsRegistry: MicrometerMetricsRegistry = MicrometerMetricsRegistry()
 
     private lateinit var configurationService: ConfigurationService
 

@@ -42,8 +42,8 @@ class TouchGoogleScenario internal constructor(private val metricsRegistry: Metr
     private val port: Int = configurationService.configuration.globals.port
 
     override fun start() {
-        requestExecutor.get(host, port, "/")
-                .doOnSuccess { metricsRegistry.counter("google_request_success").inc() }
+        requestExecutor.get(host, port, "/test")
+                .doOnSuccess { metricsRegistry.counter("google_request_success", "Number of successful requests to Google").inc() }
                 .subscribe(
                         { httpClientResponse ->
                             run {

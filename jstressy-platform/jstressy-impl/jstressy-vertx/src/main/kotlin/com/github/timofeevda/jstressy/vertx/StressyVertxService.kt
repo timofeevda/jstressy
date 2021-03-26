@@ -23,27 +23,34 @@
 
 package com.github.timofeevda.jstressy.vertx
 
-import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.vertx.VertxService
+import com.github.timofeevda.jstressy.metrics.micrometer.MicrometerMetricsRegistryService
 import com.github.timofeevda.jstressy.utils.StressyUtils.getBlockedEventLoopThreadTimeout
-import com.github.timofeevda.jstressy.vertx.metrics.StressyVertexMetricsOptions
 import io.vertx.core.VertxOptions
+import io.vertx.micrometer.MicrometerMetricsOptions
+import io.vertx.micrometer.VertxPrometheusOptions
 import io.vertx.reactivex.core.Vertx
 import java.util.concurrent.TimeUnit
 
 /**
- * Just a service providing Vertx instance - for non-OSGI mode
+ * Service providing Vertx instance configured with metrics backed by Prometheus
  *
  * @author timofeevda
  */
-open class StressyVertxService(private val metricsRegistry: MetricsRegistry) : VertxService {
+open class StressyVertxService(private val metricsRegistryService: MicrometerMetricsRegistryService) : VertxService {
     override val vertx: Vertx
         get() {
-            return Vertx.vertx(VertxOptions()
+            return Vertx.vertx(
+                VertxOptions()
                     .setWarningExceptionTime(getBlockedEventLoopThreadTimeout().toMilliseconds())
                     .setWarningExceptionTimeUnit(TimeUnit.MILLISECONDS)
-                    .setMetricsOptions(StressyVertexMetricsOptions()
-                            .setMetricsRegistry(metricsRegistry))
+                    .setMetricsOptions(
+                        MicrometerMetricsOptions()
+                            .setPrometheusOptions(VertxPrometheusOptions().setEnabled(true))
+                            .setJvmMetricsEnabled(true)
+                            .setMicrometerRegistry(metricsRegistryService.metricsRegistry.prometheusRegistry)
+                            .setEnabled(true)
+                    )
             )
         }
 

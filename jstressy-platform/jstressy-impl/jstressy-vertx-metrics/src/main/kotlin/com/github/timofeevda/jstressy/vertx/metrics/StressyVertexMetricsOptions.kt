@@ -27,7 +27,7 @@ import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import io.vertx.core.metrics.MetricsOptions
 import io.vertx.core.spi.metrics.VertxMetrics
 
-class StressyVertexMetricsOptions() : MetricsOptions() {
+class StressyVertexMetricsOptions : MetricsOptions() {
 
     private lateinit var metricsRegistry : MetricsRegistry
 
@@ -35,7 +35,7 @@ class StressyVertexMetricsOptions() : MetricsOptions() {
         return StressyVertxMetrics(metricsRegistry)
     }
 
-    fun setMetricsRegistry(metricsRegistry: MetricsRegistry): MetricsOptions {
+    fun setMetricsRegistry(metricsRegistry: MetricsRegistry): StressyVertexMetricsOptions {
         this.metricsRegistry = metricsRegistry
         return this
 

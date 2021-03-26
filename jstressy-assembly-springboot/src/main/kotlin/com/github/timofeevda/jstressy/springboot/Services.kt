@@ -34,7 +34,7 @@ class ConfigurationService() : ConfigLoader() {
 }
 
 @Service
-class VertxService(metricsRegistryService: MetricsRegistryService) : StressyVertxService(metricsRegistryService.get())
+class VertxService(metricsRegistryService: MicrometerMetricsRegistryService) : StressyVertxService(metricsRegistryService)
 
 @Service
 class HttpSessionManager : CookieSessionManagerServiceImpl()

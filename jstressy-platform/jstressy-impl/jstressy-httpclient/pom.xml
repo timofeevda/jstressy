@@ -3,18 +3,11 @@
     <parent>
         <artifactId>jstressy-impl</artifactId>
         <groupId>com.github.timofeevda.jstressy</groupId>
-        <version>1.0.23-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>jstressy-httpclient</artifactId>
-
-    <packaging>bundle</packaging>
-
-    <properties>
-        <bundle.symbolicName>com.github.timofeevda.jstressy-httpclient</bundle.symbolicName>
-        <bundle.namespace>com.github.timofeevda.jstressy.httpclient</bundle.namespace>
-    </properties>
 
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
@@ -23,18 +16,6 @@
             <plugin>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <groupId>org.jetbrains.kotlin</groupId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-Activator>${bundle.namespace}.internal.Activator</Bundle-Activator>
-                        <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
-                        <Export-Package>!*</Export-Package>
-                    </instructions>
-                </configuration>
             </plugin>
         </plugins>
     </build>

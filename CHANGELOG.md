@@ -2,12 +2,15 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
-and this project adheres to [Semantic Versioning](http://semver.org/).
+and this project is trying to adhere to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
-###
-- fixed incorrect Kotlin's operator functions usage
-- advance jackson version
+[1.1.0]
+### Added
+- new Kotlin version
+- removed OSGi support
+- migrated to Vert.X 4.0.3
+- micrometer metric is a provided dependency so that it can be change to any required
 
 ## [1.0.12] - 2019-01-08
 ### Added

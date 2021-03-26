@@ -23,6 +23,7 @@
 
 package com.github.timofeevda.jstressy.api.httpsession
 
+import io.reactivex.Single
 import io.vertx.reactivex.core.http.HttpClientRequest
 import io.vertx.reactivex.core.http.HttpClientResponse
 
@@ -47,7 +48,7 @@ interface HttpSessionManager {
      * @param request [HttpClientRequest] to process
      * @return [HttpClientRequest] instance
      */
-    fun processRequest(request: HttpClientRequest): HttpClientRequest
+    fun processRequest(request: Single<HttpClientRequest>): Single<HttpClientRequest>
 
     /**
      * Processes HTTP response (e.g. getting new session cookie)
