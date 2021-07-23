@@ -12,6 +12,7 @@ mvn clean install
 
 ## How to run
 ```
+cd jstressy-assembly-springboot
 java -DconfigFolder=../jstressy-assembly-docker/compose-bundle/stressy-conf/ -jar ./target/jstressy.jar
 ```
 
