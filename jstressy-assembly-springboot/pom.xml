@@ -11,8 +11,8 @@
     <artifactId>jstressy-assembly-springboot</artifactId>
 
     <properties>
-        <spring.version>5.3.4</spring.version>
-        <springboot.version>2.4.3</springboot.version>
+        <spring.version>5.3.22</spring.version>
+        <springboot.version>2.5.12</springboot.version>
         <javax.inject.version>1</javax.inject.version>
     </properties>
 
@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
-            <artifactId>jstressy-config</artifactId>
+            <artifactId>jstressy-config-dsl</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -132,6 +132,42 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <requiresUnpack>
+                        <dependency>
+                            <groupId>com.github.timofeevda.jstressy</groupId>
+                            <artifactId>jstressy-config</artifactId>
+                        </dependency>
+                        <dependency>
+                            <groupId>com.github.timofeevda.jstressy</groupId>
+                            <artifactId>jstressy-config-dsl</artifactId>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.jetbrains.kotlin</groupId>
+                            <artifactId>kotlin-compiler</artifactId>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.jetbrains.kotlin</groupId>
+                            <artifactId>kotlin-compiler-embeddable</artifactId>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.jetbrains.kotlin</groupId>
+                            <artifactId>kotlin-scripting-common</artifactId>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.jetbrains.kotlin</groupId>
+                            <artifactId>kotlin-scripting-jvm</artifactId>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.jetbrains.kotlin</groupId>
+                            <artifactId>kotlin-scripting-dependencies</artifactId>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.jetbrains.kotlin</groupId>
+                            <artifactId>kotlin-scripting-jvm-host</artifactId>
+                        </dependency>
+                    </requiresUnpack>
+                </configuration>
             </plugin>
         </plugins>
     </build>

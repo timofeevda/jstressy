@@ -34,10 +34,17 @@ import com.github.timofeevda.jstressy.api.config.parameters.StressyGlobals
  */
 @JsonPropertyOrder("globals", "globalParameters", "stressPlan")
 class Config : StressyConfiguration {
+    constructor(init: Config.() -> Unit): this() {
+        init()
+    }
+
+    constructor()
+
     /**
      * Global Stressy configuration
      */
     override var globals: StressyGlobals = Globals()
+
     /**
      * Stress plan configuration
      */
@@ -46,6 +53,33 @@ class Config : StressyConfiguration {
     /**
      * Arbitrary parameters defined globally
      */
-    override val globalParameters: Map<String, String> = emptyMap()
+    override var globalParameters: Map<String, String> = emptyMap()
+
+    fun globals(init: Globals.() -> Unit) {
+        globals = Globals(init)
+    }
+
+    fun plan(init: StressPlan.() -> Unit) {
+        stressPlan = StressPlan(init)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Config
+
+        if (globals != other.globals) return false
+        if (stressPlan != other.stressPlan) return false
+        return globalParameters == other.globalParameters
+    }
+
+    override fun hashCode(): Int {
+        var result = globals.hashCode()
+        result = 31 * result + stressPlan.hashCode()
+        result = 31 * result + globalParameters.hashCode()
+        return result
+    }
+
 
 }

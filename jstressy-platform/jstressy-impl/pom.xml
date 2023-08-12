@@ -14,6 +14,7 @@
 
     <modules>
         <module>jstressy-config</module>
+        <module>jstressy-config-dsl</module>
         <module>jstressy-vertx</module>
         <module>jstressy-utils</module>
         <module>jstressy-httpclient</module>

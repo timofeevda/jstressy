@@ -127,4 +127,9 @@ interface StressyGlobals {
      */
     val logNetworkActivity: Boolean
 
+    /**
+     * Denotes if YML configuration file should be overwritten by the config generated from KTS file
+     */
+    val overwriteWithDSLGeneratedConfig: Boolean
+
 }

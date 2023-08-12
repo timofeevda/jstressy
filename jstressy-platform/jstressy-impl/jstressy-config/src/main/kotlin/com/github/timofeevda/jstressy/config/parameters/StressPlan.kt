@@ -32,5 +32,29 @@ import com.github.timofeevda.jstressy.api.config.parameters.StressyStressPlan
  * @author timofeevda
  */
 class StressPlan : StressyStressPlan {
-    override val stages: List<StressyStage> = emptyList()
+    constructor(init: StressPlan.() -> Unit): this() {
+        init()
+    }
+
+    constructor()
+
+    override val stages: MutableList<StressyStage> = mutableListOf()
+
+    fun stage(init: Stage.() -> Unit) {
+        stages.add(Stage(init))
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as StressPlan
+
+        return stages == other.stages
+    }
+
+    override fun hashCode(): Int {
+        return stages.hashCode()
+    }
+
 }

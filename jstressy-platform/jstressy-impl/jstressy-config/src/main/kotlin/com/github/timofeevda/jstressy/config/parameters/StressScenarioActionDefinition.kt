@@ -11,36 +11,86 @@ import com.github.timofeevda.jstressy.api.config.parameters.StressyArrivalInterv
     "actionParameters", "arrivalIntervals")
 class StressScenarioActionDefinition : ScenarioActionDefinition {
 
-    override val name: String = ""
+    constructor(init: StressScenarioActionDefinition.() -> Unit): this() {
+        init()
+    }
+
+    constructor()
+
+    override var name: String = ""
 
     override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
 
     override var randomizeArrival: Boolean = false
 
-    override val actionParameters: Map<String, String> = emptyMap()
+    override var actionParameters: Map<String, String> = emptyMap()
 
-    override val arrivalRate: Double = 1.0
+    override var arrivalRate: Double = 1.0
 
-    override val rampArrival: Double? = null
+    override var rampArrival: Double? = null
 
-    override val rampArrivalRate: Double? = null
+    override var rampArrivalRate: Double? = null
 
-    override val rampArrivalPeriod: String? = null
+    override var rampArrivalPeriod: String? = null
 
-    override val rampDuration: String? = null
+    override var rampDuration: String? = null
 
-    override val poissonArrival: Boolean? = null
+    override var poissonArrival: Boolean? = null
 
-    override val poissonMinRandom: Double? = null
+    override var poissonMinRandom: Double? = null
 
-    override val duration: String? = null
+    override var duration: String? = null
 
-    override val delay: String = "0ms"
+    override var delay: String = "0ms"
 
     override var distributionMode: ActionDistributionMode? = null
+
+    fun arrivalInterval(init: ArrivalInterval.() -> Unit) {
+        arrivalIntervals.add(ArrivalInterval(init))
+    }
+
     override fun toString(): String {
         return "StressScenarioActionDefinition(name='$name', arrivalIntervals=$arrivalIntervals, randomizeArrival=$randomizeArrival, actionParameters=$actionParameters, arrivalRate=$arrivalRate, rampArrival=$rampArrival, rampArrivalRate=$rampArrivalRate, rampArrivalPeriod=$rampArrivalPeriod, rampDuration=$rampDuration, poissonArrival=$poissonArrival, poissonMinRandom=$poissonMinRandom, duration=$duration, delay='$delay')"
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as StressScenarioActionDefinition
+
+        if (name != other.name) return false
+        if (arrivalIntervals != other.arrivalIntervals) return false
+        if (randomizeArrival != other.randomizeArrival) return false
+        if (actionParameters != other.actionParameters) return false
+        if (arrivalRate != other.arrivalRate) return false
+        if (rampArrival != other.rampArrival) return false
+        if (rampArrivalRate != other.rampArrivalRate) return false
+        if (rampArrivalPeriod != other.rampArrivalPeriod) return false
+        if (rampDuration != other.rampDuration) return false
+        if (poissonArrival != other.poissonArrival) return false
+        if (poissonMinRandom != other.poissonMinRandom) return false
+        if (duration != other.duration) return false
+        if (delay != other.delay) return false
+        return distributionMode == other.distributionMode
+    }
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + arrivalIntervals.hashCode()
+        result = 31 * result + randomizeArrival.hashCode()
+        result = 31 * result + actionParameters.hashCode()
+        result = 31 * result + arrivalRate.hashCode()
+        result = 31 * result + (rampArrival?.hashCode() ?: 0)
+        result = 31 * result + (rampArrivalRate?.hashCode() ?: 0)
+        result = 31 * result + (rampArrivalPeriod?.hashCode() ?: 0)
+        result = 31 * result + (rampDuration?.hashCode() ?: 0)
+        result = 31 * result + (poissonArrival?.hashCode() ?: 0)
+        result = 31 * result + (poissonMinRandom?.hashCode() ?: 0)
+        result = 31 * result + (duration?.hashCode() ?: 0)
+        result = 31 * result + delay.hashCode()
+        result = 31 * result + (distributionMode?.hashCode() ?: 0)
+        return result
+    }
 
 }

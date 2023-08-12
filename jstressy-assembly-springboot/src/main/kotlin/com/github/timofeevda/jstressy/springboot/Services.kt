@@ -7,7 +7,7 @@ import com.github.timofeevda.jstressy.api.httpsession.HttpSessionManagerService
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistryService
 import com.github.timofeevda.jstressy.api.scenario.ScenarioRegistryService
 import com.github.timofeevda.jstressy.api.vertx.VertxService
-import com.github.timofeevda.jstressy.config.ConfigLoader
+import com.github.timofeevda.jstressy.config.DSLConfigLoader
 import com.github.timofeevda.jstressy.cookiesession.CookieSessionManagerServiceImpl
 import com.github.timofeevda.jstressy.httpclient.StressyHttpClientService
 import com.github.timofeevda.jstressy.httprequest.StressyRequestExecutorService
@@ -20,7 +20,7 @@ import java.io.IOException
 import javax.annotation.PostConstruct
 
 @Service
-class ConfigurationService() : ConfigLoader() {
+class ConfigurationService() : DSLConfigLoader() {
     @PostConstruct
     fun init() {
         val configFolder = System.getProperty("configFolder")

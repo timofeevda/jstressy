@@ -1,0 +1,74 @@
+globals:
+  host: google.com
+  port: 443
+  stressyMetricsPort: 8089
+  stressyMetricsPath: /metrics
+  useSsl: true
+  insecureSsl: true
+  maxConnections: 1000
+  maxWebSockets: 1000
+  maxWebSocketFrameSize: 16324
+  maxWebSocketMessageSize: 64516
+  webSocketPerMessageDeflate: true
+  webSocketCompressionLevel: 6
+  connectionKeepAlive: true
+  logNetworkActivity: true
+  overwriteWithDSLGeneratedConfig: true
+stressPlan:
+  stages:
+    - name: First
+      scenarioName: TouchGoogle
+      delay: 1s
+      duration: 20m
+      arrivalRate: 1.0
+      rampArrival: 0.5
+      rampArrivalRate: 0.0169
+      rampArrivalPeriod: 10m
+      rampDuration: 1m
+      poissonArrival: true
+      poissonMinRandom: 0.5
+      randomizeArrival: true
+      scenariosLimit: 100
+      scenarioParameters:
+        foo: bar
+      scenarioProviderParameters:
+        foo: bar
+      arrivalIntervals:
+        - id: test
+          delay: 1s
+          duration: 20m
+          arrivalRate: 1.0
+          rampArrival: 0.5
+          rampArrivalRate: 0.0169
+          rampArrivalPeriod: 10m
+          rampDuration: 1m
+          poissonArrival: true
+          poissonMinRandom: 0.5
+          randomizeArrival: true
+      actions:
+        - name: action
+          delay: 1s
+          duration: 20m
+          arrivalRate: 1.0
+          rampArrival: 0.5
+          rampArrivalRate: 0.0169
+          rampArrivalPeriod: 10m
+          rampDuration: 1m
+          poissonArrival: true
+          poissonMinRandom: 0.5
+          randomizeArrival: true
+          distributionMode: ROUND_ROBIN
+          actionParameters:
+            foo: bar
+          arrivalIntervals:
+            - id: test
+              delay: 1s
+              duration: 20m
+              arrivalRate: 1.0
+              rampArrival: 0.5
+              rampArrivalRate: 0.0169
+              rampArrivalPeriod: 10m
+              rampDuration: 1m
+              poissonArrival: true
+              poissonMinRandom: 0.5
+              randomizeArrival: true

@@ -29,19 +29,67 @@ import com.github.timofeevda.jstressy.api.config.parameters.StressyArrivalInterv
 @JsonPropertyOrder("id", "delay", "duration", "arrivalRate", "rampArrival", "rampArrivalRate",
     "rampArrivalPeriod", "rampDuration", "poissonArrival", "poissonMinRandom", "randomizeArrival", "arrivalIntervals")
 class ArrivalInterval : StressyArrivalInterval {
-    override val poissonArrival: Boolean? = null
+    constructor(init: ArrivalInterval.() -> Unit): this() {
+        init()
+    }
+
+    constructor()
+
+    override var poissonArrival: Boolean? = null
     override var poissonMinRandom: Double? = null
     override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
     override var randomizeArrival: Boolean = false
-    override val id: String = ""
-    override val duration: String =  "1min"
-    override val delay: String = "0ms"
-    override val arrivalRate: Double? = null
-    override val rampArrival: Double? = null
-    override val rampArrivalRate: Double? = null
-    override val rampArrivalPeriod: String? = null
-    override val rampDuration: String? = null
+    override var id: String = ""
+    override var duration: String =  "1min"
+    override var delay: String = "0ms"
+    override var arrivalRate: Double? = null
+    override var rampArrival: Double? = null
+    override var rampArrivalRate: Double? = null
+    override var rampArrivalPeriod: String? = null
+    override var rampDuration: String? = null
     override fun toString(): String {
         return "ArrivalInterval(poissonArrival=$poissonArrival, poissonMaxRandom=$poissonMinRandom, arrivalIntervals=$arrivalIntervals, id='$id', duration='$duration', delay=$delay, arrivalRate=$arrivalRate, rampArrival=$rampArrival, rampArrivalRate=$rampArrivalRate, rampArrivalPeriod=$rampArrivalPeriod, rampDuration=$rampDuration)"
     }
+
+    fun arrivalInterval(init: ArrivalInterval.() -> Unit) {
+        arrivalIntervals.add(ArrivalInterval(init))
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ArrivalInterval
+
+        if (poissonArrival != other.poissonArrival) return false
+        if (poissonMinRandom != other.poissonMinRandom) return false
+        if (arrivalIntervals != other.arrivalIntervals) return false
+        if (randomizeArrival != other.randomizeArrival) return false
+        if (id != other.id) return false
+        if (duration != other.duration) return false
+        if (delay != other.delay) return false
+        if (arrivalRate != other.arrivalRate) return false
+        if (rampArrival != other.rampArrival) return false
+        if (rampArrivalRate != other.rampArrivalRate) return false
+        if (rampArrivalPeriod != other.rampArrivalPeriod) return false
+        return rampDuration == other.rampDuration
+    }
+
+    override fun hashCode(): Int {
+        var result = poissonArrival?.hashCode() ?: 0
+        result = 31 * result + (poissonMinRandom?.hashCode() ?: 0)
+        result = 31 * result + arrivalIntervals.hashCode()
+        result = 31 * result + randomizeArrival.hashCode()
+        result = 31 * result + id.hashCode()
+        result = 31 * result + duration.hashCode()
+        result = 31 * result + delay.hashCode()
+        result = 31 * result + (arrivalRate?.hashCode() ?: 0)
+        result = 31 * result + (rampArrival?.hashCode() ?: 0)
+        result = 31 * result + (rampArrivalRate?.hashCode() ?: 0)
+        result = 31 * result + (rampArrivalPeriod?.hashCode() ?: 0)
+        result = 31 * result + (rampDuration?.hashCode() ?: 0)
+        return result
+    }
+
+
 }
