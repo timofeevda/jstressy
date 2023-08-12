@@ -176,13 +176,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <executions>
-                        <execution>
-                            <id>build-jar</id>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
                         <!-- Workaround to follow Sonatype requirements https://central.sonatype.org/pages/requirements.html
                      while Dokka doesn't work -->
                         <execution>
