@@ -21,7 +21,7 @@ class ScenarioRateSchedulerTest {
             override val scenarioProviderParameters: Map<String, String> = emptyMap()
             override val name: String = "Constant Rate Stage"
             override val scenarioName: String = ""
-            override val stageDelay: String? = "1min"
+            override val stageDelay: String = "1min"
             override val stageDuration: String = "10min"
             override val arrivalRate: Double = 1.0
             override val rampArrival: Double? = null
@@ -29,7 +29,7 @@ class ScenarioRateSchedulerTest {
             override val rampArrivalPeriod: String? = null
             override val rampDuration: String? = null
             override val scenariosLimit: Int? = null
-            override val poissonArrival: Boolean? = false
+            override val poissonArrival: Boolean = false
             override val poissonMaxRandom: Double? = null
             override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
         }
@@ -40,7 +40,7 @@ class ScenarioRateSchedulerTest {
             override val scenarioProviderParameters: Map<String, String> = emptyMap()
             override val name: String = "Constant Rate Stage"
             override val scenarioName: String = ""
-            override val stageDelay: String? = "1min"
+            override val stageDelay: String = "1min"
             override val stageDuration: String = "100min"
             override val arrivalRate: Double = 0.005555 // one time per 3 minutes
             override val rampArrival: Double? = null
@@ -48,7 +48,7 @@ class ScenarioRateSchedulerTest {
             override val rampArrivalPeriod: String? = null
             override val rampDuration: String? = null
             override val scenariosLimit: Int? = null
-            override val poissonArrival: Boolean? = true
+            override val poissonArrival: Boolean = true
             override val poissonMaxRandom: Double? = null
             override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
         }
@@ -58,15 +58,15 @@ class ScenarioRateSchedulerTest {
             override val scenarioProviderParameters: Map<String, String> = emptyMap()
             override val name: String = "Ramping Rate Stage"
             override val scenarioName: String = ""
-            override val stageDelay: String? = "1min"
+            override val stageDelay: String = "1min"
             override val stageDuration: String = "10min"
             override val arrivalRate: Double = 1.0
-            override val rampArrival: Double? = 2.0 // target arrival rate
-            override val rampArrivalRate: Double? = 0.2 // increase arrival rate each 5 seconds
-            override val rampArrivalPeriod: String? = "5s"
-            override val rampDuration: String? = "5min" // increase arrival rate to target value in 5 minutes
+            override val rampArrival: Double = 2.0 // target arrival rate
+            override val rampArrivalRate: Double = 0.2 // increase arrival rate each 5 seconds
+            override val rampArrivalPeriod: String = "5s"
+            override val rampDuration: String = "5min" // increase arrival rate to target value in 5 minutes
             override val scenariosLimit: Int? = null
-            override val poissonArrival: Boolean? = false
+            override val poissonArrival: Boolean = false
             override val poissonMaxRandom: Double? = null
             override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
         }
@@ -78,15 +78,15 @@ class ScenarioRateSchedulerTest {
             override val scenarioProviderParameters: Map<String, String> = emptyMap()
             override val name: String = "Ramping Rate Stage"
             override val scenarioName: String = ""
-            override val stageDelay: String? = "1min"
+            override val stageDelay: String = "1min"
             override val stageDuration: String = "10min"
             override val arrivalRate: Double = 1.0
-            override val rampArrival: Double? = 2.0 // target arrival rate
+            override val rampArrival: Double = 2.0 // target arrival rate
             override val rampArrivalRate: Double? = null
-            override val rampArrivalPeriod: String? = "5s" // increase arrival rate each 5 seconds
-            override val rampDuration: String? = "5min" // increase arrival rate to target value in 5 minutes
+            override val rampArrivalPeriod: String = "5s" // increase arrival rate each 5 seconds
+            override val rampDuration: String = "5min" // increase arrival rate to target value in 5 minutes
             override val scenariosLimit: Int? = null
-            override val poissonArrival: Boolean? = false
+            override val poissonArrival: Boolean = false
             override val poissonMaxRandom: Double? = null
             override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
         }
@@ -97,15 +97,15 @@ class ScenarioRateSchedulerTest {
             override val scenarioProviderParameters: Map<String, String> = emptyMap()
             override val name: String = "Scenarios Limit Stage"
             override val scenarioName: String = ""
-            override val stageDelay: String? = "1min"
+            override val stageDelay: String = "1min"
             override val stageDuration: String = "1min"
             override val arrivalRate: Double = 1.0
             override val rampArrival: Double? = null
             override val rampArrivalRate: Double? = null
             override val rampArrivalPeriod: String? = null
             override val rampDuration: String? = null
-            override val scenariosLimit: Int? = 30
-            override val poissonArrival: Boolean? = false
+            override val scenariosLimit: Int = 30
+            override val poissonArrival: Boolean = false
             override val poissonMaxRandom: Double? = null
             override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
         }
@@ -116,40 +116,40 @@ class ScenarioRateSchedulerTest {
             override val scenarioProviderParameters: Map<String, String> = emptyMap()
             override val name: String = "Scenarios Arrival Intervals Stage"
             override val scenarioName: String = ""
-            override val stageDelay: String? = "1min"
+            override val stageDelay: String = "1min"
             override val stageDuration: String = "30min"
             override val arrivalRate: Double = 1.0
             override val rampArrival: Double? = null
             override val rampArrivalRate: Double? = null
             override val rampArrivalPeriod: String? = null
             override val rampDuration: String? = null
-            override val poissonArrival: Boolean? = false
+            override val poissonArrival: Boolean = false
             override val poissonMaxRandom: Double? = null
             override val scenariosLimit: Int? = null
             override val arrivalIntervals: MutableList<StressyArrivalInterval>
                 get() = mutableListOf(
                         object : StressyArrivalInterval {
                             override val id: String = "first"
-                            override val delay: String? = "1min"
+                            override val delay: String = "1min"
                             override val duration: String = "10min"
                             override val arrivalRate: Double = 1.0
                             override val rampArrival: Double? = null
                             override val rampArrivalRate: Double? = null
                             override val rampArrivalPeriod: String? = null
                             override val rampDuration: String? = null
-                            override val poissonArrival: Boolean? = false
+                            override val poissonArrival: Boolean = false
                             override val poissonMaxRandom: Double? = null
                         },
                         object : StressyArrivalInterval {
                             override val id: String = "second"
-                            override val delay: String? = "12min"
+                            override val delay: String = "12min"
                             override val duration: String = "10min"
                             override val arrivalRate: Double = 1.0
-                            override val rampArrival: Double? = 2.0
-                            override val rampArrivalRate: Double? = 0.2
-                            override val rampArrivalPeriod: String? = "5s"
-                            override val rampDuration: String? = "5min"
-                            override val poissonArrival: Boolean? = false
+                            override val rampArrival: Double = 2.0
+                            override val rampArrivalRate: Double = 0.2
+                            override val rampArrivalPeriod: String = "5s"
+                            override val rampDuration: String = "5min"
+                            override val poissonArrival: Boolean = false
                             override val poissonMaxRandom: Double? = null
                         }
                 )

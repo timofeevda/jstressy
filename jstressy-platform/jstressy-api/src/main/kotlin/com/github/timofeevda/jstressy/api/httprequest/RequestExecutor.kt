@@ -29,8 +29,6 @@ import io.vertx.reactivex.core.http.HttpClientRequest
 import io.vertx.reactivex.core.http.HttpClientResponse
 import io.vertx.reactivex.core.http.WebSocket
 
-import java.util.Optional
-
 /**
  * Request executor. Proxy object hiding concrete request/response handling functionality.
  *

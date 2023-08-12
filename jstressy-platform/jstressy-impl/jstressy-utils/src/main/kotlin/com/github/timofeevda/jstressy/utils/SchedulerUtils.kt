@@ -9,7 +9,7 @@ object SchedulerUtils {
      *
      * @param arrivalRate arrival rate
      */
-    fun observeNextPoissonArrival(arrivalRate: Double) =
+    fun observeNextPoissonArrival(arrivalRate: Double): Observable<Long> =
             Observable.timer(nextPoissonArrival(arrivalRate), TimeUnit.MILLISECONDS)
 
     /**
@@ -18,7 +18,7 @@ object SchedulerUtils {
      * @param arrivalRate arrival rate
      * @param maxRandom max random value which can be used to achieve bigger intervals between Poisson arrivals
      */
-    fun observeNextPoissonArrival(arrivalRate: Double, maxRandom: Double) =
+    fun observeNextPoissonArrival(arrivalRate: Double, maxRandom: Double): Observable<Long> =
             Observable.timer(nextPoissonArrival(arrivalRate, maxRandom), TimeUnit.MILLISECONDS)
 
     /**
@@ -29,7 +29,7 @@ object SchedulerUtils {
      *
      * @return interval in milliseconds when the next Poisson arrival should happen
      */
-    fun nextPoissonArrival(arrivalRate: Double) = ((-1 / arrivalRate) * Math.log(Math.random()) * 1000).toLong()
+    private fun nextPoissonArrival(arrivalRate: Double) = ((-1 / arrivalRate) * Math.log(Math.random()) * 1000).toLong()
 
     /**
      * Next Poisson arrivals is calculated based on the following formula:
@@ -43,5 +43,5 @@ object SchedulerUtils {
      *
      * @return interval in milliseconds when the next Poisson arrival should happen
      */
-    fun nextPoissonArrival(arrivalRate: Double, maxRandom: Double) = ((-1 / arrivalRate) * Math.log(maxRandom * Math.random()) * 1000).toLong()
+    private fun nextPoissonArrival(arrivalRate: Double, maxRandom: Double) = ((-1 / arrivalRate) * Math.log(maxRandom * Math.random()) * 1000).toLong()
 }
