@@ -69,6 +69,21 @@ class Globals : StressyGlobals {
     override val webSocketCompressionLevel: Int = 6
 
     /**
+     * Max number of websocket connections
+     */
+    override val maxWebSockets = 1000
+
+    /**
+     * Max size of the websocket message frame
+     */
+    override val maxWebSocketFrameSize = 65536
+
+    /**
+     * Max size of the websocket message
+     */
+    override val maxWebSocketMessageSize = this.maxWebSocketFrameSize * 4
+
+    /**
      * Turn HTTP client connection pooling on/off
      */
     override val connectionKeepAlive: Boolean = true

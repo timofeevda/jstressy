@@ -93,6 +93,27 @@ interface StressyGlobals {
     val webSocketCompressionLevel: Int
 
     /**
+     * Max number of websocket connections
+     *
+     * @return max number of websocket connections
+     */
+    val maxWebSockets: Int
+
+    /**
+     * Max size of the websocket message
+     *
+     * @return max size of the websocket message
+     */
+    val maxWebSocketMessageSize: Int
+
+    /**
+     * Max size of the websocket message frame
+     *
+     * @return max size of the websocket message frame
+     */
+    val maxWebSocketFrameSize: Int
+
+    /**
      * Denotes if connections should be pooled by HTTP client instead of creating a new one on each request
      *
      * @return true if connections should be pooled, otherwise false
