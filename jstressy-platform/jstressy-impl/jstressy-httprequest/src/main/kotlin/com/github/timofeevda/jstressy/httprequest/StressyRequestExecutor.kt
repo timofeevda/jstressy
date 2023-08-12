@@ -50,7 +50,7 @@ import java.util.concurrent.TimeUnit
  *
  * @author timofeevda
  */
-internal class StressyRequestExecutor(
+open class StressyRequestExecutor(
     httpClientService: HttpClientService,
     metricsRegistryService: MetricsRegistryService,
     httpSessionManagerService: HttpSessionManagerService
@@ -172,7 +172,6 @@ internal class StressyRequestExecutor(
         )
     }
 
-
     private fun createMeasuredFormDataRequest(
         host: String,
         port: Int,
@@ -188,22 +187,36 @@ internal class StressyRequestExecutor(
     private fun getMeasuredRequest(rq: Single<HttpClientRequest>, data: String?): Single<HttpClientResponse> {
         val rqUUID = UUID.randomUUID()
         return rq.flatMap { r ->
-            r.rxConnect().timeout(httpTimeout().toMilliseconds(), TimeUnit.MILLISECONDS)
+            val preparedRequest = prepareRequest(r, rqUUID)
+            preparedRequest.rxConnect().timeout(httpTimeout().toMilliseconds(), TimeUnit.MILLISECONDS)
                 .doOnSubscribe {
                     if (data != null) {
-                        r.write(data)
+                        preparedRequest.write(data)
                     }
-                    r.end()
-                    logger.debug { "Invoking request ${buildRequestDescription(rqUUID, r)}" }
+                    preparedRequest.end()
+                    logger.debug { "Invoking request ${buildRequestDescription(rqUUID, preparedRequest)}" }
                 }
                 .doOnSuccess { rp ->
                     logger.debug { "Processing response ${buildResponseDescription(rqUUID, rp)}" }
                     httpSessionManager.processResponse(rp)
                 }
                 .doOnError { e ->
-                    logger.debug({ "Error invoking request ${buildRequestDescription(rqUUID, r)}" }, e)
+                    logger.debug({ "Error invoking request ${buildRequestDescription(rqUUID, preparedRequest)}" }, e)
                 }
         }
+    }
+
+    /**
+     * This method can be used for request customization. For example, adding automatically generated UUID to
+     * HTTP request headers for traceability or any other arbitrary action with the original request
+     *
+     * @param request original request
+     * @param uuid UUID generated for the provided request
+     *
+     * @return customized request that will be used further in request executor
+     */
+    open fun prepareRequest(request: HttpClientRequest, uuid: UUID): HttpClientRequest {
+        return request
     }
 
     private fun processFormDataRequest(request: Single<HttpClientRequest>, data: String): Single<HttpClientRequest> {
