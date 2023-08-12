@@ -71,9 +71,30 @@ interface StressyArrivalDefinition {
     val poissonArrival: Boolean?
 
     /**
-     * Allows to redefine max random number in Poisson arrivals formula. It can be used to achieve bigger time
-     * intervals between arrival invocations
+     * Allows to redefine min random number in Poisson arrivals formula. It can be used to achieve smaller time
+     * intervals between arrival invocations. The default value is 0.0001
      */
-    val poissonMaxRandom: Double?
+    val poissonMinRandom: Double?
+
+    /**
+     * Defines several intervals with different arrival rate to configure different scenario arrival rates within different time intervals
+     */
+    val arrivalIntervals: MutableList<StressyArrivalInterval>
+
+    /**
+     * Defines time interval within which scenarios will be invoked
+     */
+    val duration: String?
+
+    /**
+     * Defines time interval that is used as delaying scenarios invocation
+     */
+    val delay: String?
+
+    /**
+     * Denotes if arrival should be randomized within time interval defined by arrival rate (not at the exact time
+     * defined by arrival period)
+     */
+    val randomizeArrival: Boolean?
 
 }

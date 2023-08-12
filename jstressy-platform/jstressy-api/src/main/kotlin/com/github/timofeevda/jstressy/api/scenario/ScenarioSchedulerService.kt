@@ -23,6 +23,7 @@
 
 package com.github.timofeevda.jstressy.api.scenario
 
+import com.github.timofeevda.jstressy.api.config.parameters.ScenarioActionDefinition
 import io.reactivex.Observable
 
 /**
@@ -33,4 +34,9 @@ import io.reactivex.Observable
  */
 interface ScenarioSchedulerService {
     fun observeScenarios(): Observable<Scenario>
+    fun observeScenariosWithActions(): Observable<ScenarioWithActions>
+    fun observeScenarioActions(scenarioWithActions: ScenarioWithActions): Observable<ScenarioAction>
 }
+
+data class ScenarioWithActions(val scenario: Scenario, val actions: List<ScenarioActionDefinition>)
+

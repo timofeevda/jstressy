@@ -23,6 +23,8 @@
 
 package com.github.timofeevda.jstressy.api.scenario
 
+import com.github.timofeevda.jstressy.api.config.parameters.ScenarioActionDefinition
+
 /**
  * Scenario
  *
@@ -31,8 +33,9 @@ package com.github.timofeevda.jstressy.api.scenario
 interface Scenario {
     /**
      * Method for starting scenario
+     * @param actions list of scenario action definitions
      */
-    fun start()
+    fun start(actions: List<ScenarioActionDefinition>)
 
     /**
      * Method for stopping scenario
@@ -52,4 +55,36 @@ interface Scenario {
      * @return
      */
     fun withParameters(parameters: Map<String, String>): Scenario
+
+    /**
+     * Create scenario action instance
+     *
+     * @param action scenario action name
+     * @param parameters arbitrary parameters for scenario action
+     * @param intervalId arrival interval identifier that can be used to distinguish arrival interval when scenario action instance was created
+     * @return scenario action instance
+     */
+    fun createAction(action: String, parameters: Map<String, String>, intervalId: String) : ScenarioAction
+
+    /**
+     * Allows to set global actions distribution identifier which is used to coordinate action invocation among scenarios
+     * with the same distribution id
+     *
+     * @param id global actions distribution identifier
+     */
+    fun withActionDistributionId(id: String) : Scenario
+
+    /**
+     * Get current global actions distribution identifier which is used to coordinate action invocation among scenarios
+     *
+     * @return global actions distribution identifier
+     */
+    fun getActionDistributionId(): String?
+
+    /**
+     * Return true is scenario is available for global action invocation
+     *
+     * @return true is scenario is available for global action invocation, otherwise false
+     */
+    fun isAvailableForActionDistribution() : Boolean
 }

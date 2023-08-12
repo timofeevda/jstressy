@@ -1,9 +1,0 @@
-- id: first
-  arrivalRate: 1.0
-  duration: 5min
-- id: second
-  arrivalRate: 3.0
-  duration: 5min
-- id: third
-  arrivalRate: 1.0
-  duration: 5min

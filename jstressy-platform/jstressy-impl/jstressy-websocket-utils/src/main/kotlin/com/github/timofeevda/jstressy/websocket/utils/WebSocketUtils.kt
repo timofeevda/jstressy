@@ -25,6 +25,7 @@ package com.github.timofeevda.jstressy.websocket.utils
 
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
+import io.vertx.reactivex.core.buffer.Buffer
 import io.vertx.reactivex.core.http.WebSocket
 
 object WebSocketUtils {
@@ -35,6 +36,47 @@ object WebSocketUtils {
      */
     fun webSocketToMessages(webSocket: WebSocket): Observable<WebSocketTextMessage> {
         return Observable.create { emitter -> webSocketFramesHandler(webSocket, emitter) }
+    }
+
+    /**
+     * Converts [WebSocket] to [Observable] stream of binary messages. It assumes that [WebSocket] is opened in binary mode
+     *
+     */
+    fun webSocketToBinaryMessages(webSocket: WebSocket): Observable<ByteArray> {
+        return Observable.create { emitter -> webSocketBinaryFramesHandler(webSocket, emitter) }
+    }
+
+    /**
+     * Adds frame handler to [WebSocket] instance and uses [ObservableEmitter] to notify subscribers with messages.
+     *
+     * Handles continuation and final WebSocket frames, on receiving "close" frame completes observable stream
+     */
+    private fun webSocketBinaryFramesHandler(webSocket: WebSocket, emitter: ObservableEmitter<ByteArray>) {
+        var buffer = Buffer.buffer()
+        webSocket.exceptionHandler { e -> emitter.onError(e)}
+        webSocket.frameHandler { frame ->
+            if (frame.isClose) {
+                // WebSocket is closed, complete the stream
+                emitter.onComplete()
+            } else {
+                if (!frame.isFinal) {
+                    buffer.appendBuffer(frame.binaryData())
+                } else {
+                    if (buffer.length() == 0 && frame.isFinal) {
+                        // we've got single full frame, pass it directly as message
+                        emitter.onNext(frame.binaryData().bytes)
+                    } else {
+                        // join all frames and pass it as single message
+                        buffer.appendBuffer(frame.binaryData())
+                        try {
+                            emitter.onNext(buffer.bytes)
+                        } finally {
+                            buffer = Buffer.buffer()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**

@@ -59,9 +59,9 @@ open class Runner(
                 }
             })
 
-        scenarioScheduler.observeScenarios()
+        scenarioScheduler.observeScenariosWithActions()
                 .subscribe(
-                        { it.start() },
+                        { it.scenario.start(it.actions) },
                         { error -> logger.error("Error in scenarios stream", error) })
     }
 

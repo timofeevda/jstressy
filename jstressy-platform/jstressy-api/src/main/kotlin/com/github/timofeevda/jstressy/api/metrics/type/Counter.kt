@@ -25,4 +25,5 @@ package com.github.timofeevda.jstressy.api.metrics.type
 
 interface Counter {
     fun inc()
+    fun inc(value: Int)
 }

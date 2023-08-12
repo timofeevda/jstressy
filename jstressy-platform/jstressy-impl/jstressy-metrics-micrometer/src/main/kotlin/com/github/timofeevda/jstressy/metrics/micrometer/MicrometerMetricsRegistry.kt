@@ -65,6 +65,10 @@ class MicrometerMetricsRegistry internal constructor() : MetricsRegistry {
             override fun inc() {
                 counter.increment()
             }
+
+            override fun inc(value: Int) {
+                counter.increment(value.toDouble())
+            }
         }
     }
 

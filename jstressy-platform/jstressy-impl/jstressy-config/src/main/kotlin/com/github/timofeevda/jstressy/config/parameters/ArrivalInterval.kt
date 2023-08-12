@@ -23,17 +23,25 @@
 
 package com.github.timofeevda.jstressy.config.parameters
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.github.timofeevda.jstressy.api.config.parameters.StressyArrivalInterval
 
+@JsonPropertyOrder("id", "delay", "duration", "arrivalRate", "rampArrival", "rampArrivalRate",
+    "rampArrivalPeriod", "rampDuration", "poissonArrival", "poissonMinRandom", "randomizeArrival", "arrivalIntervals")
 class ArrivalInterval : StressyArrivalInterval {
     override val poissonArrival: Boolean? = null
-    override val poissonMaxRandom: Double? = null
+    override var poissonMinRandom: Double? = null
+    override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
+    override var randomizeArrival: Boolean = false
     override val id: String = ""
     override val duration: String =  "1min"
-    override val delay: String? = null
+    override val delay: String = "0ms"
     override val arrivalRate: Double? = null
     override val rampArrival: Double? = null
     override val rampArrivalRate: Double? = null
     override val rampArrivalPeriod: String? = null
     override val rampDuration: String? = null
+    override fun toString(): String {
+        return "ArrivalInterval(poissonArrival=$poissonArrival, poissonMaxRandom=$poissonMinRandom, arrivalIntervals=$arrivalIntervals, id='$id', duration='$duration', delay=$delay, arrivalRate=$arrivalRate, rampArrival=$rampArrival, rampArrivalRate=$rampArrivalRate, rampArrivalPeriod=$rampArrivalPeriod, rampDuration=$rampDuration)"
+    }
 }

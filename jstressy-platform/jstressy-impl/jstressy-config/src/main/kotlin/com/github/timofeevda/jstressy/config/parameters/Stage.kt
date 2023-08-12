@@ -23,6 +23,7 @@
 
 package com.github.timofeevda.jstressy.config.parameters
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.github.timofeevda.jstressy.api.config.parameters.StressyArrivalInterval
 import com.github.timofeevda.jstressy.api.config.parameters.StressyStage
 
@@ -31,6 +32,9 @@ import com.github.timofeevda.jstressy.api.config.parameters.StressyStage
  *
  * @author timofeevda
  */
+@JsonPropertyOrder("name", "scenarioName", "delay", "duration", "arrivalRate", "rampArrival", "rampArrivalRate",
+    "rampArrivalPeriod", "rampDuration", "poissonArrival", "poissonMinRandom", "randomizeArrival", "scenariosLimit",
+    "scenarioParameters", "scenarioProviderParameters", "arrivalIntervals", "actions")
 class Stage : StressyStage {
     /**
      * Test stage name
@@ -43,11 +47,11 @@ class Stage : StressyStage {
     /**
      * Stage invocation delay. Supports basic format like 1m, 1h, 100ms etc.
      */
-    override val stageDelay: String? = null
+    override val delay: String = "0ms"
     /**
      * Stage duration. Supports basic format like 1m, 1h, 100ms etc.
      */
-    override val stageDuration: String = ""
+    override val duration: String = ""
     /**
      * Rate of scenario invocation
      */
@@ -93,9 +97,16 @@ class Stage : StressyStage {
 
     override val arrivalIntervals: MutableList<StressyArrivalInterval> = mutableListOf()
 
-    override val arrivalIntervalsPath: String? = null
+    override var randomizeArrival: Boolean = false
 
     override val poissonArrival: Boolean? = null
 
-    override val poissonMaxRandom: Double? = null
+    override val poissonMinRandom: Double? = null
+
+    override val actions: List<StressScenarioActionDefinition> = emptyList()
+    override fun toString(): String {
+        return "Stage(name='$name', scenarioName='$scenarioName', delay='$delay', duration='$duration', arrivalRate=$arrivalRate, rampArrival=$rampArrival, rampArrivalRate=$rampArrivalRate, rampArrivalPeriod=$rampArrivalPeriod, rampDuration=$rampDuration, scenarioParameters=$scenarioParameters, scenarioProviderParameters=$scenarioProviderParameters, scenariosLimit=$scenariosLimit, arrivalIntervals=$arrivalIntervals, randomizeArrival=$randomizeArrival, poissonArrival=$poissonArrival, poissonMinRandom=$poissonMinRandom, actions=$actions)"
+    }
+
+
 }

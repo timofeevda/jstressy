@@ -7,16 +7,68 @@ globals:
   useSsl: true
   insecureSsl: true
   maxConnections: 1000
+  maxWebSockets: 1000
+  maxWebSocketMessageSize: 64516
+  maxWebSocketFrameSize: 16324
+  webSocketPerMessageDeflate: true
+  webSocketCompressionLevel: 6
+  connectionKeepAlive: true
+  logNetworkActivity: false
 stressPlan:
   stages:
     - name: First
       scenarioName: TouchGoogle
-      stageDelay: 1s
-      stageDuration: 20m
+      delay: 1s
+      duration: 20m
       arrivalRate: 0.2
       rampArrival: 0.5
       rampArrivalRate: 0.0169
       rampArrivalPeriod: 10m
+      rampDuration: 1m
+      poissonArrival: true
+      poissonMinRandom: 0.5
+      randomizeArrival: true
       scenarioParameters:
         foo: bar
-      arrivalIntervalsPath: ./intervals/constant_rate.yml
+      scenariosLimit: 100
+      scenarioProviderParameters:
+        foo: bar
+      arrivalIntervals:
+        - id: test
+          arrivalRate: 1.0
+          delay: 1s
+          duration: 20m
+          rampArrival: 0.5
+          rampArrivalRate: 0.0169
+          rampArrivalPeriod: 10m
+          rampDuration: 1m
+          poissonArrival: true
+          poissonMinRandom: 0.5
+          randomizeArrival: true
+      actions:
+        - name: action
+          delay: 1s
+          duration: 20m
+          arrivalRate: 0.2
+          rampArrival: 0.5
+          rampArrivalRate: 0.0169
+          rampArrivalPeriod: 10m
+          rampDuration: 1m
+          poissonArrival: true
+          poissonMinRandom: 0.5
+          randomizeArrival: true
+          distributionMode: random
+          actionParameters:
+            foo: bar
+          arrivalIntervals:
+            - id: test
+              arrivalRate: 1.0
+              delay: 1s
+              duration: 20m
+              rampArrival: 0.5
+              rampArrivalRate: 0.0169
+              rampArrivalPeriod: 10m
+              rampDuration: 1m
+              poissonArrival: true
+              poissonMinRandom: 0.5
+              randomizeArrival: true

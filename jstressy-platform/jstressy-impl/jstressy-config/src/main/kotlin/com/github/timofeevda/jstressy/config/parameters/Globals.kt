@@ -23,6 +23,7 @@
 
 package com.github.timofeevda.jstressy.config.parameters
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.github.timofeevda.jstressy.api.config.parameters.StressyGlobals
 
 /**
@@ -30,6 +31,9 @@ import com.github.timofeevda.jstressy.api.config.parameters.StressyGlobals
  *
  * @author timofeevda
  */
+@JsonPropertyOrder("host", "port", "stressyMetricsPort", "stressyMetricsPath", "useSsl", "insecureSsl",
+    "maxConnections", "maxWebSockets", "maxWebSocketFrameSize", "maxWebSocketMessageSize", "webSocketPerMessageDeflate",
+    "webSocketCompressionLevel", "connectionKeepAlive", "logNetworkActivity")
 class Globals : StressyGlobals {
     /**
      * Port of the host being tested

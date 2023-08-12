@@ -24,10 +24,10 @@
 package com.github.timofeevda.jstressy.config
 
 import com.fasterxml.jackson.core.Version
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver
 import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
 import com.github.timofeevda.jstressy.api.config.ConfigurationService
 import com.github.timofeevda.jstressy.api.config.parameters.StressyArrivalInterval
 import com.github.timofeevda.jstressy.api.config.parameters.StressyConfiguration
@@ -45,12 +45,12 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
 
-private const val STRESSY_YML = "stressy.yml"
+const val STRESSY_YML = "stressy.yml"
 
 /**
  * Example implementation of configuration service. Reads JStressy configuration from YAML file
  *
- * @author timofeevda
+ * @author dtimofeev
  */
 open class ConfigLoader : ConfigurationService {
 
@@ -60,6 +60,23 @@ open class ConfigLoader : ConfigurationService {
 
     override var configurationFolder: String? = null
 
+    protected val mapper = YAMLMapper.builder().enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS).build()
+
+    protected val typeResolver = SimpleAbstractTypeResolver()
+        .addMapping(StressyConfiguration::class.java, Config::class.java)
+        .addMapping(StressyGlobals::class.java, Globals::class.java)
+        .addMapping(StressyStage::class.java, Stage::class.java)
+        .addMapping(StressyStressPlan::class.java, StressPlan::class.java)
+        .addMapping(StressyArrivalInterval::class.java, ArrivalInterval::class.java)
+
+    init {
+        val configurationModule = SimpleModule("StressyConfiguration", Version.unknownVersion())
+        configurationModule.setAbstractTypes(typeResolver)
+
+        mapper.registerModule(configurationModule)
+
+    }
+
     @Throws(IOException::class)
     override fun readConfiguration(configurationFolder: String) {
         this.configurationFolder = configurationFolder
@@ -68,38 +85,11 @@ open class ConfigLoader : ConfigurationService {
     }
 
     internal fun readConfigurationFile(configFileStream: InputStream) {
-        val mapper = ObjectMapper(YAMLFactory())
+        processConfiguration(mapper.readValue(configFileStream, Config::class.java))
+    }
 
-        val typeResolver = SimpleAbstractTypeResolver()
-                .addMapping(StressyConfiguration::class.java, Config::class.java)
-                .addMapping(StressyGlobals::class.java, Globals::class.java)
-                .addMapping(StressyStage::class.java, Stage::class.java)
-                .addMapping(StressyStressPlan::class.java, StressPlan::class.java)
-                .addMapping(StressyArrivalInterval::class.java, ArrivalInterval::class.java)
-
-        val configurationModule = SimpleModule("StressyConfiguration", Version.unknownVersion())
-        configurationModule.setAbstractTypes(typeResolver)
-
-        mapper.registerModule(configurationModule)
-
-        configuration = mapper.readValue(configFileStream, Config::class.java)
-
-        // process stages and add arrival intervals from separate configs if needed
-        configuration.stressPlan.stages.forEach { stage ->
-            if (stage.arrivalIntervalsPath != null) {
-                val configFile = File(stage.arrivalIntervalsPath)
-                val arrivalIntervals = when {
-                    configFile.isAbsolute -> mapper.readValue(FileInputStream(configFile),
-                            Array<StressyArrivalInterval>::class.java).asList()
-                    else -> {
-                        mapper.readValue(FileInputStream(File(
-                                configurationFolder + File.separator + stage.arrivalIntervalsPath)),
-                                Array<StressyArrivalInterval>::class.java).asList()
-                    }
-                }
-                stage.arrivalIntervals.addAll(arrivalIntervals)
-            }
-        }
+    protected fun processConfiguration(config: Config) {
+        configuration = config
     }
 
 }

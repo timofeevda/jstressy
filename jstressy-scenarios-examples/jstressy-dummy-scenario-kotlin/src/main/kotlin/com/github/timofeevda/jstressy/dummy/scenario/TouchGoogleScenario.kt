@@ -24,9 +24,11 @@
 package com.github.timofeevda.jstressy.dummy.scenario
 
 import com.github.timofeevda.jstressy.api.config.ConfigurationService
+import com.github.timofeevda.jstressy.api.config.parameters.ScenarioActionDefinition
 import com.github.timofeevda.jstressy.api.httprequest.RequestExecutor
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.scenario.Scenario
+import com.github.timofeevda.jstressy.api.scenario.ScenarioAction
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
 
 /**
@@ -41,7 +43,7 @@ class TouchGoogleScenario internal constructor(private val metricsRegistry: Metr
     private val host: String = configurationService.configuration.globals.host
     private val port: Int = configurationService.configuration.globals.port
 
-    override fun start() {
+    override fun start(actions: List<ScenarioActionDefinition>) {
         requestExecutor.get(host, port, "/test")
                 .doOnSuccess { metricsRegistry.counter("google_request_success", "Number of successful requests to Google").inc() }
                 .subscribe(
@@ -68,4 +70,19 @@ class TouchGoogleScenario internal constructor(private val metricsRegistry: Metr
         return this
     }
 
+    override fun createAction(action: String, parameters: Map<String, String>, intervalId: String): ScenarioAction {
+        return object : ScenarioAction {
+            override fun run() {
+                // do nothing
+            }
+        }
+    }
+
+    override fun withActionDistributionId(id: String): Scenario {
+        return this
+    }
+
+    override fun getActionDistributionId(): String? = null
+
+    override fun isAvailableForActionDistribution() : Boolean = false
 }

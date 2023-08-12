@@ -32,17 +32,4 @@ interface StressyArrivalInterval : StressyArrivalDefinition {
      */
     val id: String
 
-    /**
-     * Scenarios arrival duration
-     *
-     * @return scenarios arrival duration
-     */
-    val duration: String
-
-    /**
-     * Delays scenario invocation
-     *
-     * @return scenario invocation delay
-     */
-    val delay: String?
 }

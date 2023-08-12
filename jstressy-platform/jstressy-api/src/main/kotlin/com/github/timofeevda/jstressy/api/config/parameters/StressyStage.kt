@@ -44,20 +44,6 @@ interface StressyStage : StressyArrivalDefinition {
     val scenarioName: String
 
     /**
-     * Stage delay
-     *
-     * @return stage delay
-     */
-    val stageDelay: String?
-
-    /**
-     * Stage duration
-     *
-     * @return stage duration
-     */
-    val stageDuration: String
-
-    /**
      * Scenario parameters. Can be used to pass arbitrary parameters for each scenario invocation
      *
      * @return map of scenario parameters
@@ -80,10 +66,8 @@ interface StressyStage : StressyArrivalDefinition {
     val scenariosLimit: Int?
 
     /**
-     * Defines several intervals with different arrival rate to configure different
-     * scenario arrival rates within different time intervals
+     * Optional list of scenario actions
+     * @return list of scenario actions
      */
-    val arrivalIntervals: MutableList<StressyArrivalInterval>
-
-    val arrivalIntervalsPath: String?
+    val actions: List<ScenarioActionDefinition>?
 }

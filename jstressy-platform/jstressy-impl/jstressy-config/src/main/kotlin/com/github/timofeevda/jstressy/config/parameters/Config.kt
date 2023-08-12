@@ -23,6 +23,7 @@
 
 package com.github.timofeevda.jstressy.config.parameters
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.github.timofeevda.jstressy.api.config.parameters.StressyConfiguration
 import com.github.timofeevda.jstressy.api.config.parameters.StressyGlobals
 
@@ -31,6 +32,7 @@ import com.github.timofeevda.jstressy.api.config.parameters.StressyGlobals
  *
  * @author timofeevda
  */
+@JsonPropertyOrder("globals", "globalParameters", "stressPlan")
 class Config : StressyConfiguration {
     /**
      * Global Stressy configuration

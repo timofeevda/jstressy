@@ -1,20 +1,21 @@
 package com.github.timofeevda.jstressy.scenario.echowebsocket
 
 import com.github.timofeevda.jstressy.api.config.ConfigurationService
+import com.github.timofeevda.jstressy.api.config.parameters.ScenarioActionDefinition
 import com.github.timofeevda.jstressy.api.httprequest.RequestExecutor
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.scenario.Scenario
+import com.github.timofeevda.jstressy.api.scenario.ScenarioAction
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.atomic.AtomicLong
-import java.util.function.Supplier
 
 private val echoWebsockets = AtomicLong(0)
 
 private val messagesSent = AtomicLong(0)
 private val messagesReceived = AtomicLong(0)
 
-class EchoWebSocketScenario internal constructor(private val metricsRegistry: MetricsRegistry,
+class EchoWebSocketScenario internal constructor(metricsRegistry: MetricsRegistry,
                                                  private val requestExecutor: RequestExecutor,
                                                  configurationService: ConfigurationService) : Scenario {
 
@@ -34,7 +35,7 @@ class EchoWebSocketScenario internal constructor(private val metricsRegistry: Me
             { messagesReceived.toDouble() })
     }
 
-    override fun start() {
+    override fun start(actions: List<ScenarioActionDefinition>) {
         websocketDisposable = requestExecutor.websocket(host, port, "/")
                 .subscribe({ websocket ->
                     websocket.textMessageHandler { text ->
@@ -65,5 +66,21 @@ class EchoWebSocketScenario internal constructor(private val metricsRegistry: Me
     override fun withParameters(parameters: Map<String, String>): Scenario {
         return this
     }
+
+    override fun createAction(action: String, parameters: Map<String, String>, intervalId: String): ScenarioAction {
+        return object: ScenarioAction {
+            override fun run() {
+                // do nothing
+            }
+        }
+    }
+
+    override fun withActionDistributionId(id: String): Scenario {
+        return this
+    }
+
+    override fun getActionDistributionId(): String? = null
+
+    override fun isAvailableForActionDistribution() : Boolean = false
 
 }
