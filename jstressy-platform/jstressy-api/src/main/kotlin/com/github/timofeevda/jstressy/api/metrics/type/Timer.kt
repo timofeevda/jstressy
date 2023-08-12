@@ -30,6 +30,7 @@ interface Timer {
 
     interface Context {
         fun stop()
+        fun getRecordedTime(): Long
     }
 
     fun record(duration: Long, timeUnit: TimeUnit)

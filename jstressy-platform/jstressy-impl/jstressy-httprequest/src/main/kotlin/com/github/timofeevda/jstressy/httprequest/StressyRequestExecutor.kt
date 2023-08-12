@@ -194,14 +194,14 @@ open class StressyRequestExecutor(
                         preparedRequest.write(data)
                     }
                     preparedRequest.end()
-                    logger.debug { "Invoking request ${buildRequestDescription(rqUUID, preparedRequest)}" }
+                    logger.debug({ "Invoking request"}, *requestDescriptionParameters(rqUUID, preparedRequest))
                 }
                 .doOnSuccess { rp ->
-                    logger.debug { "Processing response ${buildResponseDescription(rqUUID, rp)}" }
+                    logger.debug({ "Processing response"}, *responseDescriptionParameters(rqUUID, rp))
                     httpSessionManager.processResponse(rp)
                 }
                 .doOnError { e ->
-                    logger.debug({ "Error invoking request ${buildRequestDescription(rqUUID, preparedRequest)}" }, e)
+                    logger.debug({ "Error invoking request" }, *requestDescriptionParameters(rqUUID, preparedRequest), e)
                 }
         }
     }
@@ -252,15 +252,20 @@ open class StressyRequestExecutor(
         }
     }
 
-    private fun buildRequestDescription(uuid: UUID, rq: HttpClientRequest): String {
-        return "id: $uuid uri: ${rq.uri} headers: ${multiMapToString(rq.headers())}"
-    }
-
-    private fun buildResponseDescription(uuid: UUID, rs: HttpClientResponse): String {
-        return "id: $uuid uri: ${rs.request().uri} headers: ${multiMapToString(rs.headers())}"
-    }
-
     private fun multiMapToString(multiMap: io.vertx.reactivex.core.MultiMap): String {
         return multiMap.delegate.entries().joinToString(";") { "[${it.key} -> ${it.value}]" }
     }
+
+    private fun requestDescriptionParameters(uuid: UUID, rq: HttpClientRequest) = arrayOf(
+        "id", uuid.toString(),
+        "uri", rq.uri,
+        "method", rq.method.name(),
+        "requestHeaders", multiMapToString(rq.headers())
+    )
+
+    private fun responseDescriptionParameters(uuid: UUID, rs: HttpClientResponse) = arrayOf(
+        *requestDescriptionParameters(uuid, rs.request()),
+        "statusCode", rs.statusCode().toString(),
+        "responseHeaders", multiMapToString(rs.headers())
+    )
 }

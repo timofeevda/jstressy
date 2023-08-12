@@ -92,4 +92,18 @@ interface StressyGlobals {
      */
     val webSocketCompressionLevel: Int
 
+    /**
+     * Denotes if connections should be pooled by HTTP client instead of creating a new one on each request
+     *
+     * @return true if connections should be pooled, otherwise false
+     */
+    val connectionKeepAlive: Boolean
+
+    /**
+     * Denotes if network activity should be logged by HTTP client
+     *
+     * @return true if network activity should be logged by HTTP client, otherwise false
+     */
+    val logNetworkActivity: Boolean
+
 }

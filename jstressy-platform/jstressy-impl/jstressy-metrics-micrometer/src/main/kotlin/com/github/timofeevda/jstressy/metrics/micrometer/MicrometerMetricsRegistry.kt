@@ -35,7 +35,10 @@ class MicrometerMetricsRegistry internal constructor() : MetricsRegistry {
         prometheusRegistry.config()
                 .meterFilter(PrometheusRenameFilter())
                 .meterFilter(object : MeterFilter {
-                    override fun configure(id: Meter.Id?, config: DistributionStatisticConfig): DistributionStatisticConfig? {
+                    override fun configure(
+                        id: Meter.Id,
+                        config: DistributionStatisticConfig
+                    ): DistributionStatisticConfig? {
                         return DistributionStatisticConfig.builder()
                                 .percentiles(0.5, 0.75, 0.95)
                                 .build()
@@ -75,10 +78,14 @@ class MicrometerMetricsRegistry internal constructor() : MetricsRegistry {
         return object : Timer {
             override fun context(): Timer.Context {
                 val start = System.nanoTime()
+                var time = -1L
                 return object : Timer.Context {
                     override fun stop() {
-                        timer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS)
+                        time = System.nanoTime() - start
+                        timer.record(time, TimeUnit.NANOSECONDS)
                     }
+
+                    override fun getRecordedTime() = time
                 }
             }
 

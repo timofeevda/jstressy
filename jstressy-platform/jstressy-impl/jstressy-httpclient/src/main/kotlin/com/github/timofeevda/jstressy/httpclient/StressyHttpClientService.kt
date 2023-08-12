@@ -30,24 +30,29 @@ import io.vertx.core.http.HttpClientOptions
 import io.vertx.reactivex.core.http.HttpClient
 
 /**
- * Basic implementation of HttpClientService. Creates [HttpClient] configured based on
- * JStressy configuration
+ * Basic implementation of HttpClientService. Creates [HttpClient] configured based on JStressy configuration
  *
  * @author timofeevda
  */
-open class StressyHttpClientService(vertxService: VertxService,
-                               configurationService: ConfigurationService) : HttpClientService {
+open class StressyHttpClientService(
+    vertxService: VertxService,
+    configurationService: ConfigurationService
+) : HttpClientService {
 
     private val client: HttpClient
 
     init {
         val globals = configurationService.configuration.globals
-        this.client = vertxService.vertx.createHttpClient(HttpClientOptions()
+        this.client = vertxService.vertx.createHttpClient(
+            HttpClientOptions()
                 .setSsl(globals.useSsl)
                 .setTrustAll(globals.insecureSsl)
                 .setMaxPoolSize(globals.maxConnections)
                 .setTryUsePerMessageWebSocketCompression(globals.webSocketPerMessageDeflate)
-                .setWebSocketCompressionLevel(globals.webSocketCompressionLevel))
+                .setWebSocketCompressionLevel(globals.webSocketCompressionLevel)
+                .setKeepAlive(globals.connectionKeepAlive)
+                .setLogActivity(globals.logNetworkActivity)
+        )
     }
 
     override fun get(): HttpClient {

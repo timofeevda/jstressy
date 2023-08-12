@@ -68,4 +68,14 @@ class Globals : StressyGlobals {
      */
     override val webSocketCompressionLevel: Int = 6
 
+    /**
+     * Turn HTTP client connection pooling on/off
+     */
+    override val connectionKeepAlive: Boolean = true
+
+    /**
+     * Turn network activity logging in HTTP client on/off
+     */
+    override val logNetworkActivity: Boolean = false
+
 }
