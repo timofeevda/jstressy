@@ -11,11 +11,11 @@ stressPlan:
   stages:
     - name: First
       scenarioName: EchoWebSocket
-      stageDelay: 10s
-      stageDuration: 48h
+      delay: 10s
+      duration: 48h
       arrivalRate: 0.5
     - name: Second
       scenarioName: Google
-      stageDelay: 5s
-      stageDuration: 48h
+      delay: 5s
+      duration: 48h
       arrivalRate: 0.5
