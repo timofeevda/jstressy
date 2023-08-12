@@ -1,5 +1,5 @@
 # jstressy
-[![Build Status](https://travis-ci.org/timofeevda/jstressy.svg?branch=master)](https://travis-ci.org/timofeevda/jstressy)
+[![Build Status](https://travis-ci.com/timofeevda/jstressy.svg?branch=master)](https://travis-ci.com/timofeevda/jstressy)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.timofeevda.jstressy/jstressy/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.timofeevda.jstressy/jstressy)
 
 # JStressy
@@ -12,6 +12,7 @@ mvn clean install
 
 ## How to run
 ```
+cd jstressy-assembly-springboot
 java -DconfigFolder=../jstressy-assembly-docker/compose-bundle/stressy-conf/ -jar ./target/jstressy.jar
 ```
 
