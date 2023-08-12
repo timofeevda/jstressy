@@ -50,7 +50,7 @@ const val STRESSY_YML = "stressy.yml"
 /**
  * Example implementation of configuration service. Reads JStressy configuration from YAML file
  *
- * @author dtimofeev
+ * @author timofeevda
  */
 open class ConfigLoader : ConfigurationService {
 

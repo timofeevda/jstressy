@@ -26,7 +26,7 @@ package com.github.timofeevda.jstressy.api.httpsession
 /**
  * Service providing [HttpSessionManager] implementation
  *
- * @author dtimofeev
+ * @author timofeevda
  */
 interface HttpSessionManagerService {
 

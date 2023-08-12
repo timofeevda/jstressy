@@ -25,7 +25,7 @@ import java.util.function.Supplier
 /**
  * Metrics registry based on micrometer library with Prometheus metrics format
  *
- * @author dtimofeev
+ * @author timofeevda
  */
 class MicrometerMetricsRegistry internal constructor() : MetricsRegistry {
 

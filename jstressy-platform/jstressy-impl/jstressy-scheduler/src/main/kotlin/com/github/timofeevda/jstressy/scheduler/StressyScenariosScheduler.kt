@@ -44,7 +44,7 @@ import java.util.concurrent.ConcurrentHashMap
  * Basic implementation of [ScenarioRegistryService]. Implements basic scheduling reading arrivalRate,
  * rampArrival etc. values from stages configuration
  *
- * @author dtimofeev
+ * @author timofeevda
  */
 open class StressyScenariosScheduler(
     private val vertxService: VertxService,
