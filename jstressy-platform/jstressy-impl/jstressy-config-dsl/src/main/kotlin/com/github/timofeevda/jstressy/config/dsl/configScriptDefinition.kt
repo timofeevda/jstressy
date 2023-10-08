@@ -8,6 +8,7 @@ import kotlin.script.experimental.api.ScriptCollectedData
 import kotlin.script.experimental.api.ScriptCompilationConfiguration
 import kotlin.script.experimental.api.ScriptConfigurationRefinementContext
 import kotlin.script.experimental.api.asSuccess
+import kotlin.script.experimental.api.compilerOptions
 import kotlin.script.experimental.api.defaultImports
 import kotlin.script.experimental.api.foundAnnotations
 import kotlin.script.experimental.api.importScripts
@@ -35,6 +36,9 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
     jvm {
         dependenciesFromCurrentContext(wholeClasspath = true, unpackJarCollections = true)
     }
+
+    // https://youtrack.jetbrains.com/issue/KT-57907
+    compilerOptions.append("-Xadd-modules=ALL-MODULE-PATH")
 
     refineConfiguration{
         onAnnotations(Import::class, handler = RefineConfigurationHandler())

@@ -17,7 +17,7 @@ globals:
 stressPlan:
   stages:
     - name: First
-      scenarioName: TouchGoogle
+      scenarioName: PostmanEcho
       delay: 1s
       duration: 20m
       arrivalRate: 1.0

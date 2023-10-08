@@ -4,7 +4,7 @@
 
     <groupId>com.github.timofeevda.jstressy</groupId>
     <artifactId>jstressy</artifactId>
-    <version>1.1.4</version>
+    <version>1.1.5-SNAPSHOT</version>
     
     <packaging>pom</packaging>
 
@@ -18,17 +18,17 @@
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <vertx.version>4.3.8</vertx.version>
+        <vertx.version>4.4.5</vertx.version>
         <slf4j.version>1.7.25</slf4j.version>
         <rxjava.version>2.2.21</rxjava.version>
-        <jackson-databind.version>2.14.0</jackson-databind.version>
+        <jackson-databind.version>2.15.0</jackson-databind.version>
         <logback-classic.version>1.2.3</logback-classic.version>
         <structuredlog4j.version>1.0.0</structuredlog4j.version>
 
-        <kotlin.version>1.7.0</kotlin.version>
+        <kotlin.version>1.9.10</kotlin.version>
         <dokka.version>1.5.0</dokka.version>
         <junit-jupiter-api.version>5.1.0</junit-jupiter-api.version>
-        <micrometer.version>1.9.4</micrometer.version>
+        <micrometer.version>1.11.3</micrometer.version>
         <mockk.version>1.12.4</mockk.version>
 
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
@@ -98,24 +98,16 @@
         <tag>jstressy-1.1.4</tag>
     </scm>
 
+    <modules>
+        <module>jstressy-platform</module>
+        <module>jstressy-assembly-springboot</module>
+        <module>jstressy-assembly-docker</module>
+        <module>jstressy-scenarios-examples</module>
+    </modules>
+
     <profiles>
         <profile>
-            <id>dev</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-                <module>jstressy-platform</module>
-                <module>jstressy-assembly-springboot</module>
-                <module>jstressy-assembly-docker</module>
-                <module>jstressy-scenarios-examples</module>
-            </modules>
-        </profile>
-        <profile>
             <id>release</id>
-            <modules>
-                <module>jstressy-platform</module>
-            </modules>
             <build>
                 <plugins>
                     <plugin>

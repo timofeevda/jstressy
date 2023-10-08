@@ -8,6 +8,8 @@ import com.github.timofeevda.jstressy.api.scenario.Scenario
 import com.github.timofeevda.jstressy.api.scenario.ScenarioAction
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
 import io.reactivex.disposables.Disposable
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
 private val echoWebsockets = AtomicLong(0)
@@ -24,7 +26,9 @@ class EchoWebSocketScenario internal constructor(metricsRegistry: MetricsRegistr
     private val host: String = configurationService.configuration.globals.host
     private val port: Int = configurationService.configuration.globals.port
 
-    var websocketDisposable: Disposable? = null
+    private var websocketDisposable: Disposable? = null
+
+    private val echoMessageSendExecutor = Executors.newSingleThreadScheduledExecutor()
 
     init {
         metricsRegistry.gauge("echo-websockets", "The number of open echo WebSocket connections ",
@@ -36,12 +40,15 @@ class EchoWebSocketScenario internal constructor(metricsRegistry: MetricsRegistr
     }
 
     override fun start(actions: List<ScenarioActionDefinition>) {
-        websocketDisposable = requestExecutor.websocket(host, port, "/")
+        websocketDisposable = requestExecutor.websocket(host, port, "/raw")
                 .subscribe({ websocket ->
                     websocket.textMessageHandler { text ->
                         logger.info("rcv: $text")
                         messagesReceived.incrementAndGet()
-                        websocket.writeTextMessage(text)
+                        // reply back with the same message after delay
+                        echoMessageSendExecutor.schedule({
+                            websocket.writeTextMessage(text)
+                        }, 5, TimeUnit.SECONDS)
                     }
                     websocket.closeHandler {
                         logger.info("closed")

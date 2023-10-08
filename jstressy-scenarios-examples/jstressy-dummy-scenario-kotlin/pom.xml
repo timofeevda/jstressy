@@ -9,7 +9,7 @@
 
     <artifactId>jstressy-dummy-scenario-kotlin</artifactId>
 
-    <description>Simple scenario invoking HTTP request to Google</description>
+    <description>Simple scenario invoking HTTP request to Postman Echo</description>
 
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>

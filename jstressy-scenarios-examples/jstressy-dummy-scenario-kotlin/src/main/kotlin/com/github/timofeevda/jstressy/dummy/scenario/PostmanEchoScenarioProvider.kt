@@ -35,13 +35,13 @@ import com.github.timofeevda.jstressy.api.vertx.VertxService
  *
  * @author timofeevda
  */
-class TouchGoogleScenarioProvider : ScenarioProvider {
-    lateinit var metricsRegistry: MetricsRegistry
-    lateinit var requestExecutorService: RequestExecutorService
-    lateinit var configurationService: ConfigurationService
+class PostmanEchoScenarioProvider : ScenarioProvider {
+    private lateinit var metricsRegistry: MetricsRegistry
+    private lateinit var requestExecutorService: RequestExecutorService
+    private lateinit var configurationService: ConfigurationService
 
     override fun get(): Scenario {
-        return TouchGoogleScenario(metricsRegistry, requestExecutorService.get(), configurationService)
+        return PostmanEchoScenario(metricsRegistry, requestExecutorService.get(), configurationService)
     }
 
     override fun init(metricsRegistry: MetricsRegistry,

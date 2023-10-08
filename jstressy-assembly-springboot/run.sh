@@ -1,0 +1,1 @@
+java -DconfigFolder=../jstressy-assembly-docker/compose-bundle/stressy-conf -jar ./target/jstressy.jar

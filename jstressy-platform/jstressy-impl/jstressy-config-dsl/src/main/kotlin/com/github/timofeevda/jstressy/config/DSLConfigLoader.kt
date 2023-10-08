@@ -48,6 +48,7 @@ open class DSLConfigLoader : ConfigLoader() {
         val dslConfigFile = File(configurationFolder + File.separator + STRESSY_KTS)
 
         if (dslConfigFile.exists()) {
+            logger.info("DSL config file exists. Reading configuration from DSL file ${dslConfigFile.absolutePath}")
             evaluateDSLAndWriteConfigFile(dslConfigFile, configurationFolder)
         } else {
             super.readConfiguration(configurationFolder)
@@ -55,10 +56,11 @@ open class DSLConfigLoader : ConfigLoader() {
     }
 
     fun evaluateDSLAndWriteConfigFile(dslConfigFile: File, configurationFolder: String, printToSTDOut: Boolean = false) {
+        val compilationErrorsLogMessage = "Couldn't evaluate configuration DSL script. Please, check compilation reports in logs"
         when (val result = evalConfigDSL(dslConfigFile)) {
             is ResultWithDiagnostics.Failure -> {
                 logEvaluationReports(result, printToSTDOut)
-                throw IllegalStateException("Couldn't evaluate configuration DSL script")
+                throw IllegalStateException(compilationErrorsLogMessage)
             }
 
             is ResultWithDiagnostics.Success -> {
@@ -70,7 +72,7 @@ open class DSLConfigLoader : ConfigLoader() {
                         returnValue.error
                     )
 
-                    ResultValue.NotEvaluated -> throw IllegalStateException("Couldn't evaluate configuration DSL script")
+                    ResultValue.NotEvaluated -> throw IllegalStateException(compilationErrorsLogMessage)
                     is ResultValue.Unit -> throw IllegalStateException("DSL script evaluated to void value. Check your script")
                 }
             }
@@ -98,13 +100,13 @@ open class DSLConfigLoader : ConfigLoader() {
                 if (it.severity == ScriptDiagnostic.Severity.ERROR
                     || it.severity == ScriptDiagnostic.Severity.FATAL
                 ) {
-                    logger.error(it.message, it.exception)
+                    logger.error("DSL compilation report: $it.message", it.exception)
                 }
                 if (it.severity == ScriptDiagnostic.Severity.DEBUG
                     || it.severity == ScriptDiagnostic.Severity.WARNING
                     || it.severity == ScriptDiagnostic.Severity.INFO
                 ) {
-                    logger.info(it.message)
+                    logger.info("DSL compilation report: $it.message")
                 }
             }
         }

@@ -1,6 +1,6 @@
 ---
 globals:
-  host: google.com
+  host: postman-echo.com
   port: 443
   stressyMetricsPort: 8089
   stressyMetricsPath: /metrics
@@ -17,7 +17,7 @@ globals:
 stressPlan:
   stages:
     - name: First
-      scenarioName: TouchGoogle
+      scenarioName: PostmanEcho
       delay: 1s
       duration: 20m
       arrivalRate: 0.2

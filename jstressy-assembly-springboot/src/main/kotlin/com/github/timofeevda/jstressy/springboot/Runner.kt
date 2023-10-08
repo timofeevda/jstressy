@@ -6,7 +6,7 @@ import com.github.timofeevda.jstressy.api.config.ConfigurationService
 import com.github.timofeevda.jstressy.api.scenario.ScenarioProvider
 import com.github.timofeevda.jstressy.api.scenario.ScenarioProviderService
 import com.github.timofeevda.jstressy.api.vertx.VertxService
-import com.github.timofeevda.jstressy.dummy.scenario.TouchGoogleScenarioProvider
+import com.github.timofeevda.jstressy.dummy.scenario.PostmanEchoScenarioProvider
 import com.github.timofeevda.jstressy.scenario.echowebsocket.EchoWebSocketScenarioProvider
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
 import org.springframework.boot.ApplicationArguments
@@ -48,14 +48,14 @@ open class Runner(
             }
         })
 
-        val demoRestScenario = "Google"
+        val demoRestScenario = "PostmanEcho"
         scenarioRegistry.registerScenarioProviderService(
             demoRestScenario, object : ScenarioProviderService {
                 override val scenarioName: String
                     get() = demoRestScenario
 
                 override fun get(scenarioProviderParameters: Map<String, String>): ScenarioProvider {
-                    return TouchGoogleScenarioProvider()
+                    return PostmanEchoScenarioProvider()
                 }
             })
 

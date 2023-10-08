@@ -28,7 +28,7 @@ config {
 
         stage {
             name = "First"
-            scenarioName = "TouchGoogle"
+            scenarioName = "PostmanEcho"
             delay = "1s"
             duration = 20.minutes()
             arrivalRate = 1.0

@@ -32,9 +32,9 @@ import com.github.timofeevda.jstressy.api.scenario.ScenarioAction
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
 
 /**
- * Example implementation of scenario. Just tries to GET data from https://google.com/
+ * Example implementation of scenario. Just tries to GET data from https://postman-echo.com/get
  */
-class TouchGoogleScenario internal constructor(private val metricsRegistry: MetricsRegistry,
+class PostmanEchoScenario internal constructor(private val metricsRegistry: MetricsRegistry,
                                                private val requestExecutor: RequestExecutor,
                                                configurationService: ConfigurationService) : Scenario {
 
@@ -44,16 +44,14 @@ class TouchGoogleScenario internal constructor(private val metricsRegistry: Metr
     private val port: Int = configurationService.configuration.globals.port
 
     override fun start(actions: List<ScenarioActionDefinition>) {
-        requestExecutor.get(host, port, "/test")
-                .doOnSuccess { metricsRegistry.counter("google_request_success", "Number of successful requests to Google").inc() }
+        requestExecutor.get(host, port, "/get")
+                .doOnSuccess { metricsRegistry.counter("postman_echo_request_success", "Number of successful requests to Postman Echo").inc() }
                 .subscribe(
                         { httpClientResponse ->
-                            run {
                                 logger.info("Host $host answered with code ${httpClientResponse.statusCode()}")
                                 httpClientResponse.bodyHandler { event ->
                                     logger.info("Host $host answered with data $event")
                                 }
-                            }
                         },
                         { t -> logger.error("Error getting response from $host", t) })
     }
