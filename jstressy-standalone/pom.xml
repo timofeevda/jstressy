@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.github.timofeevda.jstressy</groupId>
         <artifactId>jstressy</artifactId>
         <version>1.1.5-SNAPSHOT</version>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>jstressy-assembly-springboot</artifactId>
+    <artifactId>jstressy-standalone</artifactId>
 
     <dependencies>
         <dependency>
@@ -59,16 +60,6 @@
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-scheduler</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.timofeevda.jstressy</groupId>
-            <artifactId>jstressy-echo-websocket-scenario-kotlin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.timofeevda.jstressy</groupId>
-            <artifactId>jstressy-dummy-scenario-kotlin</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -126,6 +117,8 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <!-- specify main class explicitely not to be in conflict with DSL script added to source root for IDE support -->
+                    <mainClass>com.github.timofeevda.jstressy.standalone.RunnerKt</mainClass>
                     <requiresUnpack>
                         <dependency>
                             <groupId>com.github.timofeevda.jstressy</groupId>

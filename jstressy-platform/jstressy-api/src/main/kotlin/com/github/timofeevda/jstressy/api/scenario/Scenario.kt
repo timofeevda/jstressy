@@ -24,6 +24,8 @@
 package com.github.timofeevda.jstressy.api.scenario
 
 import com.github.timofeevda.jstressy.api.config.parameters.ScenarioActionDefinition
+import com.github.timofeevda.jstressy.api.httprequest.RequestExecutor
+import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 
 /**
  * Scenario
@@ -64,7 +66,7 @@ interface Scenario {
      * @param intervalId arrival interval identifier that can be used to distinguish arrival interval when scenario action instance was created
      * @return scenario action instance
      */
-    fun createAction(action: String, parameters: Map<String, String>, intervalId: String) : ScenarioAction
+    fun createAction(action: String, parameters: Map<String, String>, run: ((metricsRegistry: MetricsRegistry, requestExecutor: RequestExecutor) -> Unit)?, intervalId: String) : ScenarioAction
 
     /**
      * Allows to set global actions distribution identifier which is used to coordinate action invocation among scenarios

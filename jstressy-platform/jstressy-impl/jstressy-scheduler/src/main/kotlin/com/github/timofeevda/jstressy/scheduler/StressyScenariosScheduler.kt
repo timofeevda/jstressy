@@ -90,6 +90,7 @@ open class StressyScenariosScheduler(
                             scenarioWithActions.scenario.createAction(
                                 actionDefinition.name,
                                 actionDefinition.actionParameters,
+                                actionDefinition.run,
                                 arrivalIntervalId
                             )
                         }
@@ -115,7 +116,7 @@ open class StressyScenariosScheduler(
         val scenarioProviderService = scenarioRegistryService[stage.scenarioName]
         val scenarioProvider = scenarioProviderService?.get(stage.scenarioProviderParameters)
         try {
-            scenarioProvider?.init(metricsRegistry, requestExecutorService, configurationService, vertxService)
+            scenarioProvider?.init(metricsRegistry, requestExecutorService, configurationService, this, vertxService)
         } catch (e: Throwable) {
             return Observable.error(e)
         }

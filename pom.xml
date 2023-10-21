@@ -25,6 +25,10 @@
         <logback-classic.version>1.2.3</logback-classic.version>
         <structuredlog4j.version>1.0.0</structuredlog4j.version>
 
+        <spring.version>5.3.22</spring.version>
+        <springboot.version>2.5.12</springboot.version>
+        <javax.inject.version>1</javax.inject.version>
+
         <kotlin.version>1.9.10</kotlin.version>
         <dokka.version>1.5.0</dokka.version>
         <junit-jupiter-api.version>5.1.0</junit-jupiter-api.version>
@@ -104,6 +108,8 @@
         <module>jstressy-assembly-docker</module>
         <module>jstressy-scenarios-examples</module>
         <module>jstressy-echo-servers</module>
+        <module>jstressy-standalone</module>
+        <module>jstressy-standalone-dsl</module>
     </modules>
 
     <profiles>
@@ -336,6 +342,11 @@
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-registry-prometheus</artifactId>
                 <version>${micrometer.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>${javax.inject.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run JStressy Standalone" type="JarApplication">
+    <option name="JAR_PATH" value="$PROJECT_DIR$/jstressy-standalone/target/jstressy.jar" />
+    <option name="VM_PARAMETERS" value="-DconfigFolder=../jstressy-standalone-dsl/conf" />
+    <option name="WORKING_DIRECTORY" value="C:\Sources\vagrant-gwtrxjs\jstressy\jstressy-standalone" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <method v="2" />
+  </configuration>
+</component>

@@ -86,6 +86,7 @@ abstract class AbstractDistributedActionSelector(
                     val action = scenarioTarget?.scenario?.createAction(
                         actionDefinition.name,
                         actionDefinition.actionParameters,
+                        actionDefinition.run,
                         arrivalIntervalId
                     ) ?: NoOpAction
                     ScenarioActionExecutor(action, scenarioTarget?.emitter ?: EmptyEmitter)

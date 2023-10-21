@@ -70,7 +70,7 @@ class HTTPEchoScenario internal constructor(private val metricsRegistry: Metrics
         return this
     }
 
-    override fun createAction(action: String, parameters: Map<String, String>, intervalId: String): ScenarioAction {
+    override fun createAction(action: String, parameters: Map<String, String>, run: ((metricsRegistry: MetricsRegistry, requestExecutor: RequestExecutor) -> Unit)?, intervalId: String): ScenarioAction {
         return object : ScenarioAction {
             override fun run() {
                 // do nothing

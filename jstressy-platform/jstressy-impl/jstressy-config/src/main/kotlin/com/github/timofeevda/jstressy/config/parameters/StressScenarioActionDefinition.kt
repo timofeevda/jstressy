@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.github.timofeevda.jstressy.api.config.parameters.ActionDistributionMode
 import com.github.timofeevda.jstressy.api.config.parameters.ScenarioActionDefinition
 import com.github.timofeevda.jstressy.api.config.parameters.StressyArrivalInterval
+import com.github.timofeevda.jstressy.api.httprequest.RequestExecutor
+import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 
 
 @JsonPropertyOrder("name", "delay", "duration", "arrivalRate", "rampArrival", "rampArrivalRate",
@@ -44,6 +46,8 @@ class StressScenarioActionDefinition : ScenarioActionDefinition {
     override var delay: String = "0ms"
 
     override var distributionMode: ActionDistributionMode? = null
+
+    override var run: ((metricsRegistry: MetricsRegistry, requestExecutor: RequestExecutor) -> Unit)? = null
 
     fun arrivalInterval(init: ArrivalInterval.() -> Unit) {
         arrivalIntervals.add(ArrivalInterval(init))

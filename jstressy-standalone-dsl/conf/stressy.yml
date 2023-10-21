@@ -1,0 +1,25 @@
+globals:
+  host: localhost
+  port: 8082
+  stressyMetricsPort: 8089
+  stressyMetricsPath: /metrics
+  maxConnections: 3000
+  maxWebSockets: 1000
+  maxWebSocketFrameSize: 65536
+  maxWebSocketMessageSize: 262144
+  webSocketPerMessageDeflate: true
+  webSocketCompressionLevel: 6
+  connectionKeepAlive: true
+stressPlan:
+  stages:
+  - name: Echo
+    scenarioName: HTTPEcho
+    delay: 10s
+    duration: 48h
+    arrivalRate: 1.0
+    actions:
+    - delay: 0ms
+      duration: 1m
+      arrivalRate: 0.5
+      run:
+        arity: 2

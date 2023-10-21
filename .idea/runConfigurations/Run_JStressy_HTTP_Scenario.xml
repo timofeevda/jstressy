@@ -2,7 +2,7 @@
   <configuration default="false" name="Run JStressy HTTP Scenario" type="JarApplication">
     <option name="JAR_PATH" value="$PROJECT_DIR$/jstressy-assembly-springboot/target/jstressy.jar" />
     <option name="VM_PARAMETERS" value="-DconfigFolder=../jstressy-assembly-docker/compose-bundle/stressy-conf" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$\jstressy-assembly-springboot" />
+    <option name="WORKING_DIRECTORY" value="C:\Sources\vagrant-gwtrxjs\jstressy\jstressy-assembly-springboot" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <method v="2" />
   </configuration>

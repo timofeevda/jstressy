@@ -12,12 +12,6 @@
     <artifactId>jstressy-websocket-echo-server</artifactId>
     <description>Echo server for testing JStressy WebSocket capabilities</description>
 
-    <properties>
-        <spring.version>5.3.22</spring.version>
-        <springboot.version>2.5.12</springboot.version>
-        <javax.inject.version>1</javax.inject.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -36,7 +30,6 @@
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
-            <version>${javax.inject.version}</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>

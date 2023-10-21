@@ -54,6 +54,7 @@ interface ScenarioProvider {
     fun init(metricsRegistry: MetricsRegistry,
              requestExecutorService: RequestExecutorService,
              configurationService: ConfigurationService,
+             scenarioSchedulerService: ScenarioSchedulerService,
              vertxService: VertxService)
 
 }
