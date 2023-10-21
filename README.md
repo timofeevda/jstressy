@@ -3,7 +3,7 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.timofeevda.jstressy/jstressy/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.timofeevda.jstressy/jstressy)
 
 # JStressy
-Lightweight framework for prototyping load/stress tools for Web applications. Each framework's component can be separately changed and reimplemented based on your needs. Current implementation has hardcoded dependencies on [Vert.x](https://vertx.io/) and [RxJava 2.x](https://github.com/ReactiveX/RxJava) (can be changed in future).
+JStressy is a lightweight framework for prototyping load/stress tools for Web applications. Each framework's component can be separately changed and reimplemented based on your needs. Current implementation has hardcoded dependencies on [Vert.x](https://vertx.io/) and [RxJava 2.x](https://github.com/ReactiveX/RxJava) (can be changed in future).
 
 ## How to build
 ```
@@ -15,6 +15,7 @@ mvn clean install
 cd jstressy-assembly-springboot
 java -DconfigFolder=../jstressy-assembly-docker/compose-bundle/stressy-conf/ -jar ./target/jstressy.jar
 ```
+or using predefined run configurations supported by IDE.
 
 ## How to build you own bundle with scenarios
 Use **jstressy-assembly-sprinboot** as a reference for building Spring Boot application
@@ -61,6 +62,20 @@ stressPlan:
 ```
 ![](https://github.com/timofeevda/jstressy/blob/master/docs/figures/const_rate.PNG)
 
+### Randomized constant rate arrivals
+
+Randomly distributes arrivals within the time interval defined by arrival rate. Exactly one arrival is generated for each arrival interval. `randomizeArrivals` can be used in any arrival definitions, but not with `poissonArrival` which has higher priority over `randomizeArrivals`.
+
+```yaml
+stressPlan:                     
+  stages:                       
+    - name: ConstRandomizedRate
+      ....
+      arrivalRate: 1 # constant rate - 1 per second
+      randomizeArrival: true
+      ...
+```
+
 ### Ramping rate arrivals
 ```yaml
 stressPlan:                     
@@ -91,7 +106,7 @@ stressPlan:
       ...
 ```
 
-Note: by default, JStressy uses [0,1) random numbers interval to calculation the next Poisson arrival. *poissonMaxRandom* property can be used to set the random number maximum value (exclusive) to control the number of Poisson arrivals and the interval between Poisson arrival. Low max random values give you fewer arrivals with bigger intervals between each arrival.
+Note: by default, JStressy uses random double value in [poissonMinRandom, 1) interval for calculating the next Poisson arrival. poissonMinRandom property can be used to set the random number min value (inclusive) to control the number of Poisson arrivals and the interval between these arrivals (default value is 0.0001). Big min random values give you more arrivals with smaller intervals between each arrival.
 
 ![](https://github.com/timofeevda/jstressy/blob/master/docs/figures/poisson_rate.PNG)
 
@@ -159,3 +174,104 @@ stressPlan:
       ...
 ```
 ![](https://github.com/timofeevda/jstressy/blob/master/docs/figures/mixed_rate.PNG)
+
+### Scenario actions
+Scenario represent a runnable activity within stress test stage. Scenario actions provide a way to describe scenario as a set of actions reusable across scenarios with their own arrival rate definitions.
+
+```yaml
+stressPlan:
+  stages:
+    - name: Test 
+      scenarioName: Register email
+      delay: 10s
+      duration: 5m
+      arrivalRate: 1
+      actions:
+        - name: Send confirmation code
+          arrivalRate: 1
+          delay: 10s
+          duration: 5m
+          actionParameters:
+            code: 12345
+        - name: Confirm email
+          arrivalRate: 1
+          delay: 5m
+          duration: 5m
+          actionParameters:
+            code: 12345
+```
+
+### Global arrival rate distribution for scenario actions
+
+By default, all scenarios are independent and run their actions in parallel. In some cases you want to model several simultaneously running scenarios but only one of them to perform a specific action (to maintain global rate of action in the system). Instead of configuring a separate scenario for performing a specific action with its own rate, `distributionMode` configuration mode can be used for scenario actions. If `distributionMode` configuration option is enabled, each time to perform an action, scheduler selects one of the active scenarios based on the chosen policy (round robing or random). Globally distributed action is uniquely identified by stage name and its index in the list of actions.
+
+```yaml
+stressPlan:
+  stages:
+    - name: Test
+      scenarioName: Run action
+      delay: 10s
+      duration: 5m
+      arrivalRate: 1
+      actions:
+        - name: Search files
+          arrivalRate: 3
+          distributionMode: ROUND_ROBIN
+          delay: 10s
+          duration: 10m
+```
+
+### DSL Support
+
+JStressy allows describing configuration in a form of Kotlin DSL.  By default, JStressy looks for the stressy.kts file in the configuration folder and tries compiling it to build a configuration and optionally write it to the config folder as YAML configuration file, so that generated definitions can be checked if required. If it can't find DSL script file, it fallbacks to reading YAML configuration file stressy.yml which must be present it the config folder in this case.
+
+DSL example for running HTTPEcho scenario with constant arrival rate:
+```kotlin
+import com.github.timofeevda.jstressy.config.dsl.config
+
+config {
+    globals {
+        host = "localhost"
+        port = 8082
+        stressyMetricsPort = 8089
+        stressyMetricsPath = "/metrics"
+        useSsl = false
+        insecureSsl = false
+        maxConnections = 3000
+
+        plan {
+            stage {
+                name = "Echo"
+                scenarioName = "HTTPEcho"
+                delay = "10s"
+                duration = "48h"
+                arrivalRate = 20.0
+            }
+            
+            stage {
+                name = "Email registration"
+                scenarioName = "Register email"
+                duration = "5m"
+                arrivalRate = 1.0
+                action {
+                    name = "Send confirmation code"
+                    arrivalRate = 1.0
+                    actionParameters = mapOf("code" to "1234")
+                    distributionMode = ActionDistributionMode.ROUND_ROBIN
+                }
+            }
+
+            for(i in 1 .. 2) {
+                stage {
+                    name = "Stage $i"
+                    scenarioName = "EchoWebSocket"
+                    delay = "${10 * i}s"
+                    duration =  "10s"
+                    arrivalRate = 0.5
+                }
+            }
+        }
+
+    }
+}
+```

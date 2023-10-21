@@ -1,3 +1,4 @@
+import com.github.timofeevda.jstressy.api.config.parameters.ActionDistributionMode
 import com.github.timofeevda.jstressy.config.dsl.config
 
 config {
