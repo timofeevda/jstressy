@@ -40,7 +40,7 @@ class EchoWebSocketScenario internal constructor(metricsRegistry: MetricsRegistr
     }
 
     override fun start(actions: List<ScenarioActionDefinition>) {
-        websocketDisposable = requestExecutor.websocket(host, port, "/raw")
+        websocketDisposable = requestExecutor.websocket(host, port, "/")
                 .subscribe({ websocket ->
                     websocket.textMessageHandler { text ->
                         logger.info("rcv: $text")

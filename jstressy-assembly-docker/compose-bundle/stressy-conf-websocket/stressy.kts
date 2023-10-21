@@ -2,18 +2,18 @@ import com.github.timofeevda.jstressy.config.dsl.config
 
 config {
     globals {
-        host = "ws.postman-echo.com"
-        port = 433
+        host = "localhost"
+        port = 8081
         stressyMetricsPort = 8089
         stressyMetricsPath = "/metrics"
-        useSsl = true
+        useSsl = false
         insecureSsl = false
         maxConnections = 3000
 
         plan {
             stage {
                 name = "Echo"
-                scenarioName = "EchoWebSocket"
+                scenarioName = "WebSocketEcho"
                 delay = "1s"
                 duration = "48h"
                 arrivalRate = 0.1

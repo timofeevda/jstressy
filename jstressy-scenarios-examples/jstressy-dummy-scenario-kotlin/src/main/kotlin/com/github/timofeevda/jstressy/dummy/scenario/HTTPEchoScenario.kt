@@ -30,13 +30,16 @@ import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.scenario.Scenario
 import com.github.timofeevda.jstressy.api.scenario.ScenarioAction
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
+import java.util.concurrent.atomic.AtomicLong
+
+private val globalCounter = AtomicLong(0)
 
 /**
  * Example implementation of scenario. Just tries to GET data from https://postman-echo.com/get
  */
-class PostmanEchoScenario internal constructor(private val metricsRegistry: MetricsRegistry,
-                                               private val requestExecutor: RequestExecutor,
-                                               configurationService: ConfigurationService) : Scenario {
+class HTTPEchoScenario internal constructor(private val metricsRegistry: MetricsRegistry,
+                                            private val requestExecutor: RequestExecutor,
+                                            configurationService: ConfigurationService) : Scenario {
 
     companion object : LazyLogging()
 
@@ -44,14 +47,13 @@ class PostmanEchoScenario internal constructor(private val metricsRegistry: Metr
     private val port: Int = configurationService.configuration.globals.port
 
     override fun start(actions: List<ScenarioActionDefinition>) {
-        requestExecutor.get(host, port, "/get")
+        val count = globalCounter.incrementAndGet()
+        requestExecutor.get(host, port, "/get/$count")
+                .doOnSubscribe { logger.info("Going to request path /get/$count") }
                 .doOnSuccess { metricsRegistry.counter("postman_echo_request_success", "Number of successful requests to Postman Echo").inc() }
                 .subscribe(
                         { httpClientResponse ->
-                                logger.info("Host $host answered with code ${httpClientResponse.statusCode()}")
-                                httpClientResponse.bodyHandler { event ->
-                                    logger.info("Host $host answered with data $event")
-                                }
+                                logger.info("Host $host answered with code ${httpClientResponse.statusCode()} for $count request")
                         },
                         { t -> logger.error("Error getting response from $host", t) })
     }
@@ -83,4 +85,5 @@ class PostmanEchoScenario internal constructor(private val metricsRegistry: Metr
     override fun getActionDistributionId(): String? = null
 
     override fun isAvailableForActionDistribution() : Boolean = false
+
 }

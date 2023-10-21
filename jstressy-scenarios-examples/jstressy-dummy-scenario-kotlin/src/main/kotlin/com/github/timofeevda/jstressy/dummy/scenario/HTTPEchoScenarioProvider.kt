@@ -35,13 +35,13 @@ import com.github.timofeevda.jstressy.api.vertx.VertxService
  *
  * @author timofeevda
  */
-class PostmanEchoScenarioProvider : ScenarioProvider {
+class HTTPEchoScenarioProvider : ScenarioProvider {
     private lateinit var metricsRegistry: MetricsRegistry
     private lateinit var requestExecutorService: RequestExecutorService
     private lateinit var configurationService: ConfigurationService
 
     override fun get(): Scenario {
-        return PostmanEchoScenario(metricsRegistry, requestExecutorService.get(), configurationService)
+        return HTTPEchoScenario(metricsRegistry, requestExecutorService.get(), configurationService)
     }
 
     override fun init(metricsRegistry: MetricsRegistry,

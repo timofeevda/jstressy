@@ -1,5 +1,6 @@
 target
 target-distribution
-.idea
+/.idea/*
+!/.idea/runConfigurations/
 *.iml
 release.properties

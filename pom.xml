@@ -103,6 +103,7 @@
         <module>jstressy-assembly-springboot</module>
         <module>jstressy-assembly-docker</module>
         <module>jstressy-scenarios-examples</module>
+        <module>jstressy-echo-servers</module>
     </modules>
 
     <profiles>

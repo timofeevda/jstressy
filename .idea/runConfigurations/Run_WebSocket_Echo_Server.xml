@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run WebSocket Echo Server" type="JarApplication" folderName="Stub servers">
+    <option name="JAR_PATH" value="$PROJECT_DIR$/jstressy-echo-servers/jstressy-websocket-echo-server/target/jstressy-websocket-echo.jar" />
+    <option name="WORKING_DIRECTORY" value="C:\Sources\vagrant-gwtrxjs\jstressy\jstressy-echo-servers\jstressy-websocket-echo-server" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <method v="2" />
+  </configuration>
+</component>
