@@ -1,7 +1,17 @@
+@file:Import("utils.kt")
+@file:Repository("https://repo1.maven.org/maven2/")
+@file:DependsOn("com.google.code.gson:gson:2.10.1")
+
+import com.github.timofeevda.jstressy.config.dsl.Import
 import com.github.timofeevda.jstressy.config.dsl.config
+import com.google.gson.Gson
+import kotlin.script.experimental.dependencies.DependsOn
+import kotlin.script.experimental.dependencies.Repository
 
 val targetHost = "localhost"
 val targetPort = 8082
+
+val gson = Gson()
 
 config {
     globals {
@@ -18,16 +28,19 @@ config {
                 name = "Echo"
                 scenarioName = "HTTPEcho"
                 delay = "10s"
-                duration = "48h"
+                duration = 48.hours()
                 arrivalRate = 1.0
                 action {
                     arrivalRate = 0.5
                     duration = "1m"
                     run = { metricsRegistry, requestExecutor ->
-                        requestExecutor.get(targetHost, targetPort, "/")
+                        val list = listOf("1", "2", "3", "4")
+                        requestExecutor.post(targetHost, targetPort, "/", gson.toJson(list))
                             .subscribe { r ->
                                 metricsRegistry.counter("response_counter", "response counter").inc()
-                                println("Got headers in response:" + r.headers())
+                                r.bodyHandler {
+                                    println("Got response: \n$it")
+                                }
                             }
                     }
                 }

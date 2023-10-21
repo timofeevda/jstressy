@@ -25,8 +25,8 @@
         <logback-classic.version>1.2.3</logback-classic.version>
         <structuredlog4j.version>1.0.0</structuredlog4j.version>
 
-        <spring.version>5.3.22</spring.version>
-        <springboot.version>2.5.12</springboot.version>
+        <spring.version>5.3.30</spring.version>
+        <springboot.version>2.7.17</springboot.version>
         <javax.inject.version>1</javax.inject.version>
 
         <kotlin.version>1.9.10</kotlin.version>

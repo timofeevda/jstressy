@@ -157,6 +157,10 @@
                         </dependency>
                         <dependency>
                             <groupId>org.jetbrains.kotlin</groupId>
+                            <artifactId>kotlin-scripting-dependencies-maven</artifactId>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.jetbrains.kotlin</groupId>
                             <artifactId>kotlin-scripting-jvm-host</artifactId>
                         </dependency>
                     </requiresUnpack>
