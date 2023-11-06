@@ -2,6 +2,8 @@
 @file:Repository("https://repo1.maven.org/maven2/")
 @file:DependsOn("com.google.code.gson:gson:2.10.1")
 
+import com.github.timofeevda.jstressy.api.httprequest.RequestExecutor
+import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.config.dsl.Import
 import com.github.timofeevda.jstressy.config.dsl.config
 import com.google.gson.Gson
@@ -12,6 +14,15 @@ val targetHost = "localhost"
 val targetPort = 8082
 
 val gson = Gson()
+
+fun RequestExecutor.makeRequest(metricsRegistry: MetricsRegistry) =
+    this.post(targetHost, targetPort, "/", gson.toJson(listOf("1", "2", "3", "4")))
+        .subscribe { r ->
+            metricsRegistry.counter("response_counter", "response counter").inc()
+            r.bodyHandler {
+                println("Got response: \n$it")
+            }
+        }
 
 config {
     globals {
@@ -34,18 +45,11 @@ config {
                     arrivalRate = 0.5
                     duration = "1m"
                     run = { metricsRegistry, requestExecutor ->
-                        val list = listOf("1", "2", "3", "4")
-                        requestExecutor.post(targetHost, targetPort, "/", gson.toJson(list))
-                            .subscribe { r ->
-                                metricsRegistry.counter("response_counter", "response counter").inc()
-                                r.bodyHandler {
-                                    println("Got response: \n$it")
-                                }
-                            }
+                        requestExecutor.makeRequest(metricsRegistry)
                     }
                 }
             }
         }
-
     }
+
 }

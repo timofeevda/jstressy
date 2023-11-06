@@ -18,6 +18,18 @@
             <version>${project.version}</version>
             <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>com.github.timofeevda.jstressy</groupId>
+            <artifactId>jstressy-http-echo-server</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>com.github.timofeevda.jstressy</groupId>
+            <artifactId>jstressy-websocket-echo-server</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+        </dependency>
     </dependencies>
 
     <build>

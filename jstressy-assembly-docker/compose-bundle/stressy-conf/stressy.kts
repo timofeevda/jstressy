@@ -1,9 +1,8 @@
-import com.github.timofeevda.jstressy.api.config.parameters.ActionDistributionMode
 import com.github.timofeevda.jstressy.config.dsl.config
 
 config {
     globals {
-        host = "localhost"
+        host = "stressy-http-echo"
         port = 8082
         stressyMetricsPort = 8089
         stressyMetricsPath = "/metrics"
@@ -17,7 +16,7 @@ config {
                 scenarioName = "HTTPEcho"
                 delay = "10s"
                 duration = "48h"
-                arrivalRate = 20.0
+                arrivalRate = 0.5
             }
         }
 

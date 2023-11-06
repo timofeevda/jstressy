@@ -12,7 +12,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>jstressy-dummy-scenario-kotlin</module>
-        <module>jstressy-echo-websocket-scenario-kotlin</module>
+        <module>jstressy-http-scenario</module>
+        <module>jstressy-websocket-scenario</module>
     </modules>
 </project>

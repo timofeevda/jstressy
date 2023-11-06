@@ -7,9 +7,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jstressy-dummy-scenario-kotlin</artifactId>
+    <artifactId>jstressy-http-scenario</artifactId>
 
-    <description>Simple scenario invoking HTTP request to Postman Echo</description>
+    <description>Simple scenario invoking HTTP request</description>
 
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>

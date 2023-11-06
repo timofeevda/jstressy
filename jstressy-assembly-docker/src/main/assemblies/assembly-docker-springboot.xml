@@ -29,6 +29,16 @@
             <outputDirectory>stressy-bundle/stressy</outputDirectory>
             <lineEnding>unix</lineEnding>
         </fileSet>
+        <fileSet>
+            <directory>./compose-bundle/http-echo</directory>
+            <outputDirectory>stressy-bundle/stressy-http-echo</outputDirectory>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+        <fileSet>
+            <directory>./compose-bundle/websocket-echo</directory>
+            <outputDirectory>stressy-bundle/stressy-websocket-echo</outputDirectory>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
     </fileSets>
 
     <files>
@@ -40,6 +50,14 @@
         <file>
             <source>../jstressy-assembly-springboot/target/jstressy.jar</source>
             <outputDirectory>stressy-bundle/stressy</outputDirectory>
+        </file>
+        <file>
+            <source>../jstressy-echo-servers/jstressy-http-echo-server/target/jstressy-http-echo.jar</source>
+            <outputDirectory>stressy-bundle/stressy-http-echo</outputDirectory>
+        </file>
+        <file>
+            <source>../jstressy-echo-servers/jstressy-websocket-echo-server/target/jstressy-websocket-echo.jar</source>
+            <outputDirectory>stressy-bundle/stressy-websocket-echo</outputDirectory>
         </file>
     </files>
 

@@ -275,3 +275,76 @@ config {
     }
 }
 ```
+
+### JStressy Standalone
+
+There is a module named `jstressy-standalone` which provides the standalone JStressy version that can be used to run
+scenarios implemented exclusively in DSL (not packed within the application via scenario providers). JStressy standalone
+creates scenarios dynamically and invokes actions defined in `run` instructions. 
+
+Below is the example of such possible DSL which invokes HTTP requests in `run` block:
+```kotlin
+@file:Import("utils.kt")
+@file:Repository("https://repo1.maven.org/maven2/")
+@file:DependsOn("com.google.code.gson:gson:2.10.1")
+
+import com.github.timofeevda.jstressy.api.httprequest.RequestExecutor
+import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
+import com.github.timofeevda.jstressy.config.dsl.Import
+import com.github.timofeevda.jstressy.config.dsl.config
+import com.google.gson.Gson
+import kotlin.script.experimental.dependencies.DependsOn
+import kotlin.script.experimental.dependencies.Repository
+
+val targetHost = "localhost"
+val targetPort = 8082
+
+val gson = Gson()
+
+fun RequestExecutor.makeRequest(metricsRegistry: MetricsRegistry) =
+    this.post(targetHost, targetPort, "/", gson.toJson(listOf("1", "2", "3", "4")))
+        .subscribe { r ->
+            metricsRegistry.counter("response_counter", "response counter").inc()
+            r.bodyHandler {
+                println("Got response: \n$it")
+            }
+        }
+
+config {
+    globals {
+        host = targetHost
+        port = targetPort
+        stressyMetricsPort = 8089
+        stressyMetricsPath = "/metrics"
+        useSsl = false
+        insecureSsl = false
+        maxConnections = 3000
+
+        plan {
+            stage {
+                name = "Echo"
+                scenarioName = "HTTPEcho"
+                delay = "10s"
+                duration = 48.hours()
+                arrivalRate = 1.0
+                action {
+                    arrivalRate = 0.5
+                    duration = "1m"
+                    run = { metricsRegistry, requestExecutor ->
+                        requestExecutor.makeRequest(metricsRegistry)
+                    }
+                }
+            }
+        }
+    }
+
+}
+```
+
+### Metrics
+
+By default, JStressy metrics are exposed in Prometheus format. Both scenario-specific metrics and Vert.X HTTP client metrics are available on the same endpoint. 
+
+Below is the visualization of metrics subset in Grafana:
+
+![](https://github.com/timofeevda/jstressy/blob/master/docs/figures/metrics.PNG)

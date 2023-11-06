@@ -63,12 +63,12 @@
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
-            <artifactId>jstressy-echo-websocket-scenario-kotlin</artifactId>
+            <artifactId>jstressy-websocket-scenario</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
-            <artifactId>jstressy-dummy-scenario-kotlin</artifactId>
+            <artifactId>jstressy-http-scenario</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

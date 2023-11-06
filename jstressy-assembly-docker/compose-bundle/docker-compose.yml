@@ -23,6 +23,44 @@ services:
     restart: unless-stopped
     networks:
       - stress-test
+  stressy-http-echo:
+    build:
+      context: ./stressy-http-echo
+    image: stressy-http-echo:latest
+    container_name: stressy-http-echo
+    volumes:
+      - /var/log/stressy-http-echo:/logs
+    ports:
+      - 8082:8082
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '50m'
+        max-file: '20'
+    links:
+      - stressy
+    restart: unless-stopped
+    networks:
+      - stress-test
+  stressy-http-websocket:
+    build:
+      context: ./stressy-websocket-echo
+    image: stressy-websocket-echo:latest
+    container_name: stressy-websocket-echo
+    volumes:
+      - /var/log/websocket-echo:/logs
+    ports:
+      - 8081:8081
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '50m'
+        max-file: '20'
+    links:
+      - stressy
+    restart: unless-stopped
+    networks:
+      - stress-test
   stressy-prometheus:
     image: prom/prometheus:v2.2.1
     container_name: stressy-prometheus
@@ -42,7 +80,7 @@ services:
         max-size: '50m'
         max-file: '20'
   stressy-grafana:
-    image: grafana/grafana:5.0.3
+    image: grafana/grafana:10.1.2
     container_name: stressy-grafana
     volumes:
       - ./grafana:/etc/grafana
@@ -65,6 +103,3 @@ networks:
       driver: default
       config:
         - subnet: 172.32.0.0/12
-
-
-

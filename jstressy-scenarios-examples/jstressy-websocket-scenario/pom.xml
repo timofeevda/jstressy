@@ -7,7 +7,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jstressy-echo-websocket-scenario-kotlin</artifactId>
+    <artifactId>jstressy-websocket-scenario</artifactId>
 
     <description>Scenario demonstrating WebSocket functionality</description>
 

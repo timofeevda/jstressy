@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicLong
 private val globalCounter = AtomicLong(0)
 
 /**
- * Example implementation of scenario. Just tries to GET data from https://postman-echo.com/get
+ * Example implementation of scenario. Just tries to GET data from https://host:port/get/number
  */
 class HTTPEchoScenario internal constructor(private val metricsRegistry: MetricsRegistry,
                                             private val requestExecutor: RequestExecutor,
@@ -50,7 +50,7 @@ class HTTPEchoScenario internal constructor(private val metricsRegistry: Metrics
         val count = globalCounter.incrementAndGet()
         requestExecutor.get(host, port, "/get/$count")
                 .doOnSubscribe { logger.info("Going to request path /get/$count") }
-                .doOnSuccess { metricsRegistry.counter("postman_echo_request_success", "Number of successful requests to Postman Echo").inc() }
+                .doOnSuccess { metricsRegistry.counter("echo_request_success", "Number of successful requests").inc() }
                 .subscribe(
                         { httpClientResponse ->
                                 logger.info("Host $host answered with code ${httpClientResponse.statusCode()} for $count request")
