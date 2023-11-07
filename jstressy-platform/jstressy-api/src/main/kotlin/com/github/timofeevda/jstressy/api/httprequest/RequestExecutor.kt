@@ -53,7 +53,12 @@ interface RequestExecutor {
      * @param requestURI request URI
      * @return [HttpClientResponse] response
      */
-    fun get(host: String, port: Int, requestURI: String): Single<HttpClientResponse>
+    fun get(
+        host: String,
+        port: Int,
+        requestURI: String,
+        requestAdjustment: ((r: HttpClientRequest) -> HttpClientRequest)? = null
+    ): Single<HttpClientResponse>
 
     /**
      * Invokes POST method
@@ -63,7 +68,12 @@ interface RequestExecutor {
      * @param requestURI request URI
      * @return [HttpClientResponse] response
      */
-    fun post(host: String, port: Int, requestURI: String): Single<HttpClientResponse>
+    fun post(
+        host: String,
+        port: Int,
+        requestURI: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)? = null
+    ): Single<HttpClientResponse>
 
     /**
      * Invokes POST method with payload as json
@@ -74,7 +84,13 @@ interface RequestExecutor {
      * @param data       json payload
      * @return [HttpClientResponse] response
      */
-    fun post(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse>
+    fun post(
+        host: String,
+        port: Int,
+        requestURI: String,
+        data: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)? = null
+    ): Single<HttpClientResponse>
 
     /**
      * Invokes POST method with payload as form data with "application/x-www-form-urlencoded" content type
@@ -84,7 +100,13 @@ interface RequestExecutor {
      * @param requestURI request URI
      * @return [HttpClientResponse] response
      */
-    fun postFormData(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse>
+    fun postFormData(
+        host: String,
+        port: Int,
+        requestURI: String,
+        data: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)? = null
+    ): Single<HttpClientResponse>
 
     /**
      * Invokes PUT method
@@ -94,7 +116,12 @@ interface RequestExecutor {
      * @param requestURI request URI
      * @return [HttpClientResponse] response
      */
-    fun put(host: String, port: Int, requestURI: String): Single<HttpClientResponse>
+    fun put(
+        host: String,
+        port: Int,
+        requestURI: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)? = null
+    ): Single<HttpClientResponse>
 
     /**
      * Invokes PUT method with payload as json
@@ -105,7 +132,13 @@ interface RequestExecutor {
      * @param data       json payload
      * @return [HttpClientResponse] response
      */
-    fun put(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse>
+    fun put(
+        host: String,
+        port: Int,
+        requestURI: String,
+        data: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)? = null
+    ): Single<HttpClientResponse>
 
     /**
      * Invokes PUT method with payload as form data with "application/x-www-form-urlencoded" content type
@@ -115,7 +148,13 @@ interface RequestExecutor {
      * @param requestURI request URI
      * @return [HttpClientResponse] response
      */
-    fun putFormData(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse>
+    fun putFormData(
+        host: String,
+        port: Int,
+        requestURI: String,
+        data: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)? = null
+    ): Single<HttpClientResponse>
 
     /**
      * Invokes DELETE method
@@ -125,7 +164,12 @@ interface RequestExecutor {
      * @param requestURI request URI
      * @return [HttpClientResponse] response
      */
-    fun delete(host: String, port: Int, requestURI: String): Single<HttpClientResponse>
+    fun delete(
+        host: String,
+        port: Int,
+        requestURI: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)? = null
+    ): Single<HttpClientResponse>
 
     /**
      * Invokes DELETE method with payload as json
@@ -136,7 +180,13 @@ interface RequestExecutor {
      * @param data       json payload
      * @return [HttpClientResponse] response
      */
-    fun delete(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse>
+    fun delete(
+        host: String,
+        port: Int,
+        requestURI: String,
+        data: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)? = null
+    ): Single<HttpClientResponse>
 
     /**
      * Invokes DELETE method with payload as form data with "application/x-www-form-urlencoded" content type
@@ -146,7 +196,13 @@ interface RequestExecutor {
      * @param requestURI request URI
      * @return [HttpClientResponse] response
      */
-    fun deleteFormData(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse>
+    fun deleteFormData(
+        host: String,
+        port: Int,
+        requestURI: String,
+        data: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)? = null
+    ): Single<HttpClientResponse>
 
     /**
      * Opens websocket stream

@@ -16,13 +16,14 @@ val targetPort = 8082
 val gson = Gson()
 
 fun RequestExecutor.makeRequest(metricsRegistry: MetricsRegistry) =
-    this.post(targetHost, targetPort, "/", gson.toJson(listOf("1", "2", "3", "4")))
-        .subscribe { r ->
-            metricsRegistry.counter("response_counter", "response counter").inc()
-            r.bodyHandler {
-                println("Got response: \n$it")
-            }
+    this.post(targetHost, targetPort, "/", gson.toJson(listOf("1", "2", "3", "4"))) {
+        it.putHeader("X-Test", "test")
+    }.subscribe { r ->
+        metricsRegistry.counter("response_counter", "response counter").inc()
+        r.bodyHandler {
+            println("Got response: \n$it")
         }
+    }
 
 config {
     globals {

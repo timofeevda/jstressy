@@ -21,7 +21,7 @@ open class HTTPEcho(@Value("\${http.listen.port}") private val port: Int) : Appl
         log.info("Starting listening WebSocket connections on $port")
         Vertx.vertx().createHttpServer()
             .requestHandler { request ->
-                log.info("Got request with path: ${request.path()} params: ${request.params()}")
+                log.info("Got request with path: ${request.path()} params: ${request.params()} headers: ${request.headers()}")
                 // trivial implementation of body handler for testing purposes
                 request.bodyHandler { buffer ->
                     val body = String(buffer.bytes)

@@ -65,48 +65,104 @@ open class StressyRequestExecutor(
 
     override val httpSessionManager: HttpSessionManager = httpSessionManagerService.get()
 
-    override fun get(host: String, port: Int, requestURI: String): Single<HttpClientResponse> {
+    override fun get(
+        host: String,
+        port: Int,
+        requestURI: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)?
+    ): Single<HttpClientResponse> {
         return getMeasuredRequest(
             addCustomHeaders(
                 httpSessionManager.processRequest(client.rxRequest(HttpMethod.GET, port, host, requestURI))
-            ), null
+            ).adjustRequest(requestAdjustment), null
         )
     }
 
-    override fun post(host: String, port: Int, requestURI: String): Single<HttpClientResponse> {
-        return createMeasuredRequest(host, port, requestURI, HttpMethod.POST)
+    override fun post(
+        host: String,
+        port: Int,
+        requestURI: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)?
+    ): Single<HttpClientResponse> {
+        return createMeasuredRequest(host, port, requestURI, HttpMethod.POST, requestAdjustment)
     }
 
-    override fun post(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse> {
-        return createMeasuredJSONPayloadRequest(host, port, requestURI, HttpMethod.POST, data)
+    override fun post(
+        host: String,
+        port: Int,
+        requestURI: String,
+        data: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)?
+    ): Single<HttpClientResponse> {
+        return createMeasuredJSONPayloadRequest(host, port, requestURI, HttpMethod.POST, data, requestAdjustment)
     }
 
-    override fun postFormData(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse> {
-        return createMeasuredFormDataRequest(host, port, requestURI, HttpMethod.POST, data)
+    override fun postFormData(
+        host: String,
+        port: Int,
+        requestURI: String,
+        data: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)?
+    ): Single<HttpClientResponse> {
+        return createMeasuredFormDataRequest(host, port, requestURI, HttpMethod.POST, data, requestAdjustment)
     }
 
-    override fun put(host: String, port: Int, requestURI: String): Single<HttpClientResponse> {
-        return createMeasuredRequest(host, port, requestURI, HttpMethod.PUT)
+    override fun put(
+        host: String,
+        port: Int,
+        requestURI: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)?
+    ): Single<HttpClientResponse> {
+        return createMeasuredRequest(host, port, requestURI, HttpMethod.PUT, requestAdjustment)
     }
 
-    override fun put(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse> {
-        return createMeasuredJSONPayloadRequest(host, port, requestURI, HttpMethod.PUT, data)
+    override fun put(
+        host: String,
+        port: Int,
+        requestURI: String,
+        data: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)?
+    ): Single<HttpClientResponse> {
+        return createMeasuredJSONPayloadRequest(host, port, requestURI, HttpMethod.PUT, data, requestAdjustment)
     }
 
-    override fun putFormData(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse> {
-        return createMeasuredFormDataRequest(host, port, requestURI, HttpMethod.PUT, data)
+    override fun putFormData(
+        host: String,
+        port: Int,
+        requestURI: String,
+        data: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)?
+    ): Single<HttpClientResponse> {
+        return createMeasuredFormDataRequest(host, port, requestURI, HttpMethod.PUT, data, requestAdjustment)
     }
 
-    override fun delete(host: String, port: Int, requestURI: String): Single<HttpClientResponse> {
-        return createMeasuredRequest(host, port, requestURI, HttpMethod.DELETE)
+    override fun delete(
+        host: String,
+        port: Int,
+        requestURI: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)?
+    ): Single<HttpClientResponse> {
+        return createMeasuredRequest(host, port, requestURI, HttpMethod.DELETE, requestAdjustment)
     }
 
-    override fun delete(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse> {
-        return createMeasuredJSONPayloadRequest(host, port, requestURI, HttpMethod.DELETE, data)
+    override fun delete(
+        host: String,
+        port: Int,
+        requestURI: String,
+        data: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)?
+    ): Single<HttpClientResponse> {
+        return createMeasuredJSONPayloadRequest(host, port, requestURI, HttpMethod.DELETE, data, requestAdjustment)
     }
 
-    override fun deleteFormData(host: String, port: Int, requestURI: String, data: String): Single<HttpClientResponse> {
-        return createMeasuredFormDataRequest(host, port, requestURI, HttpMethod.DELETE, data)
+    override fun deleteFormData(
+        host: String,
+        port: Int,
+        requestURI: String,
+        data: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)?
+    ): Single<HttpClientResponse> {
+        return createMeasuredFormDataRequest(host, port, requestURI, HttpMethod.DELETE, data, requestAdjustment)
     }
 
     override fun websocket(host: String, port: Int, requestURI: String): Single<WebSocket> {
@@ -151,12 +207,13 @@ open class StressyRequestExecutor(
         host: String,
         port: Int,
         requestURI: String,
-        method: HttpMethod
+        method: HttpMethod,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)?
     ): Single<HttpClientResponse> {
         return getMeasuredRequest(
             addCustomHeaders(
                 httpSessionManager.processRequest(client.rxRequest(method, port, host, requestURI))
-            ), null
+            ).adjustRequest(requestAdjustment), null
         )
     }
 
@@ -165,10 +222,11 @@ open class StressyRequestExecutor(
         port: Int,
         requestURI: String,
         method: HttpMethod,
-        data: String
+        data: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)?
     ): Single<HttpClientResponse> {
         return getMeasuredRequest(
-            processJsonDataRequest(client.rxRequest(method, port, host, requestURI), data), data
+            processJsonDataRequest(client.rxRequest(method, port, host, requestURI), data, requestAdjustment), data
         )
     }
 
@@ -177,10 +235,11 @@ open class StressyRequestExecutor(
         port: Int,
         requestURI: String,
         method: HttpMethod,
-        data: String
+        data: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)?
     ): Single<HttpClientResponse> {
         return getMeasuredRequest(
-            processFormDataRequest(client.rxRequest(method, port, host, requestURI), data), data
+            processFormDataRequest(client.rxRequest(method, port, host, requestURI), data, requestAdjustment), data
         )
     }
 
@@ -194,14 +253,18 @@ open class StressyRequestExecutor(
                         preparedRequest.write(data)
                     }
                     preparedRequest.end()
-                    logger.debug({ "Invoking request"}, *requestDescriptionParameters(rqUUID, preparedRequest))
+                    logger.debug({ "Invoking request" }, *requestDescriptionParameters(rqUUID, preparedRequest))
                 }
                 .doOnSuccess { rp ->
-                    logger.debug({ "Processing response"}, *responseDescriptionParameters(rqUUID, rp))
+                    logger.debug({ "Processing response" }, *responseDescriptionParameters(rqUUID, rp))
                     httpSessionManager.processResponse(rp)
                 }
                 .doOnError { e ->
-                    logger.debug({ "Error invoking request" }, *requestDescriptionParameters(rqUUID, preparedRequest), e)
+                    logger.debug(
+                        { "Error invoking request" },
+                        *requestDescriptionParameters(rqUUID, preparedRequest),
+                        e
+                    )
                 }
         }
     }
@@ -219,29 +282,35 @@ open class StressyRequestExecutor(
         return request
     }
 
-    private fun processFormDataRequest(request: Single<HttpClientRequest>, data: String): Single<HttpClientRequest> {
+    private fun processFormDataRequest(
+        request: Single<HttpClientRequest>,
+        data: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)?
+    ): Single<HttpClientRequest> {
         return addCustomHeaders(httpSessionManager.processRequest(request))
             .map { r ->
                 r.putHeader("Content-Length", data.toByteArray().size.toString())
                 r.putHeader("Content-Type", "application/x-www-form-urlencoded")
-            }
+            }.adjustRequest(requestAdjustment)
     }
 
     private fun processJsonDataRequest(
         request: Single<HttpClientRequest>,
-        jsonData: String
+        jsonData: String,
+        requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)?
     ): Single<HttpClientRequest> {
         return addCustomHeaders(httpSessionManager.processRequest(request))
             .map { r ->
                 r.putHeader("Content-Length", jsonData.toByteArray().size.toString())
                 r.putHeader("Content-Type", "application/json")
-            }
+            }.adjustRequest(requestAdjustment)
     }
 
     private inner class WSRequestTimer {
         private var context: Timer.Context? = null
         private val timer: Timer = metricsRegistry.timer(
-            "stressy.request.executor.websocket.setup", "Time to establish websocket connection")
+            "stressy.request.executor.websocket.setup", "Time to establish websocket connection"
+        )
 
         fun start() {
             context = timer.context()
@@ -268,4 +337,10 @@ open class StressyRequestExecutor(
         "statusCode", rs.statusCode().toString(),
         "responseHeaders", multiMapToString(rs.headers())
     )
+
+    private fun Single<HttpClientRequest>.adjustRequest(requestAdjustment: ((request: HttpClientRequest) -> HttpClientRequest)?) =
+        map {
+            requestAdjustment?.invoke(it)
+                ?: it
+        }
 }
