@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
+import com.github.timofeevda.jstressy.config.dsl.DSLContext
 import com.github.timofeevda.jstressy.config.dsl.StressyConfigScriptDefinition
 import com.github.timofeevda.jstressy.config.parameters.Config
 import java.io.File
@@ -66,14 +67,17 @@ open class DSLConfigLoader : ConfigLoader() {
             is ResultWithDiagnostics.Success -> {
                 logEvaluationReports(result, printToSTDOut)
                 when (val returnValue = result.value.returnValue) {
-                    is ResultValue.Value -> processConfiguration(returnValue.value as Config)
                     is ResultValue.Error -> throw IllegalStateException(
                         "Couldn't evaluate configuration DSL script",
                         returnValue.error
                     )
-
-                    ResultValue.NotEvaluated -> throw IllegalStateException(compilationErrorsLogMessage)
-                    is ResultValue.Unit -> throw IllegalStateException("DSL script evaluated to void value. Check your script")
+                    is ResultValue.NotEvaluated -> throw IllegalStateException(compilationErrorsLogMessage)
+                    is ResultValue.Value, is ResultValue.Unit -> {
+                        if (DSLContext.config == null) {
+                            throw IllegalStateException("DSL script evaluated to null value. Check your script")
+                        }
+                        processConfiguration(DSLContext.config as Config)
+                    }
                 }
             }
         }

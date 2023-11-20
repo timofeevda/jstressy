@@ -2,6 +2,7 @@ package com.github.timofeevda.jstressy.api.config.parameters
 
 import com.github.timofeevda.jstressy.api.httprequest.RequestExecutor
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
+import com.github.timofeevda.jstressy.api.scenario.ScenarioHandle
 
 interface ScenarioActionDefinition : StressyArrivalDefinition {
     /**
@@ -19,6 +20,6 @@ interface ScenarioActionDefinition : StressyArrivalDefinition {
      */
     val distributionMode: ActionDistributionMode?
 
-    val run: ((metricsRegistry: MetricsRegistry, requestExecutor: RequestExecutor) -> Unit)?
+    val run: ((requestExecutor: RequestExecutor, metricsRegistry: MetricsRegistry, scenarioHandle: ScenarioHandle) -> Unit)?
 
 }

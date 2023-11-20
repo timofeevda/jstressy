@@ -11,6 +11,7 @@ import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistryService
 import com.github.timofeevda.jstressy.api.scenario.Scenario
 import com.github.timofeevda.jstressy.api.scenario.ScenarioAction
+import com.github.timofeevda.jstressy.api.scenario.ScenarioHandle
 import com.github.timofeevda.jstressy.api.scenario.ScenarioProvider
 import com.github.timofeevda.jstressy.api.scenario.ScenarioProviderService
 import com.github.timofeevda.jstressy.api.scenario.ScenarioRegistryService
@@ -33,7 +34,8 @@ class ActionsDistributionSchedulingTest {
                 override val name: String = "action"
                 override val actionParameters: Map<String, String> = emptyMap()
                 override val distributionMode: ActionDistributionMode = ActionDistributionMode.ROUND_ROBIN
-                override val run: ((metricsRegistry: MetricsRegistry, requestExecutor: RequestExecutor) -> Unit)? = null
+                override val run: ((requestExecutor: RequestExecutor, metricsRegistry: MetricsRegistry, scenarioHandle: ScenarioHandle) -> Unit)? =
+                    null
                 override val arrivalRate: Double = 3.0
                 override val rampArrival: Double? = null
                 override val rampArrivalRate: Double? = null
@@ -50,7 +52,8 @@ class ActionsDistributionSchedulingTest {
                 override val name: String = "action"
                 override val actionParameters: Map<String, String> = emptyMap()
                 override val distributionMode: ActionDistributionMode = ActionDistributionMode.ROUND_ROBIN
-                override val run: ((metricsRegistry: MetricsRegistry, requestExecutor: RequestExecutor) -> Unit)? = null
+                override val run: ((requestExecutor: RequestExecutor, metricsRegistry: MetricsRegistry, scenarioHandle: ScenarioHandle) -> Unit)? =
+                    null
                 override val arrivalRate: Double = 3.0
                 override val rampArrival: Double? = null
                 override val rampArrivalRate: Double? = null
@@ -87,7 +90,8 @@ class ActionsDistributionSchedulingTest {
                 override val name: String = "action"
                 override val actionParameters: Map<String, String> = emptyMap()
                 override val distributionMode: ActionDistributionMode = ActionDistributionMode.ROUND_ROBIN
-                override val run: ((metricsRegistry: MetricsRegistry, requestExecutor: RequestExecutor) -> Unit)? = null
+                override val run: ((requestExecutor: RequestExecutor, metricsRegistry: MetricsRegistry, scenarioHandle: ScenarioHandle) -> Unit)? =
+                    null
                 override val arrivalRate: Double = 2.0
                 override val rampArrival: Double? = null
                 override val rampArrivalRate: Double? = null
@@ -274,7 +278,12 @@ class ActionsDistributionSchedulingTest {
             scenarioNumber = scenariosCounter.incrementAndGet()
         }
 
-        override fun createAction(action: String, parameters: Map<String, String>, run: ((metricsRegistry: MetricsRegistry, requestExecutor: RequestExecutor) -> Unit)?, intervalId: String): ScenarioAction {
+        override fun createAction(
+            action: String,
+            parameters: Map<String, String>,
+            run: ((requestExecutor: RequestExecutor, metricsRegistry: MetricsRegistry, scenarioHandle: ScenarioHandle) -> Unit)?,
+            intervalId: String
+        ): ScenarioAction {
             return object : ScenarioAction {
                 override fun run() {
                     actionsCountMap.computeIfAbsent(scenarioNumber) { _ -> AtomicInteger(0) }.incrementAndGet()

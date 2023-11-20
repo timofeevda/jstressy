@@ -6,6 +6,7 @@ import com.github.timofeevda.jstressy.api.httprequest.RequestExecutor
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.scenario.Scenario
 import com.github.timofeevda.jstressy.api.scenario.ScenarioAction
+import com.github.timofeevda.jstressy.api.scenario.ScenarioHandle
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.Executors
@@ -74,8 +75,13 @@ class EchoWebSocketScenario internal constructor(metricsRegistry: MetricsRegistr
         return this
     }
 
-    override fun createAction(action: String, parameters: Map<String, String>, run: ((metricsRegistry: MetricsRegistry, requestExecutor: RequestExecutor) -> Unit)?, intervalId: String): ScenarioAction {
-        return object: ScenarioAction {
+    override fun createAction(
+        action: String,
+        parameters: Map<String, String>,
+        run: ((requestExecutor: RequestExecutor, metricsRegistry: MetricsRegistry, scenarioHandle: ScenarioHandle) -> Unit)?,
+        intervalId: String
+    ): ScenarioAction {
+        return object : ScenarioAction {
             override fun run() {
                 // do nothing
             }

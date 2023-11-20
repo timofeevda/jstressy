@@ -6,6 +6,7 @@ import com.github.timofeevda.jstressy.api.config.parameters.StressyArrivalInterv
 import com.github.timofeevda.jstressy.api.httprequest.RequestExecutor
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.scenario.Scenario
+import com.github.timofeevda.jstressy.api.scenario.ScenarioHandle
 import io.mockk.every
 import io.mockk.mockk
 import io.reactivex.Observable
@@ -19,7 +20,7 @@ class ScenarioSelectorsTest {
         override val name: String = "action"
         override val actionParameters: Map<String, String> = emptyMap()
         override val distributionMode: ActionDistributionMode = ActionDistributionMode.ROUND_ROBIN
-        override val run: ((metricsRegistry: MetricsRegistry, requestExecutor: RequestExecutor) -> Unit)? = null
+        override val run: ((requestExecutor: RequestExecutor, metricsRegistry: MetricsRegistry, scenarioHandle: ScenarioHandle) -> Unit)? = null
         override val arrivalRate: Double = 2.0
         override val rampArrival: Double? = null
         override val rampArrivalRate: Double? = null

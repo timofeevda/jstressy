@@ -29,6 +29,7 @@ import com.github.timofeevda.jstressy.api.httprequest.RequestExecutor
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.scenario.Scenario
 import com.github.timofeevda.jstressy.api.scenario.ScenarioAction
+import com.github.timofeevda.jstressy.api.scenario.ScenarioHandle
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
 import java.util.concurrent.atomic.AtomicLong
 
@@ -70,7 +71,12 @@ class HTTPEchoScenario internal constructor(private val metricsRegistry: Metrics
         return this
     }
 
-    override fun createAction(action: String, parameters: Map<String, String>, run: ((metricsRegistry: MetricsRegistry, requestExecutor: RequestExecutor) -> Unit)?, intervalId: String): ScenarioAction {
+    override fun createAction(
+        action: String,
+        parameters: Map<String, String>,
+        run: ((requestExecutor: RequestExecutor, metricsRegistry: MetricsRegistry, scenarioHandle: ScenarioHandle) -> Unit)?,
+        intervalId: String
+    ): ScenarioAction {
         return object : ScenarioAction {
             override fun run() {
                 // do nothing

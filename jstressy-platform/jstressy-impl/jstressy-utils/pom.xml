@@ -22,6 +22,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.github.timofeevda.jstressy</groupId>
+            <artifactId>jstressy-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>
         </dependency>

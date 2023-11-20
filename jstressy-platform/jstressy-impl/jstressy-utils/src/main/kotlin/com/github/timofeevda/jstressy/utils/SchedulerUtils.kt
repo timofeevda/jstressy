@@ -25,16 +25,6 @@ object SchedulerUtils {
 
     /**
      * Next Poisson arrivals is calculated based on the following formula:
-     * -1 / λ * ln(r), where λ - arrival rate, r - uniformly distributed random number [0, 1)
-     *
-     * @param arrivalRate arrival rate
-     *
-     * @return interval in milliseconds when the next Poisson arrival should happen
-     */
-    private fun nextPoissonArrival(arrivalRate: Double) = ((-1 / arrivalRate) * ln(Math.random()) * 1000).toLong()
-
-    /**
-     * Next Poisson arrivals is calculated based on the following formula:
      * -1 / λ * ln(r), where λ - arrival rate, r - uniformly distributed random number between 0 and
      * specified max random
      *

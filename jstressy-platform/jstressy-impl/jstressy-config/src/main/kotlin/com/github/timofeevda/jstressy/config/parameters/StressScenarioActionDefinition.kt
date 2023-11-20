@@ -6,6 +6,7 @@ import com.github.timofeevda.jstressy.api.config.parameters.ScenarioActionDefini
 import com.github.timofeevda.jstressy.api.config.parameters.StressyArrivalInterval
 import com.github.timofeevda.jstressy.api.httprequest.RequestExecutor
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
+import com.github.timofeevda.jstressy.api.scenario.ScenarioHandle
 
 
 @JsonPropertyOrder("name", "delay", "duration", "arrivalRate", "rampArrival", "rampArrivalRate",
@@ -47,7 +48,7 @@ class StressScenarioActionDefinition : ScenarioActionDefinition {
 
     override var distributionMode: ActionDistributionMode? = null
 
-    override var run: ((metricsRegistry: MetricsRegistry, requestExecutor: RequestExecutor) -> Unit)? = null
+    override var run: ((requestExecutor: RequestExecutor, metricsRegistry: MetricsRegistry, scenarioHandle: ScenarioHandle) -> Unit)? = null
 
     fun arrivalInterval(init: ArrivalInterval.() -> Unit) {
         arrivalIntervals.add(ArrivalInterval(init))

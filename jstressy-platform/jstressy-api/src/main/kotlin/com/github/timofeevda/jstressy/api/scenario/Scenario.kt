@@ -66,7 +66,12 @@ interface Scenario {
      * @param intervalId arrival interval identifier that can be used to distinguish arrival interval when scenario action instance was created
      * @return scenario action instance
      */
-    fun createAction(action: String, parameters: Map<String, String>, run: ((metricsRegistry: MetricsRegistry, requestExecutor: RequestExecutor) -> Unit)?, intervalId: String) : ScenarioAction
+    fun createAction(
+        action: String,
+        parameters: Map<String, String>,
+        run: ((requestExecutor: RequestExecutor, metricsRegistry: MetricsRegistry, scenarioHandle: ScenarioHandle) -> Unit)?,
+        intervalId: String
+    ): ScenarioAction
 
     /**
      * Allows to set global actions distribution identifier which is used to coordinate action invocation among scenarios
