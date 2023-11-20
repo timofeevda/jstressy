@@ -1,5 +1,6 @@
 package com.github.timofeevda.jstressy.config.parameters
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.github.timofeevda.jstressy.api.config.parameters.ActionDistributionMode
 import com.github.timofeevda.jstressy.api.config.parameters.ScenarioActionDefinition
@@ -12,6 +13,7 @@ import com.github.timofeevda.jstressy.api.scenario.ScenarioHandle
 @JsonPropertyOrder("name", "delay", "duration", "arrivalRate", "rampArrival", "rampArrivalRate",
     "rampArrivalPeriod", "rampDuration", "poissonArrival", "poissonMinRandom", "randomizeArrival", "distributionMode",
     "actionParameters", "arrivalIntervals")
+@JsonIgnoreProperties("run")
 class StressScenarioActionDefinition : ScenarioActionDefinition {
 
     constructor(init: StressScenarioActionDefinition.() -> Unit): this() {
