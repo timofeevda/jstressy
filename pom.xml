@@ -18,21 +18,22 @@
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <vertx.version>4.4.5</vertx.version>
+        <vertx.version>4.5.3</vertx.version>
         <slf4j.version>1.7.25</slf4j.version>
         <rxjava.version>2.2.21</rxjava.version>
-        <jackson-databind.version>2.15.0</jackson-databind.version>
-        <logback-classic.version>1.2.3</logback-classic.version>
+        <rxjava.version>2.2.21</rxjava.version>
+        <jackson-databind.version>2.15.3</jackson-databind.version>
+        <logback-classic.version>1.2.13</logback-classic.version>
         <structuredlog4j.version>1.0.0</structuredlog4j.version>
 
-        <spring.version>5.3.30</spring.version>
-        <springboot.version>2.7.17</springboot.version>
+        <spring.version>5.3.31</spring.version>
+        <springboot.version>2.7.18</springboot.version>
         <javax.inject.version>1</javax.inject.version>
 
-        <kotlin.version>1.9.10</kotlin.version>
+        <kotlin.version>1.9.22</kotlin.version>
         <dokka.version>1.5.0</dokka.version>
         <junit-jupiter-api.version>5.1.0</junit-jupiter-api.version>
-        <micrometer.version>1.11.3</micrometer.version>
+        <micrometer.version>1.11.5</micrometer.version>
         <mockk.version>1.12.4</mockk.version>
 
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
