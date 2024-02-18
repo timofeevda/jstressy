@@ -29,14 +29,20 @@ import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
 import com.github.timofeevda.jstressy.api.config.ConfigurationService
+import com.github.timofeevda.jstressy.api.config.parameters.StressyYamlSummaryDefinition
 import com.github.timofeevda.jstressy.api.config.parameters.StressyArrivalInterval
 import com.github.timofeevda.jstressy.api.config.parameters.StressyConfiguration
 import com.github.timofeevda.jstressy.api.config.parameters.StressyGlobals
+import com.github.timofeevda.jstressy.api.config.parameters.StressyLoggerSummaryDefinition
+import com.github.timofeevda.jstressy.api.config.parameters.StressyRenderedMetrics
 import com.github.timofeevda.jstressy.api.config.parameters.StressyStage
 import com.github.timofeevda.jstressy.api.config.parameters.StressyStressPlan
 import com.github.timofeevda.jstressy.config.parameters.ArrivalInterval
 import com.github.timofeevda.jstressy.config.parameters.Config
 import com.github.timofeevda.jstressy.config.parameters.Globals
+import com.github.timofeevda.jstressy.config.parameters.YamlSummaryDefinition
+import com.github.timofeevda.jstressy.config.parameters.LoggerSummaryDefinition
+import com.github.timofeevda.jstressy.config.parameters.RenderedMetrics
 import com.github.timofeevda.jstressy.config.parameters.Stage
 import com.github.timofeevda.jstressy.config.parameters.StressPlan
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
@@ -60,7 +66,7 @@ open class ConfigLoader : ConfigurationService {
 
     override var configurationFolder: String? = null
 
-    protected val mapper = YAMLMapper.builder().enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS).build()
+    private val mapper = YAMLMapper.builder().enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS).build()
 
     protected val typeResolver = SimpleAbstractTypeResolver()
         .addMapping(StressyConfiguration::class.java, Config::class.java)
@@ -68,6 +74,9 @@ open class ConfigLoader : ConfigurationService {
         .addMapping(StressyStage::class.java, Stage::class.java)
         .addMapping(StressyStressPlan::class.java, StressPlan::class.java)
         .addMapping(StressyArrivalInterval::class.java, ArrivalInterval::class.java)
+        .addMapping(StressyRenderedMetrics::class.java, RenderedMetrics::class.java)
+        .addMapping(StressyLoggerSummaryDefinition::class.java, LoggerSummaryDefinition::class.java)
+        .addMapping(StressyYamlSummaryDefinition::class.java, YamlSummaryDefinition::class.java)
 
     init {
         val configurationModule = SimpleModule("StressyConfiguration", Version.unknownVersion())

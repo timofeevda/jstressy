@@ -83,7 +83,7 @@ open class StressyVertxService(
                         MicrometerMetricsOptions()
                             .setPrometheusOptions(VertxPrometheusOptions().setEnabled(true))
                             .setJvmMetricsEnabled(true)
-                            .setMicrometerRegistry(metricsRegistryService.metricsRegistry.prometheusRegistry)
+                            .setMicrometerRegistry(metricsRegistryService.metricsRegistry.compositeMetricsRegistry)
                             .addLabels(*(if (enablePathLabelsInMetrics) arrayOf(Label.HTTP_PATH) else emptyArray()))
                             .setEnabled(true)
                     )

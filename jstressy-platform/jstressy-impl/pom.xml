@@ -22,6 +22,7 @@
         <module>jstressy-scheduler</module>
         <module>jstressy-scenario-registry</module>
         <module>jstressy-metrics-micrometer</module>
+        <module>jstressy-metrics-renders-scrapper</module>
         <module>jstressy-httpsession</module>
         <module>jstressy-cookiesession</module>
         <module>jstressy-websocket-utils</module>

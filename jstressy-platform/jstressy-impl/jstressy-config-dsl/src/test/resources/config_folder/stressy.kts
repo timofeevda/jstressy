@@ -22,6 +22,9 @@ config {
         connectionKeepAlive = true
         logNetworkActivity = true
         overwriteWithDSLGeneratedConfig = true
+        renderedMetrics {
+            folder = "rendered-metrics"
+        }
     }
 
     plan {

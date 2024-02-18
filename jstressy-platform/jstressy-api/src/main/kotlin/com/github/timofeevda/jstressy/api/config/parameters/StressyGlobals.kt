@@ -132,4 +132,13 @@ interface StressyGlobals {
      */
     val overwriteWithDSLGeneratedConfig: Boolean
 
+    /**
+     * Configuration for snapshotting rendered metrics
+     */
+    val renderedMetrics : List<StressyRenderedMetrics>
+
+    val loggerSummary : StressyLoggerSummaryDefinition?
+
+    val yamlSummary : StressyYamlSummaryDefinition?
+
 }

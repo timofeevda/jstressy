@@ -3,7 +3,6 @@ package com.github.timofeevda.jstressy.standalone
 import com.github.structlog4j.StructLog4J
 import com.github.structlog4j.json.JsonFormatter
 import com.github.timofeevda.jstressy.api.config.ConfigurationService
-import com.github.timofeevda.jstressy.api.scenario.ScenarioProvider
 import com.github.timofeevda.jstressy.api.scenario.ScenarioProviderService
 import com.github.timofeevda.jstressy.api.vertx.VertxService
 import com.github.timofeevda.jstressy.utils.logging.LazyLogging
@@ -18,7 +17,8 @@ open class Runner(
     private val vertxService: VertxService,
     private val metricsRegistryService: MetricsRegistryService,
     private val scenarioRegistry: ScenarioRegistry,
-    private val scenarioScheduler: ScenarioScheduler
+    private val scenarioScheduler: ScenarioScheduler,
+    private val metricsScrapperService: MetricsScrapperService
 ) : ApplicationRunner {
 
     companion object : LazyLogging()
@@ -26,15 +26,15 @@ open class Runner(
         logger.info("Registering JSON log formatting")
         StructLog4J.setFormatter(JsonFormatter.getInstance())
 
-        metricsRegistryService.setConfigurationService(configService)
         metricsRegistryService.startServingMetrics(vertxService)
+
+        metricsScrapperService.start()
 
         configService.configuration.stressPlan.stages
             .map { it.scenarioName }
             .forEach {
                registerStandaloneScenarioProviderService(it)
             }
-
 
         scenarioScheduler.observeScenariosWithActions()
             .subscribe(

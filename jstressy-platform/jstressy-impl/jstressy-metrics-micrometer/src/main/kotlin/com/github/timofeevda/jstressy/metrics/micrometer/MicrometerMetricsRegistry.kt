@@ -1,9 +1,13 @@
 package com.github.timofeevda.jstressy.metrics.micrometer
 
+import com.github.timofeevda.jstressy.api.config.ConfigurationService
 import com.github.timofeevda.jstressy.api.metrics.MetricsRegistry
 import com.github.timofeevda.jstressy.api.metrics.type.Counter
 import com.github.timofeevda.jstressy.api.metrics.type.Gauge
 import com.github.timofeevda.jstressy.api.metrics.type.Timer
+import com.github.timofeevda.jstressy.metrics.micrometer.summary.SummaryMeterRegistry
+import com.github.timofeevda.jstressy.utils.logging.LazyLogging
+import io.micrometer.core.instrument.Clock
 import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.Tags
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics
@@ -14,6 +18,7 @@ import io.micrometer.core.instrument.binder.logging.LogbackMetrics
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics
 import io.micrometer.core.instrument.binder.system.UptimeMetrics
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.core.instrument.config.MeterFilter
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig
 import io.micrometer.prometheus.PrometheusConfig
@@ -27,24 +32,40 @@ import java.util.function.Supplier
  *
  * @author timofeevda
  */
-class MicrometerMetricsRegistry internal constructor() : MetricsRegistry {
+class MicrometerMetricsRegistry internal constructor(configurationService: ConfigurationService) : MetricsRegistry {
+
+    companion object : LazyLogging()
 
     val prometheusRegistry: PrometheusMeterRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 
+    val compositeMetricsRegistry: CompositeMeterRegistry = CompositeMeterRegistry(Clock.SYSTEM)
+
     init {
-        prometheusRegistry.config()
-                .meterFilter(PrometheusRenameFilter())
-                .meterFilter(object : MeterFilter {
-                    override fun configure(
-                        id: Meter.Id,
-                        config: DistributionStatisticConfig
-                    ): DistributionStatisticConfig? {
-                        return DistributionStatisticConfig.builder()
-                                .percentiles(0.5, 0.75, 0.95)
-                                .build()
-                                .merge(config)
-                    }
-                })
+        if (configurationService.configuration.globals.yamlSummary != null
+            || configurationService.configuration.globals.loggerSummary != null
+        ) {
+            val summaryMeterRegistry = SummaryMeterRegistry(configurationService.configuration.globals)
+            compositeMetricsRegistry.add(summaryMeterRegistry)
+            compositeMetricsRegistry.add(prometheusRegistry)
+        } else {
+            compositeMetricsRegistry.add(prometheusRegistry)
+        }
+
+        compositeMetricsRegistry.config()
+            .meterFilter(PrometheusRenameFilter())
+            .meterFilter(object : MeterFilter {
+                override fun configure(
+                    id: Meter.Id,
+                    config: DistributionStatisticConfig
+                ): DistributionStatisticConfig? {
+                    return DistributionStatisticConfig.builder()
+                        .percentiles(0.5, 0.75, 0.95, 0.99)
+                        .build()
+                        .merge(config)
+                }
+            })
+
+        // expose system-level metrics only to Prometheus registry, we don't need it in summary registry
         JvmMemoryMetrics().bindTo(prometheusRegistry)
         JvmGcMetrics().bindTo(prometheusRegistry)
         JvmThreadMetrics().bindTo(prometheusRegistry)
@@ -60,7 +81,8 @@ class MicrometerMetricsRegistry internal constructor() : MetricsRegistry {
             .builder(name)
             .description(description)
             .tags(Tags.of(*tags))
-            .register(prometheusRegistry)
+            .register(compositeMetricsRegistry)
+
         return object : Counter {
             override fun inc() {
                 counter.increment()
@@ -77,7 +99,7 @@ class MicrometerMetricsRegistry internal constructor() : MetricsRegistry {
             .builder(name)
             .description(description)
             .tags(Tags.of(*tags))
-            .register(prometheusRegistry)
+            .register(compositeMetricsRegistry)
 
         return object : Timer {
             override fun context(): Timer.Context {
@@ -99,10 +121,11 @@ class MicrometerMetricsRegistry internal constructor() : MetricsRegistry {
         }
     }
 
-    override fun gauge(name: String,  description: String, valueSupplier: Supplier<Double>, vararg tags: String): Gauge {
+    override fun gauge(name: String, description: String, valueSupplier: Supplier<Double>, vararg tags: String): Gauge {
         io.micrometer.core.instrument.Gauge.builder(name) { valueSupplier.get() }
             .description(description)
-            .tags(Tags.of(*tags)).register(prometheusRegistry)
+            .tags(Tags.of(*tags)).register(compositeMetricsRegistry)
+
         return object : Gauge {
             override val value: Double
                 get() = valueSupplier.get()

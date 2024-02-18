@@ -88,6 +88,10 @@ services:
       - 3002:3000
     links:
       - stressy-prometheus
+    environment:
+      GF_RENDERING_SERVER_URL: http://stressy-grafana-renderer:8081/render
+      GF_RENDERING_CALLBACK_URL: http://stressy-grafana:3000/
+      GF_LOG_FILTERS: rendering:debug
     networks:
       - stress-test
     logging:
@@ -96,6 +100,15 @@ services:
         max-size: '50m'
         max-file: '20'
     restart: unless-stopped
+  stressy-grafana-renderer:
+    image: grafana/grafana-image-renderer:latest
+    container_name: stressy-grafana-renderer
+    ports:
+      - 8081
+    links:
+      - stressy-grafana
+    networks:
+      - stress-test
 networks:
   stress-test:
     driver: bridge

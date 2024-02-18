@@ -63,6 +63,11 @@
         </dependency>
         <dependency>
             <groupId>com.github.timofeevda.jstressy</groupId>
+            <artifactId>jstressy-metrics-renders-scrapper</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.timofeevda.jstressy</groupId>
             <artifactId>jstressy-websocket-scenario</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -12,6 +12,7 @@ import com.github.timofeevda.jstressy.cookiesession.CookieSessionManagerServiceI
 import com.github.timofeevda.jstressy.httpclient.StressyHttpClientService
 import com.github.timofeevda.jstressy.httprequest.StressyRequestExecutorService
 import com.github.timofeevda.jstressy.metrics.micrometer.MicrometerMetricsRegistryService
+import com.github.timofeevda.jstressy.metrics.scrapper.RenderedMetricsScrapperService
 import com.github.timofeevda.jstressy.scenario.registry.StressyScenarioRegistry
 import com.github.timofeevda.jstressy.scheduler.StressyScenariosScheduler
 import com.github.timofeevda.jstressy.vertx.StressyVertxService
@@ -65,4 +66,8 @@ class ScenarioScheduler(
     : StressyScenariosScheduler(vertxService, requestExecutorService, configurationService, metricsRegistryService, scenarioRegistryService)
 
 @Service
-class MetricsRegistryService : MicrometerMetricsRegistryService()
+class MetricsRegistryService(configurationService: ConfigurationService) : MicrometerMetricsRegistryService(configurationService)
+
+@Service
+class MetricsScrapperService(configurationService: ConfigurationService, httpClientService: HttpClientService) :
+    RenderedMetricsScrapperService(configurationService, httpClientService)

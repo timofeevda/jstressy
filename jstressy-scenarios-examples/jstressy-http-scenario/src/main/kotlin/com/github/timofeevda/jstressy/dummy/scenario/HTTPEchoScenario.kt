@@ -51,7 +51,7 @@ class HTTPEchoScenario internal constructor(private val metricsRegistry: Metrics
         val count = globalCounter.incrementAndGet()
         requestExecutor.get(host, port, "/get/$count")
                 .doOnSubscribe { logger.info("Going to request path /get/$count") }
-                .doOnSuccess { metricsRegistry.counter("echo_request_success", "Number of successful requests").inc() }
+                .doOnSuccess { metricsRegistry.counter("echo.request.success", "Number of successful requests").inc() }
                 .subscribe(
                         { httpClientResponse ->
                                 logger.info("Host $host answered with code ${httpClientResponse.statusCode()} for $count request")

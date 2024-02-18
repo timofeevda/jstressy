@@ -24,7 +24,9 @@
 package com.github.timofeevda.jstressy.config.parameters
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import com.github.timofeevda.jstressy.api.config.parameters.StressyLoggerSummaryDefinition
 import com.github.timofeevda.jstressy.api.config.parameters.StressyGlobals
+import com.github.timofeevda.jstressy.api.config.parameters.StressyRenderedMetrics
 
 /**
  * Global Stressy configuration
@@ -33,7 +35,7 @@ import com.github.timofeevda.jstressy.api.config.parameters.StressyGlobals
  */
 @JsonPropertyOrder("host", "port", "stressyMetricsPort", "stressyMetricsPath", "useSsl", "insecureSsl",
     "maxConnections", "maxWebSockets", "maxWebSocketFrameSize", "maxWebSocketMessageSize", "webSocketPerMessageDeflate",
-    "webSocketCompressionLevel", "connectionKeepAlive", "logNetworkActivity")
+    "webSocketCompressionLevel", "connectionKeepAlive", "logNetworkActivity", "renderedMetrics", "loggerSummary", "yamlSummary")
 class Globals() : StressyGlobals {
     constructor(init: Globals.() -> Unit): this() {
         init()
@@ -106,6 +108,25 @@ class Globals() : StressyGlobals {
      * Turn YML config overwrite by DSL generated config
      */
     override var overwriteWithDSLGeneratedConfig: Boolean = false
+
+    override val renderedMetrics: MutableList<StressyRenderedMetrics> = mutableListOf()
+
+    override var loggerSummary : StressyLoggerSummaryDefinition? = null
+
+    override var yamlSummary : YamlSummaryDefinition? = null
+
+    fun renderedMetrics(init: RenderedMetrics.() -> Unit) {
+        renderedMetrics.add(RenderedMetrics(init))
+    }
+
+    fun loggerSummary(init: StressyLoggerSummaryDefinition.() -> Unit) {
+        loggerSummary = LoggerSummaryDefinition(init)
+    }
+
+    fun yamlSummary(init: YamlSummaryDefinition.() -> Unit) {
+        yamlSummary = YamlSummaryDefinition(init)
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -126,7 +147,12 @@ class Globals() : StressyGlobals {
         if (webSocketCompressionLevel != other.webSocketCompressionLevel) return false
         if (connectionKeepAlive != other.connectionKeepAlive) return false
         if (logNetworkActivity != other.logNetworkActivity) return false
-        return overwriteWithDSLGeneratedConfig == other.overwriteWithDSLGeneratedConfig
+        if (overwriteWithDSLGeneratedConfig != other.overwriteWithDSLGeneratedConfig) return false
+        if (renderedMetrics != other.renderedMetrics) return false
+        if (loggerSummary != other.loggerSummary) return false
+        if (yamlSummary != other.yamlSummary) return false
+
+        return true
     }
 
     override fun hashCode(): Int {
@@ -145,6 +171,9 @@ class Globals() : StressyGlobals {
         result = 31 * result + connectionKeepAlive.hashCode()
         result = 31 * result + logNetworkActivity.hashCode()
         result = 31 * result + overwriteWithDSLGeneratedConfig.hashCode()
+        result = 31 * result + renderedMetrics.hashCode()
+        result = 31 * result + (loggerSummary?.hashCode() ?: 0)
+        result = 31 * result + (yamlSummary?.hashCode() ?: 0)
         return result
     }
 

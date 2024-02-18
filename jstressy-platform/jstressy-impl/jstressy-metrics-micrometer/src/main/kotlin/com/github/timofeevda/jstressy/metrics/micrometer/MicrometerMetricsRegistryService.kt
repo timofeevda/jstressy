@@ -7,19 +7,13 @@ import com.github.timofeevda.jstressy.api.vertx.VertxService
 import io.prometheus.client.exporter.common.TextFormat
 import io.vertx.reactivex.ext.web.Router
 
-open class MicrometerMetricsRegistryService : MetricsRegistryService {
+open class MicrometerMetricsRegistryService(private val configurationService: ConfigurationService) :
+    MetricsRegistryService {
 
-    val metricsRegistry: MicrometerMetricsRegistry = MicrometerMetricsRegistry()
-
-    private lateinit var configurationService: ConfigurationService
+    val metricsRegistry: MicrometerMetricsRegistry = MicrometerMetricsRegistry(configurationService)
 
     override fun get(): MetricsRegistry {
         return metricsRegistry
-    }
-
-    fun setConfigurationService(configurationService: ConfigurationService): MetricsRegistryService {
-        this.configurationService = configurationService
-        return this
     }
 
     fun startServingMetrics(vertxService: VertxService) {
@@ -29,9 +23,9 @@ open class MicrometerMetricsRegistryService : MetricsRegistryService {
             try {
                 val metricsData = metricsRegistry.prometheusRegistry.scrape()
                 event.response()
-                        .setStatusCode(200)
-                        .putHeader("Content-Type", TextFormat.CONTENT_TYPE_004)
-                        .end(metricsData)
+                    .setStatusCode(200)
+                    .putHeader("Content-Type", TextFormat.CONTENT_TYPE_004)
+                    .end(metricsData)
             } catch (e: Exception) {
                 event.fail(e)
             }

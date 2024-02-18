@@ -24,7 +24,8 @@ open class Runner(
         private val vertxService: VertxService,
         private val metricsRegistryService: MetricsRegistryService,
         private val scenarioRegistry: ScenarioRegistry,
-        private val scenarioScheduler: ScenarioScheduler
+        private val scenarioScheduler: ScenarioScheduler,
+        private val metricsScrapperService: MetricsScrapperService
 ) : ApplicationRunner {
 
     companion object : LazyLogging()
@@ -34,8 +35,9 @@ open class Runner(
         logger.info("Registering JSON log formatting")
         StructLog4J.setFormatter(JsonFormatter.getInstance())
 
-        metricsRegistryService.setConfigurationService(configService)
         metricsRegistryService.startServingMetrics(vertxService)
+
+        metricsScrapperService.start()
 
         val demoScenario = "WebSocketEcho"
         scenarioRegistry.registerScenarioProviderService(
